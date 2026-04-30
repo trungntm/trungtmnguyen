@@ -1,0 +1,151 @@
+@import 'tailwindcss';
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --muted: #64748b;
+  --border: rgba(15, 23, 42, 0.1);
+  --primary: #2563eb;
+  --secondary: #7c3aed;
+  --accent: #06b6d4;
+  --gradient-main: linear-gradient(135deg, #2563eb 0%, #7c3aed 45%, #06b6d4 100%);
+  --shadow-color: rgba(37, 99, 235, 0.16);
+}
+
+.dark {
+  --background: #020617;
+  --foreground: #f8fafc;
+  --surface: #0f172a;
+  --muted: #94a3b8;
+  --border: rgba(226, 232, 240, 0.12);
+  --primary: #60a5fa;
+  --secondary: #a78bfa;
+  --accent: #22d3ee;
+  --gradient-main: linear-gradient(135deg, #60a5fa 0%, #a78bfa 45%, #22d3ee 100%);
+  --shadow-color: rgba(96, 165, 250, 0.22);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', 'Cascadia Code', monospace;
+}
+
+@utility page-container {
+  margin-inline: auto;
+  width: min(100%, 72rem);
+}
+
+@utility gradient-text {
+  background-image: var(--gradient-main);
+  background-clip: text;
+  color: transparent;
+}
+
+@utility gradient-bg {
+  background-image: var(--gradient-main);
+}
+
+@utility glass-card {
+  border: 1px solid var(--border);
+  background-color: color-mix(in oklab, var(--surface) 78%, transparent);
+  box-shadow:
+    0 18px 60px -36px var(--shadow-color),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(22px);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(
+        circle at top left,
+        color-mix(in oklab, var(--primary) 18%, transparent),
+        transparent 26rem
+      ),
+      radial-gradient(
+        circle at top right,
+        color-mix(in oklab, var(--secondary) 16%, transparent),
+        transparent 28rem
+      ),
+      linear-gradient(180deg, color-mix(in oklab, var(--background) 94%, white), var(--background));
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 28%, transparent);
+    color: var(--foreground);
+  }
+
+  a {
+    @apply transition-colors;
+  }
+}
+
+@layer components {
+  .gradient-orb-left {
+    position: absolute;
+    left: -8rem;
+    top: 6rem;
+    height: 18rem;
+    width: 18rem;
+    border-radius: 9999px;
+    background: color-mix(in oklab, var(--primary) 22%, transparent);
+    filter: blur(90px);
+    opacity: 0.65;
+  }
+
+  .gradient-orb-right {
+    position: absolute;
+    right: -7rem;
+    top: 10rem;
+    height: 20rem;
+    width: 20rem;
+    border-radius: 9999px;
+    background: color-mix(in oklab, var(--accent) 20%, transparent);
+    filter: blur(100px);
+    opacity: 0.55;
+  }
+
+  .grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in oklab, var(--border) 60%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--border) 60%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 72px 72px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.65), transparent 80%);
+    opacity: 0.25;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

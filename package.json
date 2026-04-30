@@ -1,0 +1,31 @@
+{
+  "name": "trungtmnguyen",
+  "private": true,
+  "version": "0.0.1",
+  "packageManager": "pnpm@10.22.0",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "lint-staged": "lint-staged",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "typecheck": "turbo typecheck",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "pnpm exec eslint --fix"
+    ],
+    "*.{json,md,css}": [
+      "pnpm exec prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "husky": "9.1.7",
+    "lint-staged": "16.4.0",
+    "prettier": "3.8.3",
+    "turbo": "2.9.6"
+  }
+}
