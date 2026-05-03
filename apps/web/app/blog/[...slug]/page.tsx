@@ -1,11 +1,10 @@
-import { MDXContent } from '@content-collections/mdx/react';
 import type { Metadata } from 'next';
 import { draftMode } from 'next/headers';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 import { TagPill } from '@/components/blog/tag-pill';
-import { mdxComponents } from '@/components/mdx/mdx-components';
+import { MDXRenderer } from '@/components/mdx/mdx-renderer';
 import type { Blog } from '@/lib/blogs';
 import { formatBlogDate, getAllBlogSlugs, getBlogBySlug } from '@/lib/blogs';
 import { createMetadata, siteConfig } from '@/lib/seo';
@@ -125,9 +124,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         </header>
 
         <div className="glass-card rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
-          <div className="blog-prose">
-            <MDXContent code={blog.mdx} components={mdxComponents} />
-          </div>
+          <MDXRenderer className="blog-prose" code={blog.mdx} />
         </div>
       </div>
     </article>

@@ -34,7 +34,9 @@ export const mdxComponents = {
   a: ({ className, ...props }: AnchorProps) => (
     <a
       className={cn(
-        'underline decoration-primary/35 underline-offset-4 transition-colors hover:text-primary',
+        'transition-colors hover:text-primary',
+        !className?.includes('heading-anchor') &&
+          'underline decoration-primary/35 underline-offset-4',
         className,
       )}
       {...props}
@@ -102,7 +104,10 @@ export const mdxComponents = {
   img: ({ className, alt, ...props }: ImgProps) => (
     <img
       alt={alt ?? ''}
-      className={cn('rounded-[1.5rem] border border-border/70', className)}
+      className={cn(
+        'rounded-[1.5rem] border border-border/70 shadow-[0_18px_55px_-38px_var(--shadow-color)]',
+        className,
+      )}
       loading="lazy"
       {...props}
     />

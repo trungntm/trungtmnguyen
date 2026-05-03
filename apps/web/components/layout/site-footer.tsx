@@ -6,7 +6,7 @@ export function SiteFooter() {
           <p>
             Built for practical engineering notes, architecture write-ups, and technical essays.
           </p>
-          <p>Phase 1 infrastructure foundation.</p>
+          <p>Powered by typed MDX, Content Collections, and the Next.js App Router.</p>
         </div>
       </div>
     </footer>

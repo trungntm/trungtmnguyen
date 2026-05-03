@@ -1,7 +1,11 @@
+'use client';
+
 import type { Route } from 'next';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { HoverUnderlineLink } from '@/components/ui/hover-underline-link';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -12,9 +16,45 @@ const links: Array<{ href: Route; label: string }> = [
 ];
 
 export function SiteHeader() {
+  const [isPinned, setIsPinned] = useState(false);
+
+  useEffect(() => {
+    const pinOffset = 12;
+    const unpinOffset = 4;
+
+    const handleScroll = () => {
+      const nextScrollY = window.scrollY;
+
+      setIsPinned((currentValue) => {
+        if (currentValue) {
+          return nextScrollY > unpinOffset;
+        }
+
+        return nextScrollY > pinOffset;
+      });
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 px-4 pt-4 md:px-6">
-      <div className="page-container glass-card flex items-center justify-between gap-4 px-4 py-3 md:px-6">
+    <header
+      className={cn(
+        'sticky z-40 px-4 transition-[padding] duration-300 md:px-6',
+        isPinned ? 'top-0 pt-3' : 'top-0 pt-4',
+      )}
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-full bg-background/28 backdrop-blur-xl [mask-image:linear-gradient(to_bottom,black_0%,black_72%,transparent_100%)]" />
+      <div
+        className={cn(
+          'page-container glass-card flex items-center justify-between gap-4 rounded-[1.75rem] px-4 py-3 md:px-6',
+        )}
+      >
         <Link className="flex items-center gap-3" href="/">
           <span className="gradient-bg flex size-10 items-center justify-center rounded-2xl text-sm font-bold text-white">
             TN
@@ -29,16 +69,13 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-2 md:flex">
           {links.map((link) => (
-            <Link
+            <HoverUnderlineLink
               key={link.href}
-              className={cn(
-                'rounded-full px-4 py-2 text-sm text-muted transition-colors hover:text-foreground',
-                link.href === '/blog' && 'hover:text-primary',
-              )}
+              className={cn('text-muted', link.href === '/blog' && 'hover:text-primary')}
               href={link.href}
             >
               {link.label}
-            </Link>
+            </HoverUnderlineLink>
           ))}
         </nav>
 
