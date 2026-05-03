@@ -14,14 +14,6 @@
     "typecheck": "turbo typecheck",
     "prepare": "husky"
   },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,mjs,cjs}": [
-      "pnpm exec eslint --fix"
-    ],
-    "*.{json,md,css}": [
-      "pnpm exec prettier --write"
-    ]
-  },
   "devDependencies": {
     "husky": "9.1.7",
     "lint-staged": "16.4.0",

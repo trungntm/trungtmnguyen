@@ -1,0 +1,47 @@
+---
+title: 'Designing Module Boundaries in Spring Modulith'
+description: 'Practical rules for keeping Spring Modulith modules clean and maintainable.'
+publishedAt: '2026-04-30'
+updatedAt: '2026-04-30'
+author: 'Trung Nguyen'
+tags:
+  - Spring Boot
+  - Architecture
+thumbnail: '/images/blogs/typed-mdx-blog-thumb.png'
+cover: '/images/blogs/spring-modulith-cover.png'
+draft: false
+---
+
+## Start with business seams, not package names
+
+Spring Modulith works best when modules represent business capabilities with explicit APIs. If a
+module name only mirrors a technical layer such as `service` or `repository`, the boundary will
+drift as the codebase grows.
+
+### A practical rule set
+
+- Give each module one capability-focused reason to change.
+- Export behavior through published application services or domain events.
+- Keep persistence details behind the module boundary.
+
+```java
+@ApplicationModule(
+  allowedDependencies = {"orders :: events"}
+)
+package com.example.payments;
+```
+
+## Prefer events for cross-module flow
+
+Synchronous method calls between modules are easy to add and hard to remove. Domain events create a
+clear handoff and make ownership visible in both code and architecture reviews.
+
+> A module boundary is only real when another module can evolve without reaching into its internals.
+
+## Review questions
+
+| Check                                      | Why it matters                                   |
+| ------------------------------------------ | ------------------------------------------------ |
+| Does the module expose persistence types?  | Leaks internal structure and increases coupling. |
+| Are imports pointing at internal packages? | Signals a broken public API.                     |
+| Can integration tests prove the boundary?  | Prevents architectural drift over time.          |

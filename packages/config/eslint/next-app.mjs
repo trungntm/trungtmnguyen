@@ -27,6 +27,7 @@ export function createNextAppEslintConfig({ rootDir = '.' } = {}) {
     },
     globalIgnores([
       '.next/**',
+      '.content-collections/**',
       'out/**',
       'build/**',
       'coverage/**',
