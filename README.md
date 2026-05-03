@@ -1,6 +1,6 @@
 # Trung Nguyen Blog Monorepo
 
-Phase 1 establishes the blog infrastructure only: monorepo tooling, App Router baseline, theming, SEO defaults, and developer experience. It intentionally does not include blog content logic, MDX rendering, or tests yet.
+Phase 2 adds typed MDX blog content on top of the existing infrastructure. The project now uses Content Collections for local blog content, nested blog routing, typed metadata, MDX rendering, and draft-aware public listing behavior. Remote Git sync is intentionally not implemented in this phase.
 
 ## Stack
 
@@ -19,6 +19,16 @@ Phase 1 establishes the blog infrastructure only: monorepo tooling, App Router b
 - `tailwind-merge` `3.5.0`
 - `class-variance-authority` `0.7.1`
 - `lucide-react` `1.14.0`
+- `@content-collections/core` `0.15.0`
+- `@content-collections/mdx` `0.2.2`
+- `@content-collections/next` `0.2.11`
+- `zod` `4.4.1`
+- `reading-time` `1.5.0`
+- `remark-gfm` `4.0.1`
+- `rehype-slug` `6.0.0`
+- `rehype-autolink-headings` `7.1.0`
+- `rehype-pretty-code` `0.14.3`
+- `shiki` `4.0.2`
 
 ## Decisions
 
@@ -28,6 +38,8 @@ Phase 1 establishes the blog infrastructure only: monorepo tooling, App Router b
 - `next-themes` drives light/dark mode using a class on `<html>` so design tokens and browser color-scheme stay aligned.
 - The typography baseline uses local font stacks instead of remote font fetching so production builds remain deterministic in restricted or offline environments.
 - SEO defaults live in `apps/web/lib/seo.ts` and feed root metadata, canonical URLs, Open Graph, Twitter cards, `sitemap.ts`, and `robots.ts`.
+- Blog content lives under `apps/web/data/blogs` and is compiled through `apps/web/content-collections.ts`.
+- Draft filtering is centralized in `apps/web/lib/blogs.ts` so future `draftMode()` preview support can extend one path instead of every route.
 
 ## Commands
 
@@ -52,3 +64,61 @@ Current staged-file checks:
 ## Environment
 
 Set `NEXT_PUBLIC_SITE_URL` for canonical URLs, sitemap, and robots output in non-local environments.
+
+## Writing Blog Posts
+
+Create MDX files under `apps/web/data/blogs` using nested folders for route structure:
+
+```text
+apps/web/data/blogs/
+  spring-modulith/module-boundaries.mdx
+  nextjs/typed-mdx-blog.mdx
+  devops/kubernetes-jvm-memory.mdx
+```
+
+Route mapping is folder-based:
+
+- `apps/web/data/blogs/spring-modulith/module-boundaries.mdx` -> `/blog/spring-modulith/module-boundaries`
+- `apps/web/data/blogs/nextjs/typed-mdx-blog.mdx` -> `/blog/nextjs/typed-mdx-blog`
+
+### Frontmatter Schema
+
+Required fields:
+
+- `title`: non-empty string
+- `description`: non-empty string
+- `publishedAt`: ISO date string in `YYYY-MM-DD`
+- `author`: non-empty string
+- `tags`: string array
+- `draft`: boolean
+
+Optional fields:
+
+- `updatedAt`: ISO date string in `YYYY-MM-DD`
+- `thumbnail`: string path such as `/images/blogs/example-thumb.png`
+- `cover`: string path such as `/images/blogs/example-cover.png`
+
+Example:
+
+```mdx
+---
+title: 'Designing Module Boundaries in Spring Modulith'
+description: 'Practical rules for keeping Spring Modulith modules clean and maintainable.'
+publishedAt: '2026-04-30'
+updatedAt: '2026-04-30'
+author: 'Trung Nguyen'
+tags:
+  - Spring Boot
+  - Architecture
+thumbnail: '/images/blogs/spring-modulith-thumb.png'
+cover: '/images/blogs/spring-modulith-cover.png'
+draft: false
+---
+```
+
+### Publishing Rules
+
+- Public `/blog` listing excludes `draft: true` posts.
+- Draft posts are omitted from `sitemap.xml`.
+- Direct draft URLs return `notFound()` unless future preview support enables draft access.
+- Missing local thumbnail and cover files do not break the UI; those images are simply not rendered.

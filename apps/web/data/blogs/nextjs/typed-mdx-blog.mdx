@@ -1,0 +1,47 @@
+---
+title: 'Building a Typed MDX Blog with Content Collections'
+description: 'A small, maintainable approach to typed MDX content in a Next.js App Router blog.'
+publishedAt: '2026-04-28'
+updatedAt: '2026-04-29'
+author: 'Trung Nguyen'
+tags:
+  - Next.js
+  - TypeScript
+  - MDX
+thumbnail: '/images/blogs/typed-mdx-blog-thumb.png'
+cover: '/images/blogs/typed-mdx-blog-cover.png'
+draft: false
+---
+
+## Why typed content is worth it
+
+The main win is not convenience. The main win is removing an entire class of publishing mistakes:
+missing titles, invalid dates, and silently broken route metadata.
+
+### Shape the content once
+
+When the collection schema defines the contract, the rest of the app can work with trusted data.
+That keeps route generation, metadata, and listing pages simple.
+
+```tsx
+const blog = getBlogBySlug(params.slug);
+
+if (!blog) {
+  notFound();
+}
+```
+
+## Keep draft logic centralized
+
+Filtering drafts in every page invites drift. One helper should decide whether draft content is
+visible so that future preview mode only changes one code path.
+
+![Editorial diagram showing an MDX document flowing through schema validation, route generation, and the final rendered page.](/images/blogs/typed-mdx-blog-flow.png)
+
+The same idea is easier to explain visually: source MDX enters the content pipeline, the schema
+guards required metadata, routes are generated from the folder structure, and the final page
+renders with trusted typed data.
+
+- Public lists exclude drafts by default.
+- Static params only include published entries.
+- Direct draft URLs can stay hidden until preview is turned on.

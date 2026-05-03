@@ -27,6 +27,7 @@ out/
 build
 dist
 *.tsbuildinfo
+apps/web/.content-collections
 
 
 # Debug

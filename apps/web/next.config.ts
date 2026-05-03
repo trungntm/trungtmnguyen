@@ -1,3 +1,4 @@
+import { createContentCollectionPlugin } from '@content-collections/next';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -8,4 +9,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withContentCollections = createContentCollectionPlugin({
+  configPath: './content-collections.ts',
+});
+
+export default withContentCollections(nextConfig);

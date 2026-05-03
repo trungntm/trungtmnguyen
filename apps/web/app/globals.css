@@ -35,7 +35,9 @@
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
-  --font-sans: var(--font-space-grotesk);
+  --font-sans:
+    var(--font-space-grotesk), 'Avenir Next', Avenir, 'Segoe UI', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', 'Cascadia Code', monospace;
 }
 
@@ -141,6 +143,26 @@
     background-size: 72px 72px;
     mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.65), transparent 80%);
     opacity: 0.25;
+  }
+
+  .blog-prose {
+    color: color-mix(in oklab, var(--foreground) 92%, transparent);
+  }
+
+  .blog-prose > * + * {
+    margin-top: 1.5rem;
+  }
+
+  .blog-prose .heading-anchor {
+    text-decoration: none;
+  }
+
+  .blog-prose .heading-anchor:hover {
+    color: var(--primary);
+  }
+
+  .blog-prose table thead {
+    background: color-mix(in oklab, var(--surface) 84%, transparent);
   }
 }
 

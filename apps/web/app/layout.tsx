@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk } from 'next/font/google';
+import localFont from 'next/font/local';
 import type { ReactNode } from 'react';
 
 import { SiteFooter } from '@/components/layout/site-footer';
@@ -8,9 +8,36 @@ import { ThemeProvider } from '@/components/theme/theme-provider';
 import { getBaseMetadata } from '@/lib/seo';
 
 import './globals.css';
+import './prism.css';
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
+const spaceGrotesk = localFont({
+  src: [
+    {
+      path: './fonts/SpaceGrotesk-300.ttf',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: './fonts/SpaceGrotesk-400.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './fonts/SpaceGrotesk-500.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: './fonts/SpaceGrotesk-600.ttf',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: './fonts/SpaceGrotesk-700.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
   display: 'swap',
   variable: '--font-space-grotesk',
 });
