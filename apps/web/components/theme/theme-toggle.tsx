@@ -22,7 +22,13 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button aria-label="Toggle theme" disabled size="icon" variant="ghost">
+      <Button
+        aria-label="Toggle theme"
+        className="rounded-full border border-border bg-background/60 text-muted"
+        disabled
+        size="icon"
+        variant="ghost"
+      >
         <span aria-hidden="true" className="size-4 rounded-full border border-border/80" />
       </Button>
     );
@@ -33,7 +39,7 @@ export function ThemeToggle() {
   return (
     <Button
       aria-label="Toggle theme"
-      className="cursor-pointer"
+      className="cursor-pointer rounded-full border border-border bg-background/60 text-muted hover:border-primary/45 hover:bg-background/80 hover:text-foreground"
       size="icon"
       variant="ghost"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
