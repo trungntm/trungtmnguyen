@@ -1,11 +1,12 @@
 'use client';
 
 import { Check, Copy } from 'lucide-react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 
-type CodeBlockFigureProps = React.ComponentPropsWithoutRef<'figure'>;
+type CodeBlockFigureProps = ComponentPropsWithoutRef<'figure'>;
 
 export function CodeBlockFigure({ className, children, ...props }: CodeBlockFigureProps) {
   const figureRef = useRef<HTMLElement | null>(null);

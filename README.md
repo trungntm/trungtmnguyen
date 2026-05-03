@@ -1,6 +1,6 @@
 # Trung Nguyen Blog Monorepo
 
-Phase 2 adds typed MDX blog content on top of the existing infrastructure. The project now uses Content Collections for local blog content, nested blog routing, typed metadata, MDX rendering, and draft-aware public listing behavior. Remote Git sync is intentionally not implemented in this phase.
+Phase 3 adds an MDX-powered About page on top of the existing typed blog pipeline. The project now uses Content Collections for both local blog posts and structured site pages, including `/about`, while preserving the existing App Router and MDX rendering flow.
 
 ## Stack
 
@@ -38,8 +38,9 @@ Phase 2 adds typed MDX blog content on top of the existing infrastructure. The p
 - `next-themes` drives light/dark mode using a class on `<html>` so design tokens and browser color-scheme stay aligned.
 - The typography baseline uses local font stacks instead of remote font fetching so production builds remain deterministic in restricted or offline environments.
 - SEO defaults live in `apps/web/lib/seo.ts` and feed root metadata, canonical URLs, Open Graph, Twitter cards, `sitemap.ts`, and `robots.ts`.
-- Blog content lives under `apps/web/data/blogs` and is compiled through `apps/web/content-collections.ts`.
+- Blog content lives under `apps/web/data/blogs` and page content lives under `apps/web/data/pages`, both compiled through `apps/web/content-collections.ts`.
 - Draft filtering is centralized in `apps/web/lib/blogs.ts` so future `draftMode()` preview support can extend one path instead of every route.
+- The About page is backed by the `pages` collection and loaded through `apps/web/lib/pages.ts`.
 
 ## Commands
 
@@ -122,3 +123,23 @@ draft: false
 - Draft posts are omitted from `sitemap.xml`.
 - Direct draft URLs return `notFound()` unless future preview support enables draft access.
 - Missing local thumbnail and cover files do not break the UI; those images are simply not rendered.
+
+## Editing the About Page
+
+The `/about` route is powered by the `pages` Content Collections collection. Edit this file:
+
+```text
+apps/web/data/pages/about.mdx
+```
+
+The frontmatter drives the structured sidebar and detail sections:
+
+- hero copy: `title`, `headline`, `description`
+- profile card: `name`, `role`, `company`, `location`, `email`, `phone`, `avatarText`, `socials`
+- quick facts: `quickFacts`
+- skills grid: `skills`
+- activities: `activities`
+- timelines: `education`, `career`
+- language chips: `languages`
+
+The MDX body renders the main narrative content on the right side of the About page using the same reusable MDX renderer as blog detail pages.
