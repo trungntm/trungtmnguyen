@@ -46,6 +46,16 @@
   width: min(100%, 72rem);
 }
 
+@utility page-shell {
+  position: relative;
+  overflow: clip;
+}
+
+@utility section-container {
+  margin-inline: auto;
+  width: min(100%, 58.75rem);
+}
+
 @utility gradient-text {
   background-image: var(--gradient-main);
   background-clip: text;
@@ -63,6 +73,47 @@
     0 18px 60px -36px var(--shadow-color),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(22px);
+}
+
+@utility glow-background {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 14% 12%,
+      color-mix(in oklab, var(--primary) 20%, transparent),
+      transparent 24rem
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      color-mix(in oklab, var(--secondary) 18%, transparent),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 62% 100%,
+      color-mix(in oklab, var(--accent) 12%, transparent),
+      transparent 24rem
+    );
+  opacity: 0.9;
+}
+
+@utility grid-background {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--border) 70%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--border) 70%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 64px 64px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 88%);
+  opacity: 0.18;
 }
 
 @layer base {
