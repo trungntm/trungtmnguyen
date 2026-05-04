@@ -1,6 +1,7 @@
 'use client';
 
 import type { Route } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -8,6 +9,7 @@ import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { HoverUnderlineLink } from '@/components/ui/hover-underline-link';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { siteConfig } from '@/lib/seo';
 
 const links: Array<{ href: Route; label: string }> = [
   { href: '/', label: 'Home' },
@@ -15,8 +17,11 @@ const links: Array<{ href: Route; label: string }> = [
   { href: '/blog', label: 'Blog' },
 ];
 
+const headerAvatarSrc = siteConfig.avatarImage;
+
 export function SiteHeader() {
   const [isPinned, setIsPinned] = useState(false);
+  const [avatarFailed, setAvatarFailed] = useState(false);
 
   useEffect(() => {
     const pinOffset = 12;
@@ -56,8 +61,20 @@ export function SiteHeader() {
         )}
       >
         <Link className="flex items-center gap-3" href="/">
-          <span className="gradient-bg flex size-10 items-center justify-center rounded-2xl text-sm font-bold text-white">
-            TN
+          <span className="gradient-bg relative flex size-10 items-center justify-center overflow-hidden rounded-2xl text-sm font-bold text-white">
+            {avatarFailed ? (
+              'TN'
+            ) : (
+              <Image
+                alt="Trung Nguyen"
+                className="object-cover"
+                fill
+                sizes="40px"
+                src={headerAvatarSrc}
+                unoptimized
+                onError={() => setAvatarFailed(true)}
+              />
+            )}
           </span>
           <div>
             <div className="text-sm font-semibold tracking-[0.18em] text-muted uppercase">

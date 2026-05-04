@@ -86,6 +86,7 @@ export default function AboutPage() {
       sidebar={
         <>
           <ProfileCard
+            avatarImage={about.avatarImage}
             avatarText={about.avatarText}
             company={about.company}
             email={about.email}
