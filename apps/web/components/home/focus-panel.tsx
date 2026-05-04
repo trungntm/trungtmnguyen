@@ -33,8 +33,8 @@ export function FocusPanel() {
             <span className="h-2.5 w-2.5 rounded-full bg-accent shadow-[0_0_20px_var(--color-accent)]" />
           </div>
           <p className="mt-3 text-sm leading-7 text-muted">
-            Content modeling, MDX rendering, search, RSS, and publishing workflows can layer on
-            top of this baseline without reshaping the app shell.
+            Content modeling, MDX rendering, search, RSS, and publishing workflows can layer on top
+            of this baseline without reshaping the app shell.
           </p>
         </div>
       </div>

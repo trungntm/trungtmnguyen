@@ -22,9 +22,9 @@ export function EngineeringPhilosophy() {
           </div>
 
           <p className="max-w-2xl text-base leading-8 text-muted sm:text-lg">
-            I prefer systems that are understandable, observable, and built around clear
-            contracts. The goal is not to chase patterns, but to choose structures that help
-            products and teams grow without losing delivery speed.
+            I prefer systems that are understandable, observable, and built around clear contracts.
+            The goal is not to chase patterns, but to choose structures that help products and teams
+            grow without losing delivery speed.
           </p>
         </div>
       </div>
