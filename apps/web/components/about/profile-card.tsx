@@ -1,8 +1,10 @@
+import Image from 'next/image';
 import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 
 import type { Page } from '@/lib/pages';
 
 type ProfileCardProps = {
+  avatarImage?: string | undefined;
   avatarText: string;
   company?: string | undefined;
   email?: string | undefined;
@@ -16,6 +18,7 @@ type ProfileCardProps = {
 const contactIconClassName = 'size-4 text-primary';
 
 export function ProfileCard({
+  avatarImage,
   avatarText,
   company,
   email,
@@ -30,9 +33,20 @@ export function ProfileCard({
       <div className="gradient-bg h-24 opacity-90" />
       <div className="space-y-6 px-6 pb-6">
         <div className="-mt-10 flex items-end justify-between gap-4">
-          <div className="glass-card flex size-20 items-center justify-center rounded-[1.75rem] border border-white/20 text-2xl font-semibold text-foreground">
-            {avatarText}
-          </div>
+          {avatarImage ? (
+            <Image
+              alt={name}
+              className="glass-card size-20 rounded-[1.75rem] border border-white/20 object-cover"
+              height={80}
+              src={avatarImage}
+              unoptimized
+              width={80}
+            />
+          ) : (
+            <div className="glass-card flex size-20 items-center justify-center rounded-[1.75rem] border border-white/20 text-2xl font-semibold text-foreground">
+              {avatarText}
+            </div>
+          )}
           {company ? (
             <span className="inline-flex items-center rounded-full border border-border/80 bg-surface/85 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-muted uppercase">
               {company}

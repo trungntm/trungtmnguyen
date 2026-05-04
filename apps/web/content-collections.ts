@@ -124,6 +124,7 @@ const pages = defineCollection({
     name: z.string().min(1),
     role: z.string().min(1),
     avatarText: z.string().min(1),
+    avatarImage: z.string().optional(),
     company: z.string().min(1).optional(),
     location: z.string().min(1).optional(),
     email: z.string().email().optional(),
