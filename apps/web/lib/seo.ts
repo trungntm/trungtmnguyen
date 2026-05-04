@@ -5,7 +5,7 @@ const DEFAULT_SITE_URL = 'http://localhost:3000';
 export const siteConfig = {
   name: 'Trung Nguyen',
   title: 'Trung Nguyen - Software Engineering Blog',
-  avatarImage: '/images/blogs/avatar/avatar.jpg',
+  avatarImage: '/images/avatar/avatar.jpg',
   description:
     'Practical notes about software architecture, Java, Spring Boot, Next.js, DevOps, and modern engineering.',
   get siteUrl() {
