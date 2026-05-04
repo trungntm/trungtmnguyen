@@ -53,6 +53,44 @@ pnpm typecheck
 pnpm format
 ```
 
+## Search
+
+Search uses `kbar` for the command palette UI and `MiniSearch` for ranking and query matching. The shared search core lives in `packages/search`, while the web app keeps all kbar and UI-specific code under `apps/web/components/search`.
+
+The search build step generates these files from Content Collections blog data:
+
+- `apps/web/public/search-index.json`
+- `apps/web/public/search-docs.json`
+
+Draft posts are excluded from both files. The generated assets have separate responsibilities:
+
+- `search-index.json`: serialized MiniSearch index for fast client loading
+- `search-docs.json`: render metadata keyed by document id
+
+Useful commands:
+
+```bash
+pnpm --filter @apps/web generate:search
+pnpm build
+pnpm dev
+```
+
+Current cache strategy uses stable filenames, so the app serves:
+
+```text
+Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+```
+
+When hashed filenames are introduced later, this can move to:
+
+```text
+Cache-Control: public, max-age=31536000, immutable
+```
+
+Search JSON files are also preloaded with `requestIdleCallback` and fall back to `setTimeout` when needed. That preload runs only once, improves the first search-open latency, and does not block the initial page render.
+
+Desktop keeps the centered command palette. Mobile uses a bottom-sheet style search popup so the input stays visible while results scroll inside the sheet.
+
 ## Git Hooks
 
 Husky `9.1.7` is configured at the repo root and delegates `pre-commit` to `lint-staged` `16.4.0`.

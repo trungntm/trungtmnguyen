@@ -3,18 +3,23 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "predev": "pnpm generate:search",
+    "prebuild": "pnpm generate:search",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "generate:search": "tsx scripts/generate-search-index.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/search": "workspace:*",
     "@repo/ui": "workspace:*",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "framer-motion": "12.38.0",
+    "kbar": "^0.1.0-beta.48",
     "lucide-react": "1.14.0",
     "next": "16.2.4",
     "next-themes": "0.4.6",
@@ -40,6 +45,7 @@
     "remark-gfm": "^4.0.1",
     "shiki": "^4.0.2",
     "tailwindcss": "4.2.4",
+    "tsx": "^4.20.6",
     "typescript": "6.0.3",
     "zod": "^4.4.1"
   }
