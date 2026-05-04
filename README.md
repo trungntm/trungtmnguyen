@@ -66,6 +66,8 @@ Current staged-file checks:
 
 Set `NEXT_PUBLIC_SITE_URL` for canonical URLs, sitemap, and robots output in non-local environments.
 
+Set `GITHUB_TOKEN` to enable the GitHub contribution calendar on `/about`. The token is used only on the server for GitHub GraphQL requests and is never exposed to the client.
+
 ## Writing Blog Posts
 
 Create MDX files under `apps/web/data/blogs` using nested folders for route structure:

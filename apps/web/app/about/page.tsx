@@ -9,6 +9,7 @@ import { ProfileCard } from '@/components/about/profile-card';
 import { QuickFactsCard } from '@/components/about/quick-facts-card';
 import { SkillsSection } from '@/components/about/skills-section';
 import { TimelineSection } from '@/components/about/timeline-section';
+import { GithubCalendarSection } from '@/components/github/github-calendar-section';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
 import { HoverUnderlineText } from '@/components/ui/hover-underline-text';
 import { getAboutPage } from '@/lib/pages';
@@ -106,6 +107,7 @@ export default function AboutPage() {
       </section>
 
       <SkillsSection skills={about.skills} />
+      <GithubCalendarSection user="trungntm" />
       <ActivitySection activities={about.activities} />
 
       {about.education?.length ? (
