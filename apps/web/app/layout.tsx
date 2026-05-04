@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import { SearchProvider } from '@/components/search/search-provider';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { getBaseMetadata } from '@/lib/seo';
 
@@ -49,16 +50,18 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html data-scroll-behavior="smooth" suppressHydrationWarning lang="en">
       <body className={`${spaceGrotesk.variable} min-h-screen antialiased`}>
         <ThemeProvider disableTransitionOnChange>
-          <div className="relative flex min-h-screen flex-col">
-            <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-              <div className="gradient-orb-left" />
-              <div className="gradient-orb-right" />
-              <div className="grid-overlay" />
+          <SearchProvider>
+            <div className="relative flex min-h-screen flex-col">
+              <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+                <div className="gradient-orb-left" />
+                <div className="gradient-orb-right" />
+                <div className="grid-overlay" />
+              </div>
+              <SiteHeader />
+              <main className="flex-1">{children}</main>
+              <SiteFooter />
             </div>
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
+          </SearchProvider>
         </ThemeProvider>
       </body>
     </html>

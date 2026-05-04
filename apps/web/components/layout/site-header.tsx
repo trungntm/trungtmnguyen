@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { SearchButton } from '@/components/search/search-button';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { HoverUnderlineLink } from '@/components/ui/hover-underline-link';
 import { buttonVariants } from '@/components/ui/button';
@@ -103,6 +104,7 @@ export function SiteHeader() {
           >
             Explore Notes
           </Link>
+          <SearchButton />
           <ThemeToggle />
         </div>
       </div>

@@ -28,7 +28,8 @@ build
 dist
 *.tsbuildinfo
 apps/web/.content-collections
-
+apps/web/public/search-index.json
+apps/web/public/search-docs.json
 
 # Debug
 npm-debug.log*

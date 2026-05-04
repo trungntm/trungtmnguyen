@@ -1,0 +1,118 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+import { loadSearchIndex, type SearchRenderDocument } from '@repo/search';
+
+import { fetchSearchDocsJson, fetchSearchIndexJson } from '@/components/search/use-preload-search';
+
+type SearchIndexInstance = ReturnType<typeof loadSearchIndex>;
+
+export type BlogSearchResult = SearchRenderDocument & {
+  score: number;
+};
+
+type BlogSearchState = {
+  ready: boolean;
+  error: Error | null;
+  latestBlogs: SearchRenderDocument[];
+  search: (query: string) => BlogSearchResult[];
+};
+
+let cachedIndex: SearchIndexInstance | null = null;
+let cachedDocsById: Record<string, SearchRenderDocument> | null = null;
+let cachedError: Error | null = null;
+let loadPromise: Promise<void> | null = null;
+
+// Keep the loaded index in module scope so palette mounts stay hydration-safe and cheap.
+async function loadSearchAssets() {
+  if (cachedIndex && cachedDocsById) {
+    return;
+  }
+
+  if (cachedError) {
+    throw cachedError;
+  }
+
+  if (!loadPromise) {
+    loadPromise = Promise.all([fetchSearchIndexJson(), fetchSearchDocsJson()])
+      .then(([serializedIndex, docsById]) => {
+        cachedIndex = loadSearchIndex(serializedIndex);
+        cachedDocsById = docsById;
+      })
+      .catch((error: unknown) => {
+        cachedError = error instanceof Error ? error : new Error('Search unavailable');
+        throw cachedError;
+      });
+  }
+
+  return loadPromise;
+}
+
+function getLatestBlogs() {
+  if (!cachedDocsById) {
+    return [];
+  }
+
+  return Object.values(cachedDocsById)
+    .sort((left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt))
+    .slice(0, 3);
+}
+
+export function useBlogSearch(): BlogSearchState {
+  const [ready, setReady] = useState(() => cachedIndex !== null && cachedDocsById !== null);
+  const [error, setError] = useState<Error | null>(cachedError);
+
+  useEffect(() => {
+    if (ready || error) {
+      return;
+    }
+
+    let isSubscribed = true;
+
+    void loadSearchAssets()
+      .then(() => {
+        if (isSubscribed) {
+          setReady(true);
+        }
+      })
+      .catch((loadError: unknown) => {
+        if (isSubscribed) {
+          setError(loadError instanceof Error ? loadError : new Error('Search unavailable'));
+        }
+      });
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [error, ready]);
+
+  return {
+    ready,
+    error,
+    latestBlogs: getLatestBlogs(),
+    search(query) {
+      const normalizedQuery = query.trim();
+
+      if (!normalizedQuery || !cachedIndex || !cachedDocsById) {
+        return [];
+      }
+
+      return cachedIndex
+        .search(normalizedQuery)
+        .slice(0, 10)
+        .flatMap((result: { id: string; score: number }) => {
+          const document = cachedDocsById?.[result.id];
+
+          if (!document) {
+            return [];
+          }
+
+          return {
+            ...document,
+            score: result.score,
+          };
+        });
+    },
+  };
+}
