@@ -218,6 +218,11 @@
     color: var(--primary);
   }
 
+  .blog-prose :is(h2, h3),
+  .mdx-prose :is(h2, h3) {
+    scroll-margin-top: 96px;
+  }
+
   .blog-prose table thead,
   .mdx-prose table thead {
     background: color-mix(in oklab, var(--surface) 84%, transparent);

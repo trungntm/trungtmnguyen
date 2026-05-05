@@ -7,6 +7,8 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import { z } from 'zod';
 
+import { extractTocFromMarkdown } from './lib/toc';
+
 const isoDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Expected an ISO date in YYYY-MM-DD format')
@@ -92,6 +94,7 @@ const blogs = defineCollection({
     const publishedAtDate = Date.parse(document.publishedAt);
     const updatedAtDate = document.updatedAt ? Date.parse(document.updatedAt) : null;
     const stats = readingTime(document.content);
+    const toc = extractTocFromMarkdown(document.content);
     const mdx = await compileDocumentMdx(context, document);
 
     return {
@@ -105,6 +108,7 @@ const blogs = defineCollection({
         time: stats.time,
         words: stats.words,
       },
+      toc,
       publishedAtDate,
       updatedAtDate,
       mdx,
