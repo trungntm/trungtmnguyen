@@ -1,10 +1,10 @@
 import type { MetadataRoute } from 'next';
 
+import { getAllTags, getBlogsByTag } from '@/lib/blogs';
+import { siteConfig } from '@/lib/seo';
 import { allBlogs } from 'content-collections';
 
-import { siteConfig } from '@/lib/seo';
-
-const staticPages = ['/', '/about', '/blog'] as const;
+const staticPages = ['/', '/about', '/blog', '/tags'] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
@@ -20,5 +20,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: blog.updatedAt || blog.publishedAt,
     }));
 
-  return [...staticEntries, ...blogEntries];
+  const tagEntries = getAllTags().map((tag) => {
+    const newestBlog = getBlogsByTag(tag.slug)[0];
+
+    return {
+      url: `${siteConfig.url}/tags/${tag.slug}`,
+      lastModified: newestBlog?.updatedAt || newestBlog?.publishedAt || lastModified,
+    };
+  });
+
+  return [...staticEntries, ...blogEntries, ...tagEntries];
 }

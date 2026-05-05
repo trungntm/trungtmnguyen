@@ -1,4 +1,5 @@
-import type { Metadata } from 'next';
+import type { Metadata, Route } from 'next';
+import Link from 'next/link';
 
 import { BlogCard } from '@/components/blog/blog-card';
 import { getAllTags, getPublishedBlogs } from '@/lib/blogs';
@@ -43,13 +44,14 @@ export default function BlogPage() {
           </p>
           {tags.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {tags.map((tag: string) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-border bg-surface/80 px-3 py-1 text-xs font-medium tracking-[0.18em] text-muted uppercase"
+              {tags.map((tag) => (
+                <Link
+                  key={tag.slug}
+                  className="rounded-full border border-border bg-surface/80 px-3 py-1 text-xs font-medium tracking-[0.18em] text-muted uppercase transition-colors hover:border-primary/35 hover:text-primary focus-visible:border-primary/35 focus-visible:text-primary focus-visible:outline-none"
+                  href={`/tags/${tag.slug}` as Route}
                 >
-                  {tag}
-                </span>
+                  {tag.label}
+                </Link>
               ))}
             </div>
           ) : null}

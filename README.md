@@ -164,6 +164,32 @@ draft: false
 - Direct draft URLs return `notFound()` unless future preview support enables draft access.
 - Missing local thumbnail and cover files do not break the UI; those images are simply not rendered.
 
+## Tags
+
+Tags are read from blog frontmatter and normalized into stable URL slugs before they are exposed publicly.
+
+Public tag routes:
+
+- `/tags`
+- `/tags/[tag]`
+
+Notes:
+
+- Tag slugs are derived from the original label and normalized to lowercase URL-safe values.
+- The UI preserves the original display label while route matching uses the normalized slug.
+- Draft posts do not affect public tag indexes, tag detail pages, or sitemap tag entries.
+
+## Table of Contents
+
+Blog detail pages generate a table of contents from MDX `h2` and `h3` headings.
+
+Notes:
+
+- TOC items are extracted during the Content Collections blog transform.
+- Headings inside fenced code blocks are ignored.
+- Heading ids are linked through `rehype-slug` and `rehype-autolink-headings`.
+- The TOC appears on blog detail pages and links to the rendered heading anchors.
+
 ## Editing the About Page
 
 The `/about` route is powered by the `pages` Content Collections collection. Edit this file:

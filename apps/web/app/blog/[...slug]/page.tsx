@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
-import { TagPill } from '@/components/blog/tag-pill';
+import { TableOfContents } from '@/components/blog/table-of-contents';
+import { TagLink } from '@/components/blog/tag-link';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
 import type { Blog } from '@/lib/blogs';
 import { formatBlogDate, getAllBlogSlugs, getBlogBySlug } from '@/lib/blogs';
 import { siteConfig } from '@/lib/seo';
 import { resolvePublicAsset } from '@/lib/public-assets';
+import { cn } from '@/lib/utils';
 
 type BlogDetailPageProps = {
   params: Promise<{
@@ -74,16 +76,17 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   }
 
   const cover = resolvePublicAsset(blog.cover);
+  const hasToc = blog.toc.length >= 2;
 
   return (
     <article className="page-container px-4 py-14 md:px-6 md:py-18">
-      <div className="mx-auto max-w-4xl space-y-10">
+      <div className="mx-auto max-w-[1180px] space-y-10">
         <header className="space-y-6">
           <p className="text-sm font-medium tracking-[0.3em] text-muted uppercase">Article</p>
 
           <div className="flex flex-wrap gap-2">
             {blog.tags.map((tag: string) => (
-              <TagPill key={tag} tag={tag} />
+              <TagLink key={tag} size="md" tag={tag} />
             ))}
           </div>
 
@@ -115,8 +118,29 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
           ) : null}
         </header>
 
-        <div className="glass-card rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
-          <MDXRenderer className="blog-prose" code={blog.mdx} />
+        <div
+          className={cn(
+            'grid gap-6 xl:gap-10',
+            hasToc && 'lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start',
+          )}
+        >
+          <div className="space-y-6">
+            <div className="lg:hidden">
+              <TableOfContents items={blog.toc} />
+            </div>
+
+            <div className="glass-card rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
+              <MDXRenderer className="blog-prose" code={blog.mdx} />
+            </div>
+          </div>
+
+          {hasToc ? (
+            <aside className="hidden lg:block">
+              <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
+                <TableOfContents items={blog.toc} />
+              </div>
+            </aside>
+          ) : null}
         </div>
       </div>
     </article>
