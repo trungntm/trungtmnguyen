@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { draftMode } from 'next/headers';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
@@ -7,7 +6,7 @@ import { TagPill } from '@/components/blog/tag-pill';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
 import type { Blog } from '@/lib/blogs';
 import { formatBlogDate, getAllBlogSlugs, getBlogBySlug } from '@/lib/blogs';
-import { createMetadata, siteConfig } from '@/lib/seo';
+import { siteConfig } from '@/lib/seo';
 import { resolvePublicAsset } from '@/lib/public-assets';
 
 type BlogDetailPageProps = {
@@ -17,14 +16,12 @@ type BlogDetailPageProps = {
 };
 
 async function getResolvedBlog(slugSegments: string[]) {
-  const { isEnabled } = await draftMode();
-  return getBlogBySlug(slugSegments, { includeDrafts: isEnabled }) as Blog | null;
+  return getBlogBySlug(slugSegments) as Blog | null;
 }
 
 function resolveBlogImages(blog: Blog) {
-  return [blog.cover, blog.thumbnail]
-    .filter((image): image is string => Boolean(image))
-    .map((image) => new URL(image, siteConfig.siteUrl).toString());
+  const image = blog.cover ?? blog.thumbnail ?? siteConfig.ogImage;
+  return [new URL(image, siteConfig.url).toString()];
 }
 
 export async function generateStaticParams() {
@@ -38,34 +35,29 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
   const blog = await getResolvedBlog(slug);
 
   if (!blog) {
-    return createMetadata({
-      title: 'Tech Blogs',
-      path: '/blog',
-    });
+    return {};
   }
 
   const images = resolveBlogImages(blog);
+  const canonicalUrl = `${siteConfig.url}${blog.url}`;
+  const publishedTime = new Date(blog.publishedAt).toISOString();
 
   return {
     title: blog.title,
     description: blog.description,
     alternates: {
-      canonical: blog.url,
+      canonical: canonicalUrl,
     },
     openGraph: {
       type: 'article',
-      url: blog.url,
+      url: canonicalUrl,
       title: blog.title,
       description: blog.description,
-      siteName: siteConfig.name,
-      publishedTime: new Date(blog.publishedAt).toISOString(),
-      modifiedTime: blog.updatedAt ? new Date(blog.updatedAt).toISOString() : undefined,
-      authors: [blog.author],
-      tags: blog.tags,
       images,
+      publishedTime,
     },
     twitter: {
-      card: images.length > 0 ? 'summary_large_image' : 'summary',
+      card: siteConfig.twitter.card,
       title: blog.title,
       description: blog.description,
       images,
