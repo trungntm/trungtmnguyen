@@ -1,15 +1,32 @@
+import type { Metadata } from 'next';
+
 import { CoreTopics } from '@/components/home/core-topics';
 import { EngineeringPhilosophy } from '@/components/home/engineering-philosophy';
 import { HomeHero } from '@/components/home/home-hero';
 import { LatestNotes } from '@/components/home/latest-notes';
 import { getPublishedBlogs } from '@/lib/blogs';
-import { createMetadata } from '@/lib/seo';
+import { siteConfig } from '@/lib/seo';
 
-export const metadata = createMetadata({
-  description:
-    'Practical notes about software architecture, Java, Spring Boot, Next.js, DevOps, and modern engineering.',
-  path: '/',
-});
+export const metadata: Metadata = {
+  title: siteConfig.title,
+  description: siteConfig.description,
+  alternates: {
+    canonical: siteConfig.url,
+  },
+  openGraph: {
+    type: 'website',
+    url: siteConfig.url,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+  twitter: {
+    card: siteConfig.twitter.card,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+};
 
 export default function HomePage() {
   const latestBlogs = getPublishedBlogs().slice(0, 3);

@@ -6,7 +6,7 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SearchProvider } from '@/components/search/search-provider';
 import { ThemeProvider } from '@/components/theme/theme-provider';
-import { getBaseMetadata } from '@/lib/seo';
+import { siteConfig } from '@/lib/seo';
 
 import './globals.css';
 import './prism.css';
@@ -43,11 +43,36 @@ const spaceGrotesk = localFont({
   variable: '--font-space-grotesk',
 });
 
-export const metadata: Metadata = getBaseMetadata();
+export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+  twitter: {
+    card: siteConfig.twitter.card,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+};
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html data-scroll-behavior="smooth" suppressHydrationWarning lang="en">
+      <head>
+        <link href="/blog/rss.xml" rel="alternate" title="RSS Feed" type="application/rss+xml" />
+      </head>
       <body className={`${spaceGrotesk.variable} min-h-screen antialiased`}>
         <ThemeProvider disableTransitionOnChange>
           <SearchProvider>

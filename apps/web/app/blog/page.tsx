@@ -1,13 +1,29 @@
+import type { Metadata } from 'next';
+
 import { BlogCard } from '@/components/blog/blog-card';
 import { getAllTags, getPublishedBlogs } from '@/lib/blogs';
-import { createMetadata } from '@/lib/seo';
+import { siteConfig } from '@/lib/seo';
 
-export const metadata = createMetadata({
-  title: 'Tech Blogs',
-  description:
-    'Technical articles about software architecture, Java, Spring Boot, Next.js, DevOps, and modern engineering.',
-  path: '/blog',
-});
+export const metadata: Metadata = {
+  title: 'Blog',
+  description: 'All technical notes and articles.',
+  alternates: {
+    canonical: `${siteConfig.url}/blog`,
+  },
+  openGraph: {
+    type: 'website',
+    url: `${siteConfig.url}/blog`,
+    title: 'Blog',
+    description: 'All technical notes and articles.',
+    images: [siteConfig.ogImage],
+  },
+  twitter: {
+    card: siteConfig.twitter.card,
+    title: 'Blog',
+    description: 'All technical notes and articles.',
+    images: [siteConfig.ogImage],
+  },
+};
 
 export default function BlogPage() {
   const blogs = getPublishedBlogs();
