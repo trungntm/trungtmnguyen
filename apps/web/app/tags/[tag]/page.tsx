@@ -72,7 +72,6 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
     <section className="page-container px-4 py-14 md:px-6 md:py-18">
       <div className="space-y-10">
         <div className="space-y-5">
-          <p className="text-sm font-medium tracking-[0.3em] text-muted uppercase">Tag archive</p>
           <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">#{tagLabel}</h1>
           <p className="max-w-3xl text-lg leading-8 text-muted">
             {blogs.length} {blogs.length === 1 ? 'note' : 'notes'} about {tagLabel}

@@ -82,8 +82,6 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     <article className="page-container px-4 py-14 md:px-6 md:py-18">
       <div className="mx-auto max-w-[1180px] space-y-10">
         <header className="space-y-6">
-          <p className="text-sm font-medium tracking-[0.3em] text-muted uppercase">Article</p>
-
           <div className="flex flex-wrap gap-2">
             {blog.tags.map((tag: string) => (
               <TagLink key={tag} size="md" tag={tag} />

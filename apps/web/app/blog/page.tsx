@@ -34,7 +34,6 @@ export default function BlogPage() {
     <section className="page-container px-4 py-14 md:px-6 md:py-18">
       <div className="space-y-10">
         <div className="space-y-5">
-          <p className="text-sm font-medium tracking-[0.3em] text-muted uppercase">Blog</p>
           <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
             Typed MDX posts for architecture, delivery, and engineering practice.
           </h1>
