@@ -32,7 +32,6 @@ export default function TagsPage() {
     <section className="page-container px-4 py-14 md:px-6 md:py-18">
       <div className="space-y-10">
         <div className="space-y-5">
-          <p className="text-sm font-medium tracking-[0.3em] text-muted uppercase">Tags</p>
           <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
             Browse technical notes by topic.
           </h1>
