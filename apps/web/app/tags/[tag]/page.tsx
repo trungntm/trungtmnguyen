@@ -5,6 +5,7 @@ import { BlogCard } from '@/components/blog/blog-card';
 import {
   getAllTags,
   getBlogsByTag,
+  getTagData,
   getTagLabelFromSlug,
   normalizeTag,
 } from '@/lib/blogs';
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: TagDetailPageProps): Promise<
     return {};
   }
 
-  const blogCount = getBlogsByTag(tagSlug).length;
+  const blogCount = getTagData(tagSlug)?.count ?? getBlogsByTag(tagSlug).length;
   const description = `${blogCount} notes about ${tagLabel}`;
   const canonicalUrl = `${siteConfig.url}/tags/${tagSlug}`;
 

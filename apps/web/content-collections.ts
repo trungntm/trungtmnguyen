@@ -1,3 +1,7 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+
 import { defineCollection, defineConfig, type Meta } from '@content-collections/core';
 import { compileMDX } from '@content-collections/mdx';
 import readingTime from 'reading-time';
@@ -7,6 +11,7 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import { z } from 'zod';
 
+import { slugifyHeading } from './lib/slugify';
 import { extractTocFromMarkdown } from './lib/toc';
 
 const isoDateSchema = z
@@ -39,6 +44,184 @@ type MdxDocument = {
   _meta: Meta;
   content: string;
 };
+
+type SearchSourceBlog = {
+  slug: string;
+  title: string;
+  description: string;
+  url: string;
+  tags: string[];
+  publishedAt: string;
+  updatedAt?: string | undefined;
+  draft?: boolean;
+  content: string;
+  readingTime?: {
+    text?: string;
+  };
+};
+
+type TagDataEntry = {
+  label: string;
+  slug: string;
+  count: number;
+  blogSlugs: string[];
+  lastModified: string;
+};
+
+const CODE_BLOCK_PATTERN = /```[\s\S]*?```/g;
+const IMPORT_EXPORT_PATTERN = /^\s*(?:import|export)\s.+$/gm;
+const INLINE_CODE_PATTERN = /`([^`]+)`/g;
+const MDX_COMPONENT_PATTERN = /<\/?[A-Z][^>\n]*\/?>/g;
+const HTML_TAG_PATTERN = /<[^>]+>/g;
+const LINK_PATTERN = /!?\[([^\]]*)\]\(([^)]+)\)/g;
+const MARKDOWN_SYMBOL_PATTERN = /[#>*_~|()[\]!-]+/g;
+const WHITESPACE_PATTERN = /\s+/g;
+const MAX_CONTENT_LENGTH = 10_000;
+
+const appRoot = process.cwd().endsWith('/apps/web')
+  ? process.cwd()
+  : path.join(process.cwd(), 'apps', 'web');
+const workspaceRoot = path.join(appRoot, '..', '..');
+const searchPackageRequire = createRequire(path.join(workspaceRoot, 'packages', 'search', 'package.json'));
+const MiniSearch = searchPackageRequire('minisearch');
+
+function stripMdxContent(content: string) {
+  return content
+    .replace(CODE_BLOCK_PATTERN, ' ')
+    .replace(IMPORT_EXPORT_PATTERN, ' ')
+    .replace(INLINE_CODE_PATTERN, '$1')
+    .replace(MDX_COMPONENT_PATTERN, ' ')
+    .replace(HTML_TAG_PATTERN, ' ')
+    .replace(LINK_PATTERN, '$1 $2')
+    .replace(MARKDOWN_SYMBOL_PATTERN, ' ')
+    .replace(WHITESPACE_PATTERN, ' ')
+    .trim()
+    .slice(0, MAX_CONTENT_LENGTH);
+}
+
+function createSearchIndex(blogs: SearchSourceBlog[]) {
+  const miniSearch = new MiniSearch({
+    fields: ['title', 'description', 'tagsText', 'content'],
+    storeFields: ['id'],
+    searchOptions: {
+      boost: {
+        title: 4,
+        tagsText: 3,
+        description: 2,
+        content: 1,
+      },
+      prefix: true,
+      fuzzy: 0.2,
+    },
+  });
+  const docsById: Record<
+    string,
+    {
+      id: string;
+      title: string;
+      description: string;
+      url: string;
+      tags: string[];
+      publishedAt: string;
+      readingTime?: string;
+    }
+  > = {};
+
+  const documents = blogs
+    .filter((blog) => !blog.draft)
+    .map((blog) => {
+      const document = {
+        id: blog.slug,
+        title: blog.title,
+        description: blog.description,
+        url: blog.url,
+        tags: blog.tags,
+        publishedAt: blog.publishedAt,
+        content: stripMdxContent(blog.content),
+        tagsText: blog.tags.join(' '),
+        ...(blog.readingTime?.text ? { readingTime: blog.readingTime.text } : {}),
+      };
+
+      docsById[document.id] = {
+        id: document.id,
+        title: document.title,
+        description: document.description,
+        url: document.url,
+        tags: document.tags,
+        publishedAt: document.publishedAt,
+        ...(document.readingTime ? { readingTime: document.readingTime } : {}),
+      };
+
+      return document;
+    });
+
+  miniSearch.addAll(documents);
+
+  return {
+    docsById,
+    indexJson: miniSearch.toJSON(),
+  };
+}
+
+async function writeSearchAssets(blogs: SearchSourceBlog[]) {
+  const { docsById, indexJson } = createSearchIndex(blogs);
+  const publicDirectory = path.join(appRoot, 'public');
+
+  await mkdir(publicDirectory, { recursive: true });
+  await Promise.all([
+    writeFile(path.join(publicDirectory, 'search-index.json'), JSON.stringify(indexJson, null, 2)),
+    writeFile(path.join(publicDirectory, 'search-docs.json'), JSON.stringify(docsById, null, 2)),
+  ]);
+}
+
+function normalizeTag(tag: string) {
+  return slugifyHeading(tag);
+}
+
+function createTagData(blogs: SearchSourceBlog[]) {
+  const tagMap = new Map<string, TagDataEntry>();
+
+  for (const blog of blogs) {
+    if (blog.draft) {
+      continue;
+    }
+
+    for (const tag of blog.tags) {
+      const normalizedTag = normalizeTag(tag);
+      const existingTag = tagMap.get(normalizedTag);
+      const lastModified = blog.updatedAt ?? blog.publishedAt;
+
+      if (existingTag) {
+        existingTag.count += 1;
+        existingTag.blogSlugs.push(blog.slug);
+
+        if (Date.parse(lastModified) > Date.parse(existingTag.lastModified)) {
+          existingTag.lastModified = lastModified;
+        }
+
+        continue;
+      }
+
+      tagMap.set(normalizedTag, {
+        label: tag.trim(),
+        slug: normalizedTag,
+        count: 1,
+        blogSlugs: [blog.slug],
+        lastModified,
+      });
+    }
+  }
+
+  return [...tagMap.values()].sort((left, right) => left.label.localeCompare(right.label));
+}
+
+async function writeTagData(blogs: SearchSourceBlog[]) {
+  const appDirectory = path.join(appRoot, 'app');
+  const tagData = createTagData(blogs);
+
+  await mkdir(appDirectory, { recursive: true });
+  await writeFile(path.join(appDirectory, 'tag-data.json'), JSON.stringify(tagData, null, 2));
+}
 
 async function compileDocumentMdx(
   context: Parameters<typeof compileMDX>[0],
@@ -113,6 +296,10 @@ const blogs = defineCollection({
       updatedAtDate,
       mdx,
     };
+  },
+  onSuccess: async (documents) => {
+    await writeSearchAssets(documents);
+    await writeTagData(documents);
   },
 });
 
