@@ -1,0 +1,51 @@
+[
+  {
+    "label": "Architecture",
+    "slug": "architecture",
+    "count": 1,
+    "blogSlugs": ["spring-modulith/module-boundaries"],
+    "lastModified": "2026-04-30"
+  },
+  {
+    "label": "git",
+    "slug": "git",
+    "count": 1,
+    "blogSlugs": ["multiple-git-profiles"],
+    "lastModified": "2026-05-11"
+  },
+  {
+    "label": "MDX",
+    "slug": "mdx",
+    "count": 1,
+    "blogSlugs": ["nextjs/typed-mdx-blog"],
+    "lastModified": "2026-04-29"
+  },
+  {
+    "label": "Next.js",
+    "slug": "nextjs",
+    "count": 1,
+    "blogSlugs": ["nextjs/typed-mdx-blog"],
+    "lastModified": "2026-04-29"
+  },
+  {
+    "label": "Spring Boot",
+    "slug": "spring-boot",
+    "count": 1,
+    "blogSlugs": ["spring-modulith/module-boundaries"],
+    "lastModified": "2026-04-30"
+  },
+  {
+    "label": "ssh-key",
+    "slug": "ssh-key",
+    "count": 1,
+    "blogSlugs": ["multiple-git-profiles"],
+    "lastModified": "2026-05-11"
+  },
+  {
+    "label": "TypeScript",
+    "slug": "typescript",
+    "count": 1,
+    "blogSlugs": ["nextjs/typed-mdx-blog"],
+    "lastModified": "2026-04-29"
+  }
+]

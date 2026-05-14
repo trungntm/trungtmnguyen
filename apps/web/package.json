@@ -5,10 +5,11 @@
   "scripts": {
     "predev": "pnpm generate:search",
     "prebuild": "pnpm generate:search",
+    "pretypecheck": "pnpm generate:search && next typegen",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "generate:search": "tsx scripts/generate-search-index.ts",
+    "generate:search": "node --experimental-strip-types scripts/generate-search-index.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit"
