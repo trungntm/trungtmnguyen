@@ -7,11 +7,39 @@
     "lastModified": "2026-04-30"
   },
   {
+    "label": "CI/CD",
+    "slug": "cicd",
+    "count": 1,
+    "blogSlugs": ["cicd/github-actions/java/publish-maven-package-to-github-package-part-1"],
+    "lastModified": "2025-06-28"
+  },
+  {
     "label": "git",
     "slug": "git",
     "count": 1,
     "blogSlugs": ["multiple-git-profiles"],
     "lastModified": "2026-05-11"
+  },
+  {
+    "label": "Github Action",
+    "slug": "github-action",
+    "count": 1,
+    "blogSlugs": ["cicd/github-actions/java/publish-maven-package-to-github-package-part-1"],
+    "lastModified": "2025-06-28"
+  },
+  {
+    "label": "Java",
+    "slug": "java",
+    "count": 1,
+    "blogSlugs": ["cicd/github-actions/java/publish-maven-package-to-github-package-part-1"],
+    "lastModified": "2025-06-28"
+  },
+  {
+    "label": "Maven",
+    "slug": "maven",
+    "count": 1,
+    "blogSlugs": ["cicd/github-actions/java/publish-maven-package-to-github-package-part-1"],
+    "lastModified": "2025-06-28"
   },
   {
     "label": "MDX",
