@@ -1,5 +1,6 @@
 export type SearchDocument = {
   id: string;
+  locale: string;
   title: string;
   description: string;
   url: string;
@@ -11,6 +12,7 @@ export type SearchDocument = {
 
 export type SearchRenderDocument = {
   id: string;
+  locale: string;
   title: string;
   description: string;
   url: string;

@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import type { ReactNode } from 'react';
 
-import { SiteFooter } from '@/components/layout/site-footer';
-import { SiteHeader } from '@/components/layout/site-header';
-import { SearchProvider } from '@/components/search/search-provider';
+import { AppShell } from '@/components/layout/app-shell';
 import { ThemeProvider } from '@/components/theme/theme-provider';
-import { siteConfig } from '@/lib/seo';
+import { defaultLocale } from '@/lib/i18n';
+import { getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 import './globals.css';
 import './prism.css';
@@ -52,7 +51,7 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   openGraph: {
     type: 'website',
-    locale: 'en_US',
+    locale: getOpenGraphLocale(defaultLocale),
     url: siteConfig.url,
     siteName: siteConfig.name,
     title: siteConfig.title,
@@ -69,24 +68,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html data-scroll-behavior="smooth" suppressHydrationWarning lang="en">
-      <head>
-        <link href="/blog/rss.xml" rel="alternate" title="RSS Feed" type="application/rss+xml" />
-      </head>
+    <html data-scroll-behavior="smooth" suppressHydrationWarning lang={defaultLocale}>
       <body className={`${spaceGrotesk.variable} min-h-screen antialiased`}>
         <ThemeProvider disableTransitionOnChange>
-          <SearchProvider>
-            <div className="relative flex min-h-screen flex-col">
-              <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-                <div className="gradient-orb-left" />
-                <div className="gradient-orb-right" />
-                <div className="grid-overlay" />
-              </div>
-              <SiteHeader />
-              <main className="flex-1">{children}</main>
-              <SiteFooter />
-            </div>
-          </SearchProvider>
+          <AppShell>{children}</AppShell>
         </ThemeProvider>
       </body>
     </html>

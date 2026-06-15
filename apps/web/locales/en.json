@@ -1,0 +1,104 @@
+{
+  "metadata": {
+    "siteTitle": "Trung Nguyen - Software Engineering Blog",
+    "siteDescription": "Practical notes about software architecture, Java, Spring Boot, Next.js, DevOps, and modern engineering.",
+    "homeTitle": "Home",
+    "blogTitle": "Blog",
+    "blogDescription": "All technical notes and articles.",
+    "aboutTitle": "About",
+    "aboutDescription": "About Trung Nguyen and his engineering journey.",
+    "tagsTitle": "Tags",
+    "tagsDescription": "Browse technical notes by topic."
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "blog": "Blog",
+    "tags": "Tags",
+    "exploreNotes": "Explore Notes",
+    "siteTagline": "Software Engineering Blog"
+  },
+  "common": {
+    "blog": "Blog",
+    "readMore": "Read more",
+    "publishedAt": "Published at",
+    "updatedAt": "Updated",
+    "backToPosts": "Back to posts",
+    "language": "Language",
+    "topic": "Topic",
+    "search": "Search",
+    "openSearch": "Open search",
+    "toggleTheme": "Toggle theme",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "home": {
+    "badge": "Technical Blog Platform",
+    "eyebrow": "Engineering notes, systems thinking, practical delivery",
+    "title": "A clean technical blog foundation for shipping ideas with",
+    "titleHighlight": "clarity and rigor.",
+    "description": "This workspace is prepared for future writing about software architecture, Java, Spring Boot, Next.js, DevOps, and modern engineering practice.",
+    "blogCta": "Explore Blog",
+    "aboutCta": "Read About",
+    "latestEyebrow": "Latest notes",
+    "latestTitle": "Latest notes",
+    "latestDescription": "Recent technical writing from real engineering decisions and production trade-offs.",
+    "viewAll": "View all →",
+    "latestEmptyLabel": "No published posts",
+    "latestEmptyTitle": "The writing pipeline is ready. Public notes will appear here as they are published.",
+    "latestEmptyDescription": "Draft entries remain excluded automatically. Add a published MDX post under `apps/web/data/blogs` and it will be picked up by Content Collections.",
+    "topicsEyebrow": "Core topics",
+    "topicsTitle": "Systems, platforms, and delivery disciplines that shape the writing direction.",
+    "philosophyEyebrow": "Engineering philosophy",
+    "philosophyTitle": "Engineering with clarity, not ceremony.",
+    "philosophyDescription": "I prefer systems that are understandable, observable, and built around clear contracts. The goal is not to chase patterns, but to choose structures that help products and teams grow without losing delivery speed."
+  },
+  "blogPage": {
+    "heading": "Typed MDX posts for architecture, delivery, and engineering practice.",
+    "description": "Published articles are compiled from local MDX content with typed metadata, nested routes, and centralized draft handling ready for future preview support.",
+    "emptyLabel": "No posts yet",
+    "emptyTitle": "The content pipeline is ready. The public article list is currently empty.",
+    "emptyDescription": "Add an MDX file under `apps/web/data/blogs` with valid frontmatter and it will appear here automatically unless marked as a draft."
+  },
+  "tagsPage": {
+    "heading": "Browse technical notes by topic.",
+    "description": "Tags are generated from published blog frontmatter and grouped into stable public URLs.",
+    "emptyLabel": "No tags yet",
+    "emptyTitle": "Published posts will generate public tag pages automatically.",
+    "emptyDescription": "Draft entries stay excluded, so only published frontmatter affects the tag index.",
+    "noPublishedPosts": "No published posts",
+    "noVisiblePostsTitle": "This tag exists, but there are no visible posts attached to it.",
+    "countLabelOne": "{count} note about {tagLabel}",
+    "countLabelOther": "{count} notes about {tagLabel}"
+  },
+  "aboutPage": {
+    "eyebrow": "About me",
+    "communication": "Communication",
+    "languages": "Languages",
+    "education": "Education",
+    "educationTitle": "Academic foundation",
+    "career": "Career path",
+    "careerTitle": "Growth and trajectory"
+  },
+  "footer": {
+    "primary": "Built for practical engineering notes, architecture write-ups, and technical essays.",
+    "secondary": "Powered by typed MDX, Content Collections, and the Next.js App Router."
+  },
+  "search": {
+    "placeholder": "Search posts, tags, and pages...",
+    "loading": "Loading search index...",
+    "unavailable": "Search unavailable",
+    "empty": "No results found",
+    "postsSection": "Posts",
+    "latestPostsSection": "Latest Posts",
+    "navigationSection": "Navigation"
+  },
+  "rss": {
+    "title": "RSS Feed",
+    "description": "Practical notes about software engineering",
+    "language": "en-us"
+  },
+  "tagLink": {
+    "ariaLabel": "Browse posts tagged {tag}"
+  }
+}

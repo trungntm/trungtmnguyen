@@ -2,9 +2,10 @@
 
 import type { Variants } from 'framer-motion';
 import { motion, useReducedMotion } from 'framer-motion';
-import Link from 'next/link';
 
 import { buttonVariants } from '@/components/ui/button';
+import { BaseLink } from '@/components/ui/links';
+import type { Dictionary } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 import { HeroVisualBoard } from './hero-visual-board';
@@ -34,7 +35,11 @@ const item: Variants = {
   },
 };
 
-export function HomeHero() {
+type HomeHeroProps = {
+  dictionary: Dictionary;
+};
+
+export function HomeHero({ dictionary }: HomeHeroProps) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
@@ -46,7 +51,7 @@ export function HomeHero() {
             variants={item}
             {...(shouldReduceMotion ? { transition: { duration: 0.01 } } : {})}
           >
-            Technical Blog Platform
+            {dictionary.home.badge}
           </motion.div>
           <motion.div
             className="space-y-5"
@@ -54,15 +59,13 @@ export function HomeHero() {
             {...(shouldReduceMotion ? { transition: { duration: 0.01 } } : {})}
           >
             <p className="text-sm font-medium tracking-[0.3em] text-muted uppercase">
-              Engineering notes, systems thinking, practical delivery
+              {dictionary.home.eyebrow}
             </p>
             <h1 className="max-w-3xl text-5xl font-semibold tracking-tight text-balance md:text-7xl">
-              A clean technical blog foundation for shipping ideas with{' '}
-              <span className="gradient-text">clarity and rigor.</span>
+              {dictionary.home.title} <span className="gradient-text">{dictionary.home.titleHighlight}</span>
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-muted md:text-xl">
-              This workspace is prepared for future writing about software architecture, Java,
-              Spring Boot, Next.js, DevOps, and modern engineering practice.
+              {dictionary.home.description}
             </p>
           </motion.div>
           <motion.div
@@ -70,12 +73,12 @@ export function HomeHero() {
             variants={item}
             {...(shouldReduceMotion ? { transition: { duration: 0.01 } } : {})}
           >
-            <Link className={buttonVariants()} href="/blog">
-              Explore Blog
-            </Link>
-            <Link className={cn(buttonVariants({ variant: 'secondary' }))} href="/about">
-              Read About
-            </Link>
+            <BaseLink className={buttonVariants()} href="/blog">
+              {dictionary.home.blogCta}
+            </BaseLink>
+            <BaseLink className={cn(buttonVariants({ variant: 'secondary' }))} href="/about">
+              {dictionary.home.aboutCta}
+            </BaseLink>
           </motion.div>
         </motion.div>
 

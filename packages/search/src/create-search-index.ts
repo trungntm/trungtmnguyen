@@ -4,6 +4,8 @@ import type { SearchIndexDocument } from './minisearch-config';
 import type { SearchRenderDocument } from './types';
 
 type SearchSourceBlog = {
+  id: string;
+  locale: string;
   slug: string;
   title: string;
   description: string;
@@ -25,7 +27,8 @@ export function createSearchIndex(blogs: SearchSourceBlog[]) {
     .filter((blog) => !blog.draft)
     .map((blog): SearchIndexDocument => {
       const document: SearchIndexDocument = {
-        id: blog.slug,
+        id: blog.id,
+        locale: blog.locale,
         title: blog.title,
         description: blog.description,
         url: blog.url,
@@ -38,6 +41,7 @@ export function createSearchIndex(blogs: SearchSourceBlog[]) {
 
       docsById[document.id] = {
         id: document.id,
+        locale: document.locale,
         title: document.title,
         description: document.description,
         url: document.url,

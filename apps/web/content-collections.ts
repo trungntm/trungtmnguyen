@@ -11,6 +11,7 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import { z } from 'zod';
 
+import { defaultLocale, locales } from './lib/i18n';
 import { slugifyHeading } from './lib/slugify';
 import { extractTocFromMarkdown } from './lib/toc';
 
@@ -46,7 +47,10 @@ type MdxDocument = {
 };
 
 type SearchSourceBlog = {
+  id: string;
+  locale: (typeof locales)[number];
   slug: string;
+  translationKey: string;
   title: string;
   description: string;
   url: string;
@@ -61,10 +65,11 @@ type SearchSourceBlog = {
 };
 
 type TagDataEntry = {
+  locale: (typeof locales)[number];
   label: string;
   slug: string;
   count: number;
-  blogSlugs: string[];
+  blogIds: string[];
   lastModified: string;
 };
 
@@ -118,6 +123,7 @@ function createSearchIndex(blogs: SearchSourceBlog[]) {
     string,
     {
       id: string;
+      locale: (typeof locales)[number];
       title: string;
       description: string;
       url: string;
@@ -131,12 +137,13 @@ function createSearchIndex(blogs: SearchSourceBlog[]) {
     .filter((blog) => !blog.draft)
     .map((blog) => {
       const document = {
-        id: blog.slug,
+        id: blog.id,
         title: blog.title,
         description: blog.description,
         url: blog.url,
         tags: blog.tags,
         publishedAt: blog.publishedAt,
+        locale: blog.locale,
         content: stripMdxContent(blog.content),
         tagsText: blog.tags.join(' '),
         ...(blog.readingTime?.text ? { readingTime: blog.readingTime.text } : {}),
@@ -149,6 +156,7 @@ function createSearchIndex(blogs: SearchSourceBlog[]) {
         url: document.url,
         tags: document.tags,
         publishedAt: document.publishedAt,
+        locale: document.locale,
         ...(document.readingTime ? { readingTime: document.readingTime } : {}),
       };
 
@@ -188,12 +196,13 @@ function createTagData(blogs: SearchSourceBlog[]) {
 
     for (const tag of blog.tags) {
       const normalizedTag = normalizeTag(tag);
-      const existingTag = tagMap.get(normalizedTag);
+      const tagId = `${blog.locale}:${normalizedTag}`;
+      const existingTag = tagMap.get(tagId);
       const lastModified = blog.updatedAt ?? blog.publishedAt;
 
       if (existingTag) {
         existingTag.count += 1;
-        existingTag.blogSlugs.push(blog.slug);
+        existingTag.blogIds.push(blog.id);
 
         if (Date.parse(lastModified) > Date.parse(existingTag.lastModified)) {
           existingTag.lastModified = lastModified;
@@ -202,11 +211,12 @@ function createTagData(blogs: SearchSourceBlog[]) {
         continue;
       }
 
-      tagMap.set(normalizedTag, {
+      tagMap.set(tagId, {
+        locale: blog.locale,
         label: tag.trim(),
         slug: normalizedTag,
         count: 1,
-        blogSlugs: [blog.slug],
+        blogIds: [blog.id],
         lastModified,
       });
     }
@@ -260,10 +270,15 @@ const blogs = defineCollection({
   include: '**/*.mdx',
   typeName: 'Blog',
   schema: z.object({
+    locale: z.enum(locales),
+    slug: z.string().min(1),
+    translationKey: z.string().min(1),
+    canonicalLocale: z.enum(locales).default(defaultLocale),
     title: z.string().min(1),
     description: z.string().min(1),
     publishedAt: isoDateSchema,
     updatedAt: isoDateSchema.optional(),
+    legacySlug: z.string().min(1).optional(),
     author: z.string().min(1),
     tags: z.array(z.string()).default([]),
     thumbnail: z.string().optional(),
@@ -272,19 +287,22 @@ const blogs = defineCollection({
     content: z.string(),
   }),
   transform: async (document, context) => {
-    const slug = document._meta.path;
-    const slugSegments = slug.split('/').filter(Boolean);
+    const slug = document.slug;
+    const slugSegments = [slug];
     const publishedAtDate = Date.parse(document.publishedAt);
     const updatedAtDate = document.updatedAt ? Date.parse(document.updatedAt) : null;
     const stats = readingTime(document.content);
     const toc = extractTocFromMarkdown(document.content);
     const mdx = await compileDocumentMdx(context, document);
+    const id = `${document.locale}:${document.slug}`;
+    const url = `/${document.locale}/blog/${document.slug}`;
 
     return {
       ...document,
+      id,
       slug,
       slugSegments,
-      url: `/blog/${slug}`,
+      url,
       readingTime: {
         text: stats.text,
         minutes: stats.minutes,

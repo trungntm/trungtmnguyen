@@ -7,12 +7,15 @@ import { useRouter } from 'next/navigation';
 
 import { SearchCommand } from '@/components/search/search-command';
 import { preloadSearchAssets } from '@/components/search/use-preload-search';
+import type { Dictionary, Locale } from '@/lib/i18n';
 
 type SearchProviderProps = {
   children: ReactNode;
+  locale: Locale;
+  dictionary: Dictionary;
 };
 
-export function SearchProvider({ children }: SearchProviderProps) {
+export function SearchProvider({ children, locale, dictionary }: SearchProviderProps) {
   const router = useRouter();
 
   useEffect(() => {
@@ -24,24 +27,24 @@ export function SearchProvider({ children }: SearchProviderProps) {
       actions={[
         {
           id: 'home',
-          name: 'Home',
-          section: 'Navigation',
+          name: dictionary.navigation.home,
+          section: dictionary.search.navigationSection,
           keywords: 'index landing',
-          perform: () => router.push('/'),
+          perform: () => router.push(`/${locale}`),
         },
         {
           id: 'about',
-          name: 'About',
-          section: 'Navigation',
+          name: dictionary.navigation.about,
+          section: dictionary.search.navigationSection,
           keywords: 'profile biography',
-          perform: () => router.push('/about'),
+          perform: () => router.push(`/${locale}/about`),
         },
         {
           id: 'blog',
-          name: 'Blog',
-          section: 'Navigation',
+          name: dictionary.navigation.blog,
+          section: dictionary.search.navigationSection,
           keywords: 'posts writing notes articles',
-          perform: () => router.push('/blog'),
+          perform: () => router.push(`/${locale}/blog`),
         },
       ]}
       options={{
@@ -53,7 +56,7 @@ export function SearchProvider({ children }: SearchProviderProps) {
       }}
     >
       {children}
-      <SearchCommand />
+      <SearchCommand dictionary={dictionary} locale={locale} />
     </KBarProvider>
   );
 }

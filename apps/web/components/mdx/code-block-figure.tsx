@@ -1,9 +1,11 @@
 'use client';
 
 import { Check, Copy } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { defaultLocale, getDictionary, isValidLocale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 type CodeBlockFigureProps = ComponentPropsWithoutRef<'figure'>;
@@ -12,6 +14,10 @@ export function CodeBlockFigure({ className, children, ...props }: CodeBlockFigu
   const figureRef = useRef<HTMLElement | null>(null);
   const [copied, setCopied] = useState(false);
   const [language, setLanguage] = useState<string | null>(null);
+  const pathname = usePathname();
+  const firstSegment = pathname?.split('/').filter(Boolean)[0];
+  const locale = firstSegment && isValidLocale(firstSegment) ? firstSegment : defaultLocale;
+  const dictionary = getDictionary(locale);
 
   useEffect(() => {
     const detectedLanguage = figureRef.current
@@ -53,7 +59,7 @@ export function CodeBlockFigure({ className, children, ...props }: CodeBlockFigu
           type="button"
         >
           {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-          <span>{copied ? 'Copied' : 'Copy'}</span>
+          <span>{copied ? dictionary.common.copied : dictionary.common.copy}</span>
         </button>
       </div>
       {children}

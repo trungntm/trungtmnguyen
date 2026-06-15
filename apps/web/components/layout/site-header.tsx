@@ -2,27 +2,33 @@
 
 import type { Route } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { SearchButton } from '@/components/search/search-button';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { HoverUnderlineLink } from '@/components/ui/hover-underline-link';
 import { buttonVariants } from '@/components/ui/button';
+import { BaseLink } from '@/components/ui/links';
+import type { Dictionary, Locale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { siteConfig } from '@/lib/seo';
 
-const links: Array<{ href: Route; label: string }> = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/blog', label: 'Blog' },
-];
-
 const headerAvatarSrc = siteConfig.avatarImage;
 
-export function SiteHeader() {
+type SiteHeaderProps = {
+  locale: Locale;
+  dictionary: Dictionary;
+};
+
+export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
   const [isPinned, setIsPinned] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const links: Array<{ href: Route; label: string }> = [
+    { href: '/' as Route, label: dictionary.navigation.home },
+    { href: '/about' as Route, label: dictionary.navigation.about },
+    { href: '/blog' as Route, label: dictionary.navigation.blog },
+  ];
 
   useEffect(() => {
     const pinOffset = 12;
@@ -61,7 +67,7 @@ export function SiteHeader() {
           'page-container glass-card flex items-center justify-between gap-4 rounded-[1.75rem] px-4 py-3 md:px-6',
         )}
       >
-        <Link className="flex items-center gap-3" href="/">
+        <BaseLink className="flex items-center gap-3" href="/">
           <span className="gradient-bg relative flex size-10 items-center justify-center overflow-hidden rounded-2xl text-sm font-bold text-white">
             {avatarFailed ? (
               'TN'
@@ -81,9 +87,9 @@ export function SiteHeader() {
             <div className="text-sm font-semibold tracking-[0.18em] text-muted uppercase">
               Trung Nguyen
             </div>
-            <div className="text-xs text-muted">Software Engineering Blog</div>
+            <div className="text-xs text-muted">{dictionary.navigation.siteTagline}</div>
           </div>
-        </Link>
+        </BaseLink>
 
         <nav className="hidden items-center gap-2 md:flex">
           {links.map((link) => (
@@ -98,14 +104,15 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link
+          <BaseLink
             className={cn(buttonVariants({ variant: 'secondary' }), 'hidden md:inline-flex')}
             href="/blog"
           >
-            Explore Notes
-          </Link>
-          <SearchButton />
-          <ThemeToggle />
+            {dictionary.navigation.exploreNotes}
+          </BaseLink>
+          <SearchButton label={dictionary.common.search} openLabel={dictionary.common.openSearch} />
+          <LanguageSwitcher locale={locale} />
+          <ThemeToggle label={dictionary.common.toggleTheme} />
         </div>
       </div>
     </header>

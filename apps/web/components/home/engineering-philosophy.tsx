@@ -1,4 +1,10 @@
-export function EngineeringPhilosophy() {
+import type { Dictionary } from '@/lib/i18n';
+
+type EngineeringPhilosophyProps = {
+  dictionary: Dictionary;
+};
+
+export function EngineeringPhilosophy({ dictionary }: EngineeringPhilosophyProps) {
   return (
     <section
       className="page-container px-4 pb-20 md:px-6 md:pb-24"
@@ -11,20 +17,18 @@ export function EngineeringPhilosophy() {
         <div className="relative grid gap-8 md:grid-cols-[0.92fr_1.08fr] md:items-start">
           <div className="space-y-3">
             <p className="text-xs font-semibold tracking-[0.28em] text-muted uppercase">
-              Engineering philosophy
+              {dictionary.home.philosophyEyebrow}
             </p>
             <h2
               className="max-w-md text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
               id="engineering-philosophy-heading"
             >
-              Engineering with clarity, not ceremony.
+              {dictionary.home.philosophyTitle}
             </h2>
           </div>
 
           <p className="max-w-2xl text-base leading-8 text-muted sm:text-lg">
-            I prefer systems that are understandable, observable, and built around clear contracts.
-            The goal is not to chase patterns, but to choose structures that help products and teams
-            grow without losing delivery speed.
+            {dictionary.home.philosophyDescription}
           </p>
         </div>
       </div>
