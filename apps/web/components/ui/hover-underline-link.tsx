@@ -1,9 +1,9 @@
-import Link from 'next/link';
 import type { ComponentProps, ReactNode } from 'react';
 
+import { BaseLink } from '@/components/ui/links';
 import { cn } from '@/lib/utils';
 
-type HoverUnderlineLinkProps = Omit<ComponentProps<typeof Link>, 'className'> & {
+type HoverUnderlineLinkProps = Omit<ComponentProps<typeof BaseLink>, 'className'> & {
   children: ReactNode;
   className?: string;
   underlineClassName?: string;
@@ -16,7 +16,7 @@ export function HoverUnderlineLink({
   ...props
 }: HoverUnderlineLinkProps) {
   return (
-    <Link
+    <BaseLink
       {...props}
       className={cn(
         'group relative inline-flex rounded-full px-4 py-2 text-sm text-muted transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none',
@@ -31,6 +31,6 @@ export function HoverUnderlineLink({
           underlineClassName,
         )}
       />
-    </Link>
+    </BaseLink>
   );
 }

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { loadSearchIndex, type SearchRenderDocument } from '@repo/search';
 
 import { fetchSearchDocsJson, fetchSearchIndexJson } from '@/components/search/use-preload-search';
+import type { Locale } from '@/lib/i18n';
 
 type SearchIndexInstance = ReturnType<typeof loadSearchIndex>;
 
@@ -49,17 +50,18 @@ async function loadSearchAssets() {
   return loadPromise;
 }
 
-function getLatestBlogs() {
+function getLatestBlogs(locale: Locale) {
   if (!cachedDocsById) {
     return [];
   }
 
   return Object.values(cachedDocsById)
+    .filter((document) => document.locale === locale)
     .sort((left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt))
     .slice(0, 3);
 }
 
-export function useBlogSearch(): BlogSearchState {
+export function useBlogSearch(locale: Locale): BlogSearchState {
   const [ready, setReady] = useState(() => cachedIndex !== null && cachedDocsById !== null);
   const [error, setError] = useState<Error | null>(cachedError);
 
@@ -90,7 +92,7 @@ export function useBlogSearch(): BlogSearchState {
   return {
     ready,
     error,
-    latestBlogs: getLatestBlogs(),
+    latestBlogs: getLatestBlogs(locale),
     search(query) {
       const normalizedQuery = query.trim();
 
@@ -105,6 +107,10 @@ export function useBlogSearch(): BlogSearchState {
           const document = cachedDocsById?.[result.id];
 
           if (!document) {
+            return [];
+          }
+
+          if (document.locale !== locale) {
             return [];
           }
 

@@ -1,6 +1,7 @@
 import { allBlogs } from 'content-collections';
 import tagData from '@/app/tag-data.json';
 
+import { type Locale, defaultLocale } from '@/lib/i18n';
 import { slugifyHeading } from '@/lib/slugify';
 
 export type Blog = (typeof allBlogs)[number];
@@ -10,7 +11,8 @@ export type TagSummary = {
   count: number;
 };
 export type TagData = TagSummary & {
-  blogSlugs: string[];
+  locale: Locale;
+  blogIds: string[];
   lastModified: string;
 };
 
@@ -18,11 +20,18 @@ type BlogQueryOptions = {
   includeDrafts?: boolean;
 };
 
-const blogDateFormatter = new Intl.DateTimeFormat('en-US', {
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
-});
+const blogDateFormatters: Record<Locale, Intl.DateTimeFormat> = {
+  vi: new Intl.DateTimeFormat('vi-VN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }),
+  en: new Intl.DateTimeFormat('en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }),
+};
 
 function shouldIncludeDrafts(options?: BlogQueryOptions) {
   return options?.includeDrafts ?? false;
@@ -44,46 +53,28 @@ function getGeneratedTagData() {
   return tagData as TagData[];
 }
 
-export function getTagUrl(tag: string) {
-  return `/tags/${normalizeTag(tag)}` as const;
+export function formatBlogDate(date: string, locale: Locale = defaultLocale) {
+  return blogDateFormatters[locale].format(new Date(date));
 }
 
-export function getTagLabelFromSlug(tagSlug: string, options?: BlogQueryOptions) {
-  if (!shouldIncludeDrafts(options)) {
-    return getGeneratedTagData().find((tag) => tag.slug === normalizeTag(tagSlug))?.label;
-  }
-
-  const normalizedSlug = normalizeTag(tagSlug);
-
-  const tagMap = new Map<string, string>();
-
-  for (const blog of getAllBlogs(options)) {
-    for (const tag of blog.tags) {
-      const slug = normalizeTag(tag);
-      if (!tagMap.has(slug)) {
-        tagMap.set(slug, tag.trim());
-      }
-    }
-  }
-
-  return tagMap.get(normalizedSlug);
+export function getLocalizedBlogUrl(locale: Locale, slug: string) {
+  return `/${locale}/blog/${slug}` as const;
 }
 
-export function formatBlogDate(date: string) {
-  return blogDateFormatter.format(new Date(date));
+export function getTagUrl(locale: Locale, tag: string) {
+  return `/${locale}/tags/${normalizeTag(tag)}` as const;
 }
 
-export function getAllBlogs(options?: BlogQueryOptions) {
-  return sortBlogs(allBlogs.filter((blog) => isVisibleBlog(blog, options)));
+export function getPostsByLocale(locale: Locale, options?: BlogQueryOptions) {
+  return sortBlogs(allBlogs.filter((blog) => blog.locale === locale && isVisibleBlog(blog, options)));
 }
 
-export function getPublishedBlogs() {
-  return getAllBlogs();
+export function getPublishedBlogs(locale: Locale) {
+  return getPostsByLocale(locale);
 }
 
-export function getBlogBySlug(slugSegments: string[], options?: BlogQueryOptions) {
-  const slug = slugSegments.join('/');
-  const blog = allBlogs.find((entry) => entry.slug === slug);
+export function getPostBySlug(locale: Locale, slug: string, options?: BlogQueryOptions) {
+  const blog = allBlogs.find((entry) => entry.locale === locale && entry.slug === slug);
 
   if (!blog || !isVisibleBlog(blog, options)) {
     return null;
@@ -92,18 +83,56 @@ export function getBlogBySlug(slugSegments: string[], options?: BlogQueryOptions
   return blog;
 }
 
-export function getAllBlogSlugs(options?: BlogQueryOptions) {
-  return getAllBlogs(options).map((blog) => blog.slugSegments);
+export function getPostByLegacySlug(legacySlug: string, locale: Locale = defaultLocale) {
+  const normalizedSlug = legacySlug.replace(/^\/+|\/+$/g, '');
+  const blog = allBlogs.find(
+    (entry) =>
+      entry.locale === locale &&
+      isVisibleBlog(entry) &&
+      (entry.legacySlug === normalizedSlug || entry.slug === normalizedSlug),
+  );
+
+  return blog ?? null;
 }
 
-export function getAllTags(options?: BlogQueryOptions) {
+export function getTranslationsByKey(translationKey: string, options?: BlogQueryOptions) {
+  return sortBlogs(
+    allBlogs.filter(
+      (blog) => blog.translationKey === translationKey && isVisibleBlog(blog, options),
+    ),
+  );
+}
+
+export function getPostTranslation(
+  post: Pick<Blog, 'translationKey'>,
+  targetLocale: Locale,
+  options?: BlogQueryOptions,
+) {
+  return (
+    getTranslationsByKey(post.translationKey, options).find((entry) => entry.locale === targetLocale) ??
+    null
+  );
+}
+
+export function getAllBlogParams(options?: BlogQueryOptions) {
+  return allBlogs
+    .filter((blog) => isVisibleBlog(blog, options))
+    .map((blog) => ({
+      locale: blog.locale,
+      slug: blog.slug,
+    }));
+}
+
+export function getAllTags(locale: Locale, options?: BlogQueryOptions) {
   if (!shouldIncludeDrafts(options)) {
-    return getGeneratedTagData().map(({ label, slug, count }) => ({ label, slug, count }));
+    return getGeneratedTagData()
+      .filter((tag) => tag.locale === locale)
+      .map(({ label, slug, count }) => ({ label, slug, count }));
   }
 
   const tagMap = new Map<string, TagSummary>();
 
-  for (const blog of getAllBlogs(options)) {
+  for (const blog of getPostsByLocale(locale, options)) {
     for (const tag of blog.tags) {
       const slug = normalizeTag(tag);
       const existingTag = tagMap.get(slug);
@@ -124,23 +153,50 @@ export function getAllTags(options?: BlogQueryOptions) {
   return [...tagMap.values()].sort((left, right) => left.label.localeCompare(right.label));
 }
 
-export function getBlogsByTag(tag: string, options?: BlogQueryOptions) {
-  const normalizedTag = normalizeTag(tag);
+export function getTagLabelFromSlug(locale: Locale, tagSlug: string, options?: BlogQueryOptions) {
+  if (!shouldIncludeDrafts(options)) {
+    return getGeneratedTagData().find(
+      (tag) => tag.locale === locale && tag.slug === normalizeTag(tagSlug),
+    )?.label;
+  }
 
-  const blogs = getAllBlogs(options);
+  const normalizedSlug = normalizeTag(tagSlug);
+  const tagMap = new Map<string, string>();
+
+  for (const blog of getPostsByLocale(locale, options)) {
+    for (const tag of blog.tags) {
+      const slug = normalizeTag(tag);
+      if (!tagMap.has(slug)) {
+        tagMap.set(slug, tag.trim());
+      }
+    }
+  }
+
+  return tagMap.get(normalizedSlug);
+}
+
+export function getBlogsByTag(locale: Locale, tag: string, options?: BlogQueryOptions) {
+  const normalizedTag = normalizeTag(tag);
+  const blogs = getPostsByLocale(locale, options);
 
   if (!shouldIncludeDrafts(options)) {
-    const slugSet = new Set(
-      getGeneratedTagData().find((entry) => entry.slug === normalizedTag)?.blogSlugs ?? [],
+    const blogIdSet = new Set(
+      getGeneratedTagData().find(
+        (entry) => entry.locale === locale && entry.slug === normalizedTag,
+      )?.blogIds ?? [],
     );
 
-    return blogs.filter((blog) => slugSet.has(blog.slug));
+    return blogs.filter((blog) => blogIdSet.has(blog.id));
   }
 
   return blogs.filter((blog) => blog.tags.some((entry) => normalizeTag(entry) === normalizedTag));
 }
 
-export function getTagData(tag: string) {
+export function getTagData(locale: Locale, tag: string) {
   const normalizedTag = normalizeTag(tag);
-  return getGeneratedTagData().find((entry) => entry.slug === normalizedTag) ?? null;
+  return (
+    getGeneratedTagData().find(
+      (entry) => entry.locale === locale && entry.slug === normalizedTag,
+    ) ?? null
+  );
 }

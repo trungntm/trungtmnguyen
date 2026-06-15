@@ -1,0 +1,52 @@
+---
+locale: 'vi'
+slug: 'module-boundaries'
+translationKey: 'module-boundaries'
+canonicalLocale: 'vi'
+legacySlug: 'spring-modulith/module-boundaries'
+title: 'Thiết Kế Ranh Giới Module Trong Spring Modulith'
+description: 'Các nguyên tắc thực tế để giữ cho module trong Spring Modulith sạch sẽ và dễ bảo trì.'
+publishedAt: '2026-04-30'
+updatedAt: '2026-04-30'
+author: 'Trung Nguyen'
+tags:
+  - Spring Boot
+  - Kiến trúc
+thumbnail: '/images/blogs/typed-mdx-blog-thumb.png'
+cover: '/images/blogs/spring-modulith-cover.png'
+draft: false
+---
+
+## Bắt đầu từ ranh giới nghiệp vụ, không phải tên package
+
+Spring Modulith hoạt động hiệu quả nhất khi các module đại diện cho năng lực nghiệp vụ với API rõ
+ràng. Nếu tên module chỉ phản chiếu một tầng kỹ thuật như `service` hay `repository`, ranh giới đó
+sẽ dần bị lệch khi codebase phát triển.
+
+### Một bộ nguyên tắc thực tế
+
+- Mỗi module chỉ nên có một lý do thay đổi gắn với năng lực của nó.
+- Công bố hành vi thông qua application service hoặc domain event đã được định nghĩa rõ.
+- Giữ chi tiết persistence ở phía sau ranh giới module.
+
+```java
+@ApplicationModule(
+  allowedDependencies = {"orders :: events"}
+)
+package com.example.payments;
+```
+
+## Ưu tiên event cho luồng liên module
+
+Các lời gọi đồng bộ giữa module thì dễ thêm nhưng rất khó gỡ bỏ về sau. Domain event tạo ra điểm
+bàn giao rõ ràng và giúp quyền sở hữu trở nên minh bạch hơn cả trong code lẫn lúc review kiến trúc.
+
+> Ranh giới module chỉ thực sự tồn tại khi module khác có thể tiến hóa mà không phải chạm vào nội bộ của nó.
+
+## Câu hỏi khi review
+
+| Kiểm tra                                    | Vì sao quan trọng                                  |
+| ------------------------------------------- | ------------------------------------------------- |
+| Module có lộ ra persistence types không?    | Làm rò rỉ cấu trúc nội bộ và tăng coupling.       |
+| Import có trỏ vào package nội bộ không?     | Là dấu hiệu public API đang bị phá vỡ.            |
+| Integration test có chứng minh được boundary không? | Giúp ngăn kiến trúc bị trôi dần theo thời gian. |

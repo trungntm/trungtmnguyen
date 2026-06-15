@@ -22,6 +22,7 @@ import { useRouter } from 'next/navigation';
 
 import { useBlogSearch } from '@/components/search/use-blog-search';
 import { formatBlogDate } from '@/lib/blogs';
+import type { Dictionary, Locale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 type PaletteActionItem = {
@@ -116,8 +117,13 @@ function useSearchViewport() {
 
 const SearchResultItem = forwardRef<
   HTMLDivElement,
-  { active: boolean; item: PaletteActionItem | string | undefined }
->(function SearchResultItem({ active, item }, ref) {
+  {
+    active: boolean;
+    item: PaletteActionItem | string | undefined;
+    locale: Locale;
+    resultBadgeLabel: string;
+  }
+>(function SearchResultItem({ active, item, locale, resultBadgeLabel }, ref) {
   if (!item) {
     return <div ref={ref} className="h-0" />;
   }
@@ -136,7 +142,7 @@ const SearchResultItem = forwardRef<
   const tags = Array.isArray(item.tags) ? item.tags : [];
   const publishedAt =
     typeof item.publishedAt === 'string' && item.publishedAt.length > 0
-      ? formatBlogDate(item.publishedAt)
+      ? formatBlogDate(item.publishedAt, locale)
       : null;
   const readingTime =
     typeof item.readingTime === 'string' && item.readingTime.length > 0 ? item.readingTime : null;
@@ -159,7 +165,7 @@ const SearchResultItem = forwardRef<
         </div>
         {item.score ? (
           <span className="shrink-0 rounded-full border border-border/70 bg-background/80 px-2 py-1 text-[10px] font-semibold tracking-[0.2em] text-muted uppercase">
-            Post
+            {resultBadgeLabel}
           </span>
         ) : null}
       </div>
@@ -182,9 +188,14 @@ const SearchResultItem = forwardRef<
   );
 });
 
-export function SearchCommand() {
+type SearchCommandProps = {
+  locale: Locale;
+  dictionary: Dictionary;
+};
+
+export function SearchCommand({ locale, dictionary }: SearchCommandProps) {
   const { results: navigationResults } = useMatches();
-  const { search, ready, error, latestBlogs } = useBlogSearch();
+  const { search, ready, error, latestBlogs } = useBlogSearch(locale);
   const router = useRouter();
   const { isMobile, resultsMaxHeight } = useSearchViewport();
   const { query, searchQuery, visualState, activeIndex } = useKBar(
@@ -214,7 +225,9 @@ export function SearchCommand() {
     };
   });
 
-  const blogSectionTitle = trimmedQuery ? 'Posts' : 'Latest Posts';
+  const blogSectionTitle = trimmedQuery
+    ? dictionary.search.postsSection
+    : dictionary.search.latestPostsSection;
   const items: KBarRenderItem[] =
     blogResultActions.length > 0
       ? ([blogSectionTitle, ...blogResultActions, ...navigationResults] as KBarRenderItem[])
@@ -365,25 +378,25 @@ export function SearchCommand() {
             <Search className="size-4 text-muted" />
             <KBarSearch
               className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted"
-              defaultPlaceholder="Search posts, tags, and pages..."
+              defaultPlaceholder={dictionary.search.placeholder}
             />
           </div>
 
           {showLoading ? (
             <div className="border-b border-border/60 px-4 py-3 text-sm text-muted">
-              Loading search index...
+              {dictionary.search.loading}
             </div>
           ) : null}
 
           {showError ? (
             <div className="border-b border-border/60 px-4 py-3 text-sm text-muted">
-              Search unavailable
+              {dictionary.search.unavailable}
             </div>
           ) : null}
 
           {showEmpty ? (
             <div className="border-b border-border/60 px-4 py-3 text-sm text-muted">
-              No results found
+              {dictionary.search.empty}
             </div>
           ) : null}
 
@@ -435,6 +448,8 @@ export function SearchCommand() {
                     <SearchResultItem
                       active={isActive}
                       item={action as PaletteActionItem | string | undefined}
+                      locale={locale}
+                      resultBadgeLabel={dictionary.common.blog}
                     />
                   </button>
                 );

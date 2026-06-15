@@ -1,0 +1,104 @@
+{
+  "metadata": {
+    "siteTitle": "Trung Nguyen - Blog Kỹ Thuật Phần Mềm",
+    "siteDescription": "Ghi chép thực chiến về kiến trúc phần mềm, Java, Spring Boot, Next.js, DevOps và kỹ thuật hiện đại.",
+    "homeTitle": "Trang chủ",
+    "blogTitle": "Blog",
+    "blogDescription": "Tất cả bài viết và ghi chép kỹ thuật.",
+    "aboutTitle": "Giới thiệu",
+    "aboutDescription": "Thông tin về Trung Nguyen và hành trình kỹ thuật.",
+    "tagsTitle": "Chủ đề",
+    "tagsDescription": "Duyệt bài viết theo chủ đề kỹ thuật."
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "blog": "Blog",
+    "tags": "Chủ đề",
+    "exploreNotes": "Xem bài viết",
+    "siteTagline": "Blog Kỹ Thuật Phần Mềm"
+  },
+  "common": {
+    "blog": "Blog",
+    "readMore": "Đọc tiếp",
+    "publishedAt": "Ngày đăng",
+    "updatedAt": "Cập nhật",
+    "backToPosts": "Quay lại danh sách bài viết",
+    "language": "Ngôn ngữ",
+    "topic": "Chủ đề",
+    "search": "Tìm kiếm",
+    "openSearch": "Mở tìm kiếm",
+    "toggleTheme": "Đổi giao diện",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép"
+  },
+  "home": {
+    "badge": "Nền tảng blog kỹ thuật",
+    "eyebrow": "Ghi chép kỹ thuật, tư duy hệ thống, triển khai thực dụng",
+    "title": "Một nền tảng blog kỹ thuật gọn gàng để chia sẻ ý tưởng với",
+    "titleHighlight": "độ rõ ràng và tính kỷ luật.",
+    "description": "Workspace này được chuẩn bị cho các bài viết về kiến trúc phần mềm, Java, Spring Boot, Next.js, DevOps và thực hành kỹ thuật hiện đại.",
+    "blogCta": "Khám phá blog",
+    "aboutCta": "Đọc trang giới thiệu",
+    "latestEyebrow": "Bài mới nhất",
+    "latestTitle": "Bài mới nhất",
+    "latestDescription": "Các bài viết kỹ thuật gần đây được đúc kết từ quyết định kỹ thuật thực tế và những trade-off trong production.",
+    "viewAll": "Xem tất cả →",
+    "latestEmptyLabel": "Chưa có bài public",
+    "latestEmptyTitle": "Pipeline viết bài đã sẵn sàng. Các bài public sẽ xuất hiện tại đây khi được xuất bản.",
+    "latestEmptyDescription": "Bài draft sẽ tự động bị loại trừ. Chỉ cần thêm một bài MDX đã publish dưới `apps/web/data/blogs`, Content Collections sẽ tự nhận diện.",
+    "topicsEyebrow": "Chủ đề trọng tâm",
+    "topicsTitle": "Hệ thống, nền tảng và các mảng delivery định hình hướng viết.",
+    "philosophyEyebrow": "Triết lý kỹ thuật",
+    "philosophyTitle": "Làm kỹ thuật với sự rõ ràng, không hình thức.",
+    "philosophyDescription": "Tôi ưu tiên những hệ thống dễ hiểu, dễ quan sát và được xây dựng quanh các hợp đồng rõ ràng. Mục tiêu không phải chạy theo pattern, mà là chọn cấu trúc giúp sản phẩm và đội ngũ phát triển mà không mất tốc độ delivery."
+  },
+  "blogPage": {
+    "heading": "Các bài viết kỹ thuật về kiến trúc, delivery và thực hành engineering.",
+    "description": "Bài viết được biên dịch từ MDX cục bộ với metadata có kiểu, route rõ ràng và logic draft tập trung để sẵn sàng cho preview trong tương lai.",
+    "emptyLabel": "Chưa có bài viết",
+    "emptyTitle": "Pipeline nội dung đã sẵn sàng. Danh sách bài public hiện đang trống.",
+    "emptyDescription": "Thêm một file MDX dưới `apps/web/data/blogs` với frontmatter hợp lệ và bài viết sẽ tự xuất hiện tại đây, trừ khi được đánh dấu draft."
+  },
+  "tagsPage": {
+    "heading": "Duyệt ghi chép kỹ thuật theo chủ đề.",
+    "description": "Tags được sinh từ frontmatter của các bài public và gom thành những URL ổn định.",
+    "emptyLabel": "Chưa có tag",
+    "emptyTitle": "Các bài viết đã xuất bản sẽ tự động sinh trang tag public.",
+    "emptyDescription": "Bài draft sẽ không được đưa vào, nên chỉ frontmatter của bài đã xuất bản mới ảnh hưởng tới tag index.",
+    "noPublishedPosts": "Chưa có bài viết public",
+    "noVisiblePostsTitle": "Tag này tồn tại nhưng hiện chưa có bài viết hiển thị.",
+    "countLabelOne": "{count} bài viết về {tagLabel}",
+    "countLabelOther": "{count} bài viết về {tagLabel}"
+  },
+  "aboutPage": {
+    "eyebrow": "Về tôi",
+    "communication": "Giao tiếp",
+    "languages": "Ngôn ngữ",
+    "education": "Học vấn",
+    "educationTitle": "Nền tảng học thuật",
+    "career": "Hành trình nghề nghiệp",
+    "careerTitle": "Quá trình phát triển"
+  },
+  "footer": {
+    "primary": "Được xây dựng để chia sẻ ghi chép thực chiến, bài viết kiến trúc và những bài luận kỹ thuật.",
+    "secondary": "Vận hành bởi typed MDX, Content Collections và Next.js App Router."
+  },
+  "search": {
+    "placeholder": "Tìm bài viết, tag và trang...",
+    "loading": "Đang tải chỉ mục tìm kiếm...",
+    "unavailable": "Tìm kiếm hiện không khả dụng",
+    "empty": "Không tìm thấy kết quả",
+    "postsSection": "Bài viết",
+    "latestPostsSection": "Bài viết mới nhất",
+    "navigationSection": "Điều hướng"
+  },
+  "rss": {
+    "title": "RSS Feed",
+    "description": "Ghi chép thực tế về kỹ thuật phần mềm",
+    "language": "vi-vn"
+  },
+  "tagLink": {
+    "ariaLabel": "Xem bài viết với tag {tag}"
+  }
+}
