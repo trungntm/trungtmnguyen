@@ -78,7 +78,10 @@
     "education": "Học vấn",
     "educationTitle": "Nền tảng học thuật",
     "career": "Hành trình nghề nghiệp",
-    "careerTitle": "Quá trình phát triển"
+    "careerTitle": "Quá trình phát triển",
+    "projectsTitle": "Các dự án tiêu biểu",
+    "showDetails": "Xem chi tiết",
+    "hideDetails": "Ẩn chi tiết"
   },
   "footer": {
     "primary": "Được xây dựng để chia sẻ ghi chép thực chiến, bài viết kiến trúc và những bài luận kỹ thuật.",

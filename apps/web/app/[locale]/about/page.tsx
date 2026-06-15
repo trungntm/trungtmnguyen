@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { AboutLayout } from '@/components/about/about-layout';
 import { ActivitySection } from '@/components/about/activity-section';
+import { CareerTimeline } from '@/components/about/career-timeline';
 import { Chip } from '@/components/about/chip';
 import { ProfileCard } from '@/components/about/profile-card';
 import { QuickFactsCard } from '@/components/about/quick-facts-card';
@@ -150,9 +151,12 @@ export default async function LocalizedAboutPage({ params }: LocalizedAboutPageP
       ) : null}
 
       {about.career?.length ? (
-        <TimelineSection
+        <CareerTimeline
           eyebrow={dictionary.aboutPage.career}
           items={about.career}
+          hideDetailsLabel={dictionary.aboutPage.hideDetails}
+          projectLabel={dictionary.aboutPage.projectsTitle}
+          showDetailsLabel={dictionary.aboutPage.showDetails}
           title={dictionary.aboutPage.careerTitle}
         />
       ) : null}

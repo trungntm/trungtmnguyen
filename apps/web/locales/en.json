@@ -78,7 +78,10 @@
     "education": "Education",
     "educationTitle": "Academic foundation",
     "career": "Career path",
-    "careerTitle": "Growth and trajectory"
+    "careerTitle": "Growth and trajectory",
+    "projectsTitle": "Highlighted projects",
+    "showDetails": "Show details",
+    "hideDetails": "Hide details"
   },
   "footer": {
     "primary": "Built for practical engineering notes, architecture write-ups, and technical essays.",

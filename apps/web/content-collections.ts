@@ -41,6 +41,38 @@ const activitySchema = z.object({
   description: z.string().min(1),
 });
 
+const timelineLinkSchema = z.object({
+  text: z.string().min(1),
+  href: z.string().url(),
+});
+
+type CareerTimelineLink = {
+  text: string;
+  href: string;
+};
+
+type CareerTimelineItem = {
+  company: string;
+  project?: string | undefined;
+  role: string;
+  duration: string;
+  description: string[];
+  links: CareerTimelineLink[];
+  projects: CareerTimelineItem[];
+};
+
+const careerTimelineItemSchema: z.ZodType<CareerTimelineItem> = z.lazy(() =>
+  z.object({
+    company: z.string().min(1),
+    project: z.string().min(1).optional(),
+    role: z.string().min(1),
+    duration: z.string().min(1),
+    description: z.array(z.string().min(1)).default([]),
+    links: z.array(timelineLinkSchema).default([]),
+    projects: z.array(careerTimelineItemSchema).default([]),
+  }),
+);
+
 type MdxDocument = {
   _meta: Meta;
   content: string;
@@ -351,7 +383,7 @@ const pages = defineCollection({
     activities: z.array(activitySchema).optional(),
     education: z.array(labeledEntrySchema).optional(),
     languages: z.array(z.string().min(1)).optional(),
-    career: z.array(labeledEntrySchema).optional(),
+    career: z.array(careerTimelineItemSchema).optional(),
     content: z.string(),
   }),
   transform: async (document, context) => {
