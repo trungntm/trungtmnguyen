@@ -25,6 +25,22 @@
   },
   {
     "locale": "en",
+    "label": "Development Tools",
+    "slug": "development-tools",
+    "count": 1,
+    "blogIds": ["en:install-java-using-sdkman"],
+    "lastModified": "2025-07-26"
+  },
+  {
+    "locale": "vi",
+    "label": "Development Tools",
+    "slug": "development-tools",
+    "count": 1,
+    "blogIds": ["vi:install-java-using-sdkman"],
+    "lastModified": "2025-07-26"
+  },
+  {
+    "locale": "en",
     "label": "git",
     "slug": "git",
     "count": 1,
@@ -59,17 +75,23 @@
     "locale": "en",
     "label": "Java",
     "slug": "java",
-    "count": 1,
-    "blogIds": ["en:publish-maven-package-to-github-package-part-1"],
-    "lastModified": "2025-06-28"
+    "count": 2,
+    "blogIds": [
+      "en:install-java-using-sdkman",
+      "en:publish-maven-package-to-github-package-part-1"
+    ],
+    "lastModified": "2025-07-26"
   },
   {
     "locale": "vi",
     "label": "Java",
     "slug": "java",
-    "count": 1,
-    "blogIds": ["vi:publish-maven-package-to-github-package-part-1"],
-    "lastModified": "2025-06-28"
+    "count": 2,
+    "blogIds": [
+      "vi:install-java-using-sdkman",
+      "vi:publish-maven-package-to-github-package-part-1"
+    ],
+    "lastModified": "2025-07-26"
   },
   {
     "locale": "vi",
@@ -126,6 +148,38 @@
     "count": 1,
     "blogIds": ["vi:typed-mdx-blog"],
     "lastModified": "2026-04-29"
+  },
+  {
+    "locale": "en",
+    "label": "SDKMAN",
+    "slug": "sdkman",
+    "count": 1,
+    "blogIds": ["en:install-java-using-sdkman"],
+    "lastModified": "2025-07-26"
+  },
+  {
+    "locale": "vi",
+    "label": "SDKMAN",
+    "slug": "sdkman",
+    "count": 1,
+    "blogIds": ["vi:install-java-using-sdkman"],
+    "lastModified": "2025-07-26"
+  },
+  {
+    "locale": "en",
+    "label": "Setup",
+    "slug": "setup",
+    "count": 1,
+    "blogIds": ["en:install-java-using-sdkman"],
+    "lastModified": "2025-07-26"
+  },
+  {
+    "locale": "vi",
+    "label": "Setup",
+    "slug": "setup",
+    "count": 1,
+    "blogIds": ["vi:install-java-using-sdkman"],
+    "lastModified": "2025-07-26"
   },
   {
     "locale": "en",
