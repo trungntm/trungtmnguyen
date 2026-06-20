@@ -103,6 +103,22 @@
   },
   {
     "locale": "en",
+    "label": "Mac Setup",
+    "slug": "mac-setup",
+    "count": 1,
+    "blogIds": ["en:create-ssh-key"],
+    "lastModified": "2025-02-25"
+  },
+  {
+    "locale": "vi",
+    "label": "Mac Setup",
+    "slug": "mac-setup",
+    "count": 1,
+    "blogIds": ["vi:create-ssh-key"],
+    "lastModified": "2025-02-25"
+  },
+  {
+    "locale": "en",
     "label": "Maven",
     "slug": "maven",
     "count": 1,
@@ -198,19 +214,19 @@
     "lastModified": "2026-04-30"
   },
   {
-    "locale": "vi",
-    "label": "SSH Key",
+    "locale": "en",
+    "label": "Ssh Key",
     "slug": "ssh-key",
-    "count": 1,
-    "blogIds": ["vi:multiple-git-profiles"],
+    "count": 2,
+    "blogIds": ["en:create-ssh-key", "en:multiple-git-profiles"],
     "lastModified": "2026-05-11"
   },
   {
-    "locale": "en",
-    "label": "ssh-key",
+    "locale": "vi",
+    "label": "SSH Key",
     "slug": "ssh-key",
-    "count": 1,
-    "blogIds": ["en:multiple-git-profiles"],
+    "count": 2,
+    "blogIds": ["vi:create-ssh-key", "vi:multiple-git-profiles"],
     "lastModified": "2026-05-11"
   },
   {
