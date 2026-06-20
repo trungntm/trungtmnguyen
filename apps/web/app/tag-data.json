@@ -1,6 +1,22 @@
 [
   {
     "locale": "en",
+    "label": "API Testing",
+    "slug": "api-testing",
+    "count": 1,
+    "blogIds": ["en:using-postman-in-scratch-pad-mode"],
+    "lastModified": "2025-10-22"
+  },
+  {
+    "locale": "vi",
+    "label": "API Testing",
+    "slug": "api-testing",
+    "count": 1,
+    "blogIds": ["vi:using-postman-in-scratch-pad-mode"],
+    "lastModified": "2025-10-22"
+  },
+  {
+    "locale": "en",
     "label": "Architecture",
     "slug": "architecture",
     "count": 1,
@@ -22,6 +38,22 @@
     "count": 1,
     "blogIds": ["vi:publish-maven-package-to-github-package-part-1"],
     "lastModified": "2025-06-28"
+  },
+  {
+    "locale": "en",
+    "label": "Developer Tips",
+    "slug": "developer-tips",
+    "count": 1,
+    "blogIds": ["en:using-postman-in-scratch-pad-mode"],
+    "lastModified": "2025-10-22"
+  },
+  {
+    "locale": "vi",
+    "label": "Developer Tips",
+    "slug": "developer-tips",
+    "count": 1,
+    "blogIds": ["vi:using-postman-in-scratch-pad-mode"],
+    "lastModified": "2025-10-22"
   },
   {
     "locale": "en",
@@ -164,6 +196,22 @@
     "count": 1,
     "blogIds": ["vi:typed-mdx-blog"],
     "lastModified": "2026-04-29"
+  },
+  {
+    "locale": "en",
+    "label": "Postman",
+    "slug": "postman",
+    "count": 1,
+    "blogIds": ["en:using-postman-in-scratch-pad-mode"],
+    "lastModified": "2025-10-22"
+  },
+  {
+    "locale": "vi",
+    "label": "Postman",
+    "slug": "postman",
+    "count": 1,
+    "blogIds": ["vi:using-postman-in-scratch-pad-mode"],
+    "lastModified": "2025-10-22"
   },
   {
     "locale": "en",
