@@ -4,6 +4,6 @@
   "version": "0.0.0",
   "dependencies": {
     "eslint": "9.39.4",
-    "eslint-config-next": "16.2.4"
+    "eslint-config-next": "16.2.9"
   }
 }

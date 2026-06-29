@@ -82,7 +82,7 @@ export default async function LocalizedBlogPage({ params }: LocalizedBlogPagePro
             ))}
           </div>
         ) : (
-          <div className="glass-card rounded-[2rem] p-8 md:p-10">
+          <div className="glass-card rounded-4xl p-8 md:p-10">
             <p className="text-sm font-medium tracking-[0.25em] text-muted uppercase">
               {dictionary.blogPage.emptyLabel}
             </p>

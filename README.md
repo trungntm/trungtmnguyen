@@ -4,22 +4,25 @@ Phase 3 adds an MDX-powered About page on top of the existing typed blog pipelin
 
 ## Stack
 
-- Next.js `16.2.4`
-- React `19.2.5`
-- React DOM `19.2.5`
+- Next.js `16.2.9`
+- React `19.2.7`
+- React DOM `19.2.7`
 - TypeScript `6.0.3`
 - ESLint `9.39.4`
-- `eslint-config-next` `16.2.4`
+- `eslint-config-next` `16.2.9`
 - Prettier `3.8.3`
-- Turborepo `2.9.6`
+- Turborepo `2.10.0`
 - Tailwind CSS `4.2.4`
-- `@tailwindcss/postcss` `4.2.4`
+- `@tailwindcss/postcss` `4.3.1`
 - `next-themes` `0.4.6`
 - `clsx` `2.1.1`
-- `tailwind-merge` `3.5.0`
+- `tailwind-merge` `3.6.0`
 - `class-variance-authority` `0.7.1`
 - `lucide-react` `1.14.0`
-- `@content-collections/core` `0.15.0`
+- `framer-motion` `12.42.0`
+- `kbar` `0.1.0-beta.48`
+- `minisearch` `7.2.0`
+- `@content-collections/core` `0.15.2`
 - `@content-collections/mdx` `0.2.2`
 - `@content-collections/next` `0.2.11`
 - `zod` `4.4.1`
