@@ -4,7 +4,6 @@ import path from 'node:path';
 
 import { defineCollection, defineConfig, type Meta } from '@content-collections/core';
 import { compileMDX } from '@content-collections/mdx';
-import readingTime from 'reading-time';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeSlug from 'rehype-slug';
@@ -12,6 +11,7 @@ import remarkGfm from 'remark-gfm';
 import { z } from 'zod';
 
 import { defaultLocale, locales } from './lib/i18n';
+import { calculateReadingTime } from './lib/reading-time';
 import { slugifyHeading } from './lib/slugify';
 import { extractTocFromMarkdown } from './lib/toc';
 
@@ -323,7 +323,7 @@ const blogs = defineCollection({
     const slugSegments = [slug];
     const publishedAtDate = Date.parse(document.publishedAt);
     const updatedAtDate = document.updatedAt ? Date.parse(document.updatedAt) : null;
-    const stats = readingTime(document.content);
+    const stats = calculateReadingTime(document.content);
     const toc = extractTocFromMarkdown(document.content);
     const mdx = await compileDocumentMdx(context, document);
     const id = `${document.locale}:${document.slug}`;

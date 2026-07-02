@@ -1,5 +1,13 @@
 [
   {
+    "locale": "vi",
+    "label": "",
+    "slug": "section",
+    "count": 1,
+    "blogIds": ["vi:create-ssh-key"],
+    "lastModified": "2025-02-25"
+  },
+  {
     "locale": "en",
     "label": "API Testing",
     "slug": "api-testing",
@@ -143,8 +151,8 @@
   },
   {
     "locale": "vi",
-    "label": "Mac Setup",
-    "slug": "mac-setup",
+    "label": "Mac SSSH Keyetup",
+    "slug": "mac-sssh-keyetup",
     "count": 1,
     "blogIds": ["vi:create-ssh-key"],
     "lastModified": "2025-02-25"
@@ -273,8 +281,8 @@
     "locale": "vi",
     "label": "SSH Key",
     "slug": "ssh-key",
-    "count": 2,
-    "blogIds": ["vi:create-ssh-key", "vi:multiple-git-profiles"],
+    "count": 1,
+    "blogIds": ["vi:multiple-git-profiles"],
     "lastModified": "2026-05-11"
   },
   {

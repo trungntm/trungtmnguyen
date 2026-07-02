@@ -2,12 +2,16 @@ import type { Metadata, Route } from 'next';
 import Image from 'next/image';
 import { notFound, permanentRedirect } from 'next/navigation';
 
+import { TableOfContents } from '@/components/blog/table-of-contents';
 import { TagPill } from '@/components/blog/tag-pill';
 import { CmsMarkdownRenderer } from '@/features/cms-blog/components/cms-markdown-renderer';
 import { getPublishedPostBySlug } from '@/features/cms-blog/api/cms-blog-api';
 import { formatBlogDate, getPostByLegacySlug } from '@/lib/blogs';
 import { defaultLocale, getDictionary, isValidLocale, type Locale } from '@/lib/i18n';
+import { calculateReadingTime } from '@/lib/reading-time';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
+import { extractTocFromMarkdown } from '@/lib/toc';
+import { cn } from '@/lib/utils';
 
 type PublicBlogDetailPageProps = {
   params: Promise<{
@@ -103,6 +107,9 @@ export default async function PublicBlogDetailPage({ params }: PublicBlogDetailP
 
     const locale = cmsParams.locale;
     const dictionary = getDictionary(locale);
+    const readingTime = calculateReadingTime(post.contentMd);
+    const toc = extractTocFromMarkdown(post.contentMd);
+    const hasToc = toc.length >= 2;
 
     return (
       <article className="page-container px-4 py-14 md:px-6 md:py-18">
@@ -127,6 +134,7 @@ export default async function PublicBlogDetailPage({ params }: PublicBlogDetailP
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted">
               <span>{formatBlogDate(post.publishedAt, locale)}</span>
+              <span>{readingTime.text}</span>
               {post.updatedAt !== post.publishedAt ? (
                 <span>
                   {dictionary.common.updatedAt} {formatBlogDate(post.updatedAt, locale)}
@@ -149,8 +157,17 @@ export default async function PublicBlogDetailPage({ params }: PublicBlogDetailP
             ) : null}
           </header>
 
-          <div className="grid gap-6 xl:gap-10">
+          <div
+            className={cn(
+              'grid gap-6 xl:gap-10',
+              hasToc && 'lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start',
+            )}
+          >
             <div className="space-y-6">
+              <div className="lg:hidden">
+                <TableOfContents items={toc} />
+              </div>
+
               <div className="glass-card rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
                 <CmsMarkdownRenderer
                   contentMd={post.contentMd}
@@ -158,6 +175,14 @@ export default async function PublicBlogDetailPage({ params }: PublicBlogDetailP
                 />
               </div>
             </div>
+
+            {hasToc ? (
+              <aside className="hidden lg:block">
+                <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
+                  <TableOfContents items={toc} />
+                </div>
+              </aside>
+            ) : null}
           </div>
         </div>
       </article>
