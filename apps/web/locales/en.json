@@ -46,7 +46,7 @@
     "viewAll": "View all →",
     "latestEmptyLabel": "No published posts",
     "latestEmptyTitle": "The writing pipeline is ready. Public notes will appear here as they are published.",
-    "latestEmptyDescription": "Draft entries remain excluded automatically. Add a published MDX post under `apps/web/data/blogs` and it will be picked up by Content Collections.",
+    "latestEmptyDescription": "Published posts will appear here automatically when the CMS public blog API returns data.",
     "topicsEyebrow": "Core topics",
     "topicsTitle": "Systems, platforms, and delivery disciplines that shape the writing direction.",
     "philosophyEyebrow": "Engineering philosophy",
@@ -55,10 +55,10 @@
   },
   "blogPage": {
     "heading": "Typed MDX posts for architecture, delivery, and engineering practice.",
-    "description": "Published articles are compiled from local MDX content with typed metadata, nested routes, and centralized draft handling ready for future preview support.",
+    "description": "Published articles are loaded from the CMS public blog API and rendered with the existing article layout and markdown pipeline.",
     "emptyLabel": "No posts yet",
     "emptyTitle": "The content pipeline is ready. The public article list is currently empty.",
-    "emptyDescription": "Add an MDX file under `apps/web/data/blogs` with valid frontmatter and it will appear here automatically unless marked as a draft."
+    "emptyDescription": "Published CMS posts will appear here automatically when the public blog API returns data."
   },
   "tagsPage": {
     "heading": "Browse technical notes by topic.",

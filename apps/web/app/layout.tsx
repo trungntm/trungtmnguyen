@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { AppShell } from '@/components/layout/app-shell';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { defaultLocale } from '@/lib/i18n';
-import { getOpenGraphLocale, siteConfig } from '@/lib/seo';
+import { getOpenGraphLocale, getSiteUrl, siteConfig } from '@/lib/seo';
 
 import './globals.css';
 import './prism.css';
@@ -43,7 +43,7 @@ const spaceGrotesk = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: siteConfig.title,
     template: `%s | ${siteConfig.name}`,
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: getOpenGraphLocale(defaultLocale),
-    url: siteConfig.url,
+    url: getSiteUrl(),
     siteName: siteConfig.name,
     title: siteConfig.title,
     description: siteConfig.description,

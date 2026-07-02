@@ -10,11 +10,20 @@ import { getLocalizedPath, isValidLocale } from '@/lib/i18n';
 type BaseLinkProps = ComponentProps<typeof Link>;
 
 function isExternalHref(href: string) {
-  return /^(?:[a-z]+:)?\/\//i.test(href) || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:');
+  return (
+    /^(?:[a-z]+:)?\/\//i.test(href) ||
+    href.startsWith('#') ||
+    href.startsWith('mailto:') ||
+    href.startsWith('tel:')
+  );
+}
+
+function isTopLevelBlogRoute(href: string) {
+  return href === '/blog' || href.startsWith('/blog/');
 }
 
 function localizeHref(href: string, locale: ReturnType<typeof useLocale>) {
-  if (!href || isExternalHref(href)) {
+  if (!href || isExternalHref(href) || isTopLevelBlogRoute(href)) {
     return href;
   }
 

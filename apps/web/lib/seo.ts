@@ -13,8 +13,12 @@ export const siteConfig = {
   avatarImage: '/images/avatar/avatar.jpg',
 } as const;
 
+export function getSiteUrl() {
+  return process.env.NEXT_PUBLIC_SITE_URL?.trim() || siteConfig.url;
+}
+
 export function buildAbsoluteUrl(pathname: string) {
-  return new URL(pathname, siteConfig.url).toString();
+  return new URL(pathname, getSiteUrl()).toString();
 }
 
 export function getOpenGraphLocale(locale: Locale) {
