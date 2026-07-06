@@ -10,7 +10,6 @@ import { ProfileCard } from '@/components/about/profile-card';
 import { QuickFactsCard } from '@/components/about/quick-facts-card';
 import { SkillsSection } from '@/components/about/skills-section';
 import { TimelineSection } from '@/components/about/timeline-section';
-import { GithubCalendarSection } from '@/components/github/github-calendar-section';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
 import { HoverUnderlineText } from '@/components/ui/hover-underline-text';
 import { getDictionary, type Locale } from '@/lib/i18n';
@@ -55,7 +54,7 @@ type LocalizedAboutPageProps = {
 export async function generateMetadata({ params }: LocalizedAboutPageProps): Promise<Metadata> {
   const { locale } = await params;
   const dictionary = getDictionary(locale);
-  const about = getAboutPage();
+  const about = await getAboutPage();
 
   return {
     title: about?.title ?? dictionary.metadata.aboutTitle,
@@ -85,7 +84,7 @@ export async function generateMetadata({ params }: LocalizedAboutPageProps): Pro
 export default async function LocalizedAboutPage({ params }: LocalizedAboutPageProps) {
   const { locale } = await params;
   const dictionary = getDictionary(locale);
-  const about = getAboutPage();
+  const about = await getAboutPage();
 
   if (!about) {
     notFound();
@@ -113,12 +112,12 @@ export default async function LocalizedAboutPage({ params }: LocalizedAboutPageP
       }
       title={about.headline}
     >
-      <section className="glass-card rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
-        <MDXRenderer code={about.mdx} components={aboutMdxComponents} />
+      <section className="glass-card rounded-4xl px-6 py-8 md:px-10 md:py-10">
+        <MDXRenderer components={aboutMdxComponents} slug={about.slug} source={about.contentMd} />
       </section>
 
       <SkillsSection skills={about.skills} />
-      <GithubCalendarSection user="trungntm" />
+      {/* <GithubCalendarSection user="trungntm" /> */}
       <ActivitySection activities={about.activities} />
 
       {about.education?.length ? (
@@ -130,7 +129,7 @@ export default async function LocalizedAboutPage({ params }: LocalizedAboutPageP
       ) : null}
 
       {about.languages?.length ? (
-        <section className="glass-card rounded-[2rem] p-6 md:p-8">
+        <section className="glass-card rounded-4xl p-6 md:p-8">
           <div className="space-y-5">
             <div className="space-y-2">
               <p className="text-xs font-semibold tracking-[0.2em] text-muted uppercase">

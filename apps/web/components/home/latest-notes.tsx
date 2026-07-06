@@ -50,24 +50,25 @@ export function LatestNotes({
         {blogs.length > 0 ? (
           <div className="grid gap-5 lg:grid-cols-3">
             {blogs.map((blog) => {
-              const primaryTag = blog.tags[0];
-
               return (
                 <article
                   key={blog.id}
                   className="glass-card group flex h-full flex-col rounded-[1.75rem] p-6 transition duration-300 hover:-translate-y-1 hover:border-primary/55 focus-within:-translate-y-1 focus-within:border-primary/55"
                 >
-                  {primaryTag ? (
-                    <div className="mb-4 flex items-center gap-3">
-                      {disableTagLinks ? (
-                        <TagPill className="bg-background/60" tag={primaryTag} />
-                      ) : (
-                        <TagLink
-                          className="bg-background/60"
-                          locale={locale}
-                          size="sm"
-                          tag={primaryTag}
-                        />
+                  {blog.tags.length > 0 ? (
+                    <div className="mb-4 flex flex-wrap items-center gap-3">
+                      {blog.tags.map((tag) =>
+                        disableTagLinks ? (
+                          <TagPill key={tag} className="bg-background/60" tag={tag} />
+                        ) : (
+                          <TagLink
+                            key={tag}
+                            className="bg-background/60"
+                            locale={locale}
+                            size="sm"
+                            tag={tag}
+                          />
+                        ),
                       )}
                     </div>
                   ) : null}

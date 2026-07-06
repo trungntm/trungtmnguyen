@@ -6,10 +6,18 @@ export type BlogTagDto = {
   name: string;
 };
 
+export type PublicPostTranslationLinkDto = {
+  locale: BlogLocale;
+  slug: string;
+  url: string;
+  title: string;
+};
+
 export type PublicPostListItemDto = {
   id: string;
   locale: BlogLocale;
   slug: string;
+  url: string;
   title: string;
   description: string | null;
   coverImageObjectKey: string | null;
@@ -25,6 +33,8 @@ export type PublicPostDetailDto = {
   id: string;
   locale: BlogLocale;
   slug: string;
+  url: string;
+  translations: PublicPostTranslationLinkDto[];
   title: string;
   description: string | null;
   contentMd: string;

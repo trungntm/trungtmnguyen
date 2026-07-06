@@ -3,13 +3,12 @@ import { notFound } from 'next/navigation';
 
 import { BlogCard } from '@/components/blog/blog-card';
 import {
-  getAllTags,
   getBlogsByTag,
   getTagData,
   getTagLabelFromSlug,
-  normalizeTag,
-} from '@/lib/blogs';
+} from '@/lib/blog-data';
 import { getDictionary, getTagCountLabel, type Locale } from '@/lib/i18n';
+import { normalizeTag } from '@/lib/blogs';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 type TagDetailPageProps = {
@@ -20,25 +19,32 @@ type TagDetailPageProps = {
 };
 
 export async function generateStaticParams() {
-  return (['vi', 'en'] as const).flatMap((locale) =>
-    getAllTags(locale).map((tag) => ({
-      locale,
-      tag: tag.slug,
-    })),
-  );
+  return [];
 }
 
 export async function generateMetadata({ params }: TagDetailPageProps): Promise<Metadata> {
   const { locale, tag } = await params;
   const tagSlug = normalizeTag(tag);
-  const tagLabel = getTagLabelFromSlug(locale, tagSlug);
+  let tagLabel: Awaited<ReturnType<typeof getTagLabelFromSlug>>;
+  let tagData: Awaited<ReturnType<typeof getTagData>>;
+  let blogs: Awaited<ReturnType<typeof getBlogsByTag>>;
+
+  try {
+    [tagLabel, tagData, blogs] = await Promise.all([
+      getTagLabelFromSlug(locale, tagSlug),
+      getTagData(locale, tagSlug),
+      getBlogsByTag(locale, tagSlug),
+    ]);
+  } catch {
+    return {};
+  }
 
   if (!tagLabel) {
     return {};
   }
 
   const dictionary = getDictionary(locale);
-  const blogCount = getTagData(locale, tagSlug)?.count ?? getBlogsByTag(locale, tagSlug).length;
+  const blogCount = tagData?.count ?? blogs.length;
   const description = getTagCountLabel(dictionary, blogCount, tagLabel);
   const canonicalUrl = buildAbsoluteUrl(`/${locale}/tags/${tagSlug}`);
 
@@ -69,20 +75,30 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
   const { locale, tag } = await params;
   const dictionary = getDictionary(locale);
   const tagSlug = normalizeTag(tag);
-  const tagLabel = getTagLabelFromSlug(locale, tagSlug);
+  let tagLabel: Awaited<ReturnType<typeof getTagLabelFromSlug>>;
+  let blogs: Awaited<ReturnType<typeof getBlogsByTag>>;
+
+  try {
+    [tagLabel, blogs] = await Promise.all([
+      getTagLabelFromSlug(locale, tagSlug),
+      getBlogsByTag(locale, tagSlug),
+    ]);
+  } catch {
+    notFound();
+  }
 
   if (!tagLabel) {
     notFound();
   }
-
-  const blogs = getBlogsByTag(locale, tagSlug);
 
   return (
     <section className="page-container px-4 py-14 md:px-6 md:py-18">
       <div className="space-y-10">
         <div className="space-y-5">
           <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">#{tagLabel}</h1>
-          <p className="max-w-3xl text-lg leading-8 text-muted">{getTagCountLabel(dictionary, blogs.length, tagLabel)}</p>
+          <p className="max-w-3xl text-lg leading-8 text-muted">
+            {getTagCountLabel(dictionary, blogs.length, tagLabel)}
+          </p>
         </div>
 
         {blogs.length > 0 ? (

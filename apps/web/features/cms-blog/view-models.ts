@@ -9,7 +9,7 @@ export function mapCmsPostToPostCardViewModel(
 ): BlogPreview {
   return {
     id: post.id,
-    url: `/blog/${post.locale}/${post.slug}` as Route,
+    url: post.url as Route,
     title: post.title,
     description: post.description,
     publishedAt: post.publishedAt,

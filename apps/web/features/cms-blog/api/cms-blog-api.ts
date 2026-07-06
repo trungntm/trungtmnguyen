@@ -9,6 +9,7 @@ import type {
   ListPublishedPostsResponseDto,
   PublicPostDetailDto,
   PublicPostListItemDto,
+  PublicPostTranslationLinkDto,
 } from '@/features/cms-blog/types';
 
 const blogLocaleSchema = z.enum(['vi', 'en']);
@@ -19,10 +20,18 @@ const blogTagDtoSchema = z.object({
   name: z.string(),
 });
 
+const publicPostTranslationLinkDtoSchema = z.object({
+  locale: blogLocaleSchema,
+  slug: z.string(),
+  url: z.string(),
+  title: z.string(),
+});
+
 const publicPostListItemDtoSchema = z.object({
   id: z.string(),
   locale: blogLocaleSchema,
   slug: z.string(),
+  url: z.string(),
   title: z.string(),
   description: z.string().nullable(),
   coverImageObjectKey: z.string().nullable(),
@@ -38,6 +47,8 @@ const publicPostDetailDtoSchema = z.object({
   id: z.string(),
   locale: blogLocaleSchema,
   slug: z.string(),
+  url: z.string(),
+  translations: z.array(publicPostTranslationLinkDtoSchema).default([]),
   title: z.string(),
   description: z.string().nullable(),
   contentMd: z.string(),
@@ -151,6 +162,7 @@ function parseApiSuccess<T>(
 
 async function fetchCms(endpoint: string) {
   const response = await fetch(endpoint, {
+    signal: AbortSignal.timeout(5000),
     next: {
       revalidate: 60,
     },
@@ -211,6 +223,35 @@ function sortPublishedPosts<T extends PublicPostListItemDto | PublicPostDetailDt
   });
 }
 
+function normalizeTranslations(
+  post: PublicPostDetailDto,
+): PublicPostTranslationLinkDto[] {
+  const translations = post.translations.filter(
+    (translation, index, items) =>
+      items.findIndex((entry) => entry.locale === translation.locale) === index,
+  );
+
+  const hasCurrentLocale = translations.some((translation) => translation.locale === post.locale);
+
+  if (hasCurrentLocale) {
+    return translations;
+  }
+
+  return [
+    ...translations,
+    {
+      locale: post.locale,
+      slug: post.slug,
+      url: post.url,
+      title: post.title,
+    },
+  ];
+}
+
+type GetAllPublishedPostsInput = Omit<GetPublishedPostsInput, 'page' | 'pageSize'> & {
+  pageSize?: number;
+};
+
 export async function getPublishedPosts(
   input?: GetPublishedPostsInput,
 ): Promise<ListPublishedPostsResponseDto> {
@@ -240,6 +281,38 @@ export async function getPublishedPosts(
   }
 }
 
+export async function getAllPublishedPosts(
+  input?: GetAllPublishedPostsInput,
+): Promise<PublicPostListItemDto[]> {
+  const pageSize = input?.pageSize ?? 100;
+  const firstPage = await getPublishedPosts({
+    ...input,
+    page: 1,
+    pageSize,
+  });
+
+  const totalPages = Math.max(1, Math.ceil(firstPage.total / pageSize));
+
+  if (totalPages === 1) {
+    return firstPage.items;
+  }
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, index) =>
+      getPublishedPosts({
+        ...input,
+        page: index + 2,
+        pageSize,
+      }),
+    ),
+  );
+
+  return sortPublishedPosts([
+    ...firstPage.items,
+    ...remainingPages.flatMap((page) => page.items),
+  ]);
+}
+
 export async function getPublishedPostBySlug(
   input: GetPublishedPostBySlugInput,
 ): Promise<PublicPostDetailDto | null> {
@@ -249,7 +322,12 @@ export async function getPublishedPostBySlug(
 
   try {
     const payload = await fetchCms(endpoint);
-    return parseApiSuccess(payload, publicPostDetailDtoSchema, endpoint).data;
+    const post = parseApiSuccess(payload, publicPostDetailDtoSchema, endpoint).data;
+
+    return {
+      ...post,
+      translations: normalizeTranslations(post),
+    };
   } catch (error) {
     if (error instanceof CmsBlogApiError && (error.code as CmsApiErrorCode) === 'BLOG_NOT_FOUND') {
       return null;

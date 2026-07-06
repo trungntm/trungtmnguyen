@@ -24,6 +24,7 @@ export function SearchProvider({ children, locale, dictionary }: SearchProviderP
 
   return (
     <KBarProvider
+      key={locale}
       actions={[
         {
           id: 'home',

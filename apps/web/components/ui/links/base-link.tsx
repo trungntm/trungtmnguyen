@@ -18,12 +18,8 @@ function isExternalHref(href: string) {
   );
 }
 
-function isTopLevelBlogRoute(href: string) {
-  return href === '/blog' || href.startsWith('/blog/');
-}
-
 function localizeHref(href: string, locale: ReturnType<typeof useLocale>) {
-  if (!href || isExternalHref(href) || isTopLevelBlogRoute(href)) {
+  if (!href || isExternalHref(href)) {
     return href;
   }
 

@@ -2,10 +2,13 @@
 
 import type { SearchRenderDocument } from '@repo/search';
 
-export const SEARCH_INDEX_URL = '/search-index.json';
-export const SEARCH_DOCS_URL = '/search-docs.json';
+export const SEARCH_INDEX_URL = '/api/search/index';
+export const SEARCH_DOCS_URL = '/api/search/docs';
 export const SEARCH_FETCH_OPTIONS = {
   cache: 'force-cache',
+} as const;
+export const SEARCH_REFRESH_FETCH_OPTIONS = {
+  cache: 'no-store',
 } as const;
 
 type SearchDocsMap = Record<string, SearchRenderDocument>;
@@ -23,8 +26,14 @@ type RequestIdleCallbackFn = (
 
 let preloadStarted = false;
 
-export function fetchSearchIndexJson() {
-  return fetch(SEARCH_INDEX_URL, SEARCH_FETCH_OPTIONS).then(async (response) => {
+type SearchFetchMode = 'cache' | 'refresh';
+
+function getFetchOptions(mode: SearchFetchMode) {
+  return mode === 'refresh' ? SEARCH_REFRESH_FETCH_OPTIONS : SEARCH_FETCH_OPTIONS;
+}
+
+export function fetchSearchIndexJson(mode: SearchFetchMode = 'cache') {
+  return fetch(SEARCH_INDEX_URL, getFetchOptions(mode)).then(async (response) => {
     if (!response.ok) {
       throw new Error(`Search index request failed with ${response.status}`);
     }
@@ -33,8 +42,8 @@ export function fetchSearchIndexJson() {
   });
 }
 
-export function fetchSearchDocsJson() {
-  return fetch(SEARCH_DOCS_URL, SEARCH_FETCH_OPTIONS).then(async (response) => {
+export function fetchSearchDocsJson(mode: SearchFetchMode = 'cache') {
+  return fetch(SEARCH_DOCS_URL, getFetchOptions(mode)).then(async (response) => {
     if (!response.ok) {
       throw new Error(`Search docs request failed with ${response.status}`);
     }

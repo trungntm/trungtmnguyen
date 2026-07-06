@@ -1,10 +1,10 @@
-import { allBlogs } from 'content-collections';
 import { notFound } from 'next/navigation';
 
+import { getPublishedPosts } from '@/features/cms-blog/api/cms-blog-api';
 import { getDictionary, isValidLocale } from '@/lib/i18n';
 import { buildAbsoluteUrl } from '@/lib/seo';
 
-const contentPreviewLimit = 1200;
+export const revalidate = 60;
 
 function escapeXml(value: string) {
   return value
@@ -13,18 +13,6 @@ function escapeXml(value: string) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&apos;');
-}
-
-function escapeCdata(value: string) {
-  return value.replaceAll(']]>', ']]]]><![CDATA[>');
-}
-
-function truncateContent(value: string, limit: number) {
-  if (value.length <= limit) {
-    return value;
-  }
-
-  return `${value.slice(0, limit).trimEnd()}...`;
 }
 
 type LocalizedRssRouteProps = {
@@ -41,23 +29,35 @@ export async function GET(_: Request, { params }: LocalizedRssRouteProps) {
   }
 
   const dictionary = getDictionary(locale);
-  const blogs = [...allBlogs]
-    .filter((blog) => !blog.draft && blog.locale === locale)
-    .sort((left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt));
+  let response: Awaited<ReturnType<typeof getPublishedPosts>>;
 
-  const items = blogs
-    .map((blog) => {
-      const url = buildAbsoluteUrl(blog.url);
-      const preview = truncateContent(blog.content.trim(), contentPreviewLimit);
-      const description = preview ? `${blog.description}\n\n${preview}` : blog.description;
+  try {
+    response = await getPublishedPosts({
+      locale,
+      page: 1,
+      pageSize: 100,
+    });
+  } catch {
+    response = {
+      items: [],
+      page: 1,
+      pageSize: 100,
+      total: 0,
+    };
+  }
+
+  const items = response.items
+    .map((post) => {
+      const url = buildAbsoluteUrl(post.url);
 
       return [
         '<item>',
-        `<title>${escapeXml(blog.title)}</title>`,
+        `<title>${escapeXml(post.title)}</title>`,
         `<link>${escapeXml(url)}</link>`,
         `<guid>${escapeXml(url)}</guid>`,
-        `<pubDate>${escapeXml(new Date(blog.publishedAt).toUTCString())}</pubDate>`,
-        `<description><![CDATA[${escapeCdata(description)}]]></description>`,
+        `<pubDate>${escapeXml(new Date(post.publishedAt).toUTCString())}</pubDate>`,
+        `<description>${escapeXml(post.description ?? '')}</description>`,
+        ...post.tags.map((tag) => `<category>${escapeXml(tag.name)}</category>`),
         '</item>',
       ].join('');
     })
@@ -78,7 +78,8 @@ export async function GET(_: Request, { params }: LocalizedRssRouteProps) {
 
   return new Response(xml, {
     headers: {
-      'Content-Type': 'application/rss+xml',
+      'Content-Type': 'application/rss+xml; charset=utf-8',
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=86400',
     },
   });
 }

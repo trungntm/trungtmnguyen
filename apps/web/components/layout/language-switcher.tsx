@@ -4,12 +4,15 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import type { PublicPostTranslationLinkDto } from '@/features/cms-blog/types';
 import { type Locale, getLocalizedPath, locales } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
+type LanguageSwitcherTranslation = Pick<PublicPostTranslationLinkDto, 'locale' | 'url' | 'title'>;
+
 type LanguageSwitcherProps = {
   locale: Locale;
-  postTranslations?: Partial<Record<Locale, string>>;
+  postTranslations?: LanguageSwitcherTranslation[];
 };
 
 function isLocalizedBlogDetail(pathname: string) {
@@ -24,11 +27,13 @@ export function LanguageSwitcher({ locale, postTranslations }: LanguageSwitcherP
   return (
     <div className="inline-flex rounded-full border border-border bg-background/60 p-1">
       {locales.map((targetLocale) => {
-        const translationSlug = postTranslations?.[targetLocale];
+        const targetTranslation = postTranslations?.find(
+          (translation) => translation.locale === targetLocale,
+        );
         const href =
           postTranslations && isBlogDetail
-            ? translationSlug
-              ? (`/${targetLocale}/blog/${translationSlug}` as Route)
+            ? targetTranslation?.url
+              ? (targetTranslation.url as Route)
               : null
             : (getLocalizedPath(targetLocale, pathname) as Route);
         const isActive = targetLocale === locale;
@@ -44,6 +49,7 @@ export function LanguageSwitcher({ locale, postTranslations }: LanguageSwitcherP
                 : 'text-muted hover:text-foreground focus-visible:text-foreground focus-visible:outline-none',
             )}
             href={href}
+            title={targetTranslation?.title}
           >
             {targetLocale}
           </Link>

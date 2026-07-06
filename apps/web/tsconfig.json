@@ -5,8 +5,7 @@
     "paths": {
       "@/*": ["./*"],
       "@repo/search": ["../../packages/search/src/index.ts"],
-      "@repo/ui": ["../../packages/ui/src/index.ts"],
-      "content-collections": ["./.content-collections/generated"]
+      "@repo/ui": ["../../packages/ui/src/index.ts"]
     },
     "plugins": [
       {
@@ -14,12 +13,6 @@
       }
     ]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".content-collections/generated/**/*.ts"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

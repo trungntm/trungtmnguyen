@@ -1,40 +1,76 @@
 import type { MetadataRoute } from 'next';
 
-import { getAllTags, getTagData, getTranslationsByKey } from '@/lib/blogs';
+import { getAllPublishedPosts } from '@/features/cms-blog/api/cms-blog-api';
+import { getAllTags, getTagData } from '@/lib/blog-data';
 import { locales } from '@/lib/i18n';
 import { buildAbsoluteUrl } from '@/lib/seo';
-import { allBlogs } from 'content-collections';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
-  const staticEntries = locales.flatMap((locale) =>
+type SitemapEntry = MetadataRoute.Sitemap[number];
+
+export const revalidate = 60;
+
+function getStaticEntries(lastModified: Date): SitemapEntry[] {
+  const localizedEntries = locales.flatMap((locale) =>
     ['/', '/about', '/blog', '/tags'].map((path) => ({
       url: buildAbsoluteUrl(path === '/' ? `/${locale}` : `/${locale}${path}`),
       lastModified,
     })),
   );
 
-  const blogEntries = allBlogs
-    .filter((blog) => !blog.draft)
-    .map((blog) => ({
-      url: buildAbsoluteUrl(blog.url),
-      lastModified: blog.updatedAt || blog.publishedAt,
-      alternates: {
-        languages: Object.fromEntries(
-          getTranslationsByKey(blog.translationKey).map((translation) => [
-            translation.locale,
-            buildAbsoluteUrl(translation.url),
-          ]),
-        ),
-      },
-    }));
+  return [
+    {
+      url: buildAbsoluteUrl('/'),
+      lastModified,
+    },
+    {
+      url: buildAbsoluteUrl('/blog'),
+      lastModified,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    ...localizedEntries,
+  ];
+}
 
-  const tagEntries = locales.flatMap((locale) =>
-    getAllTags(locale).map((tag) => ({
-      url: buildAbsoluteUrl(`/${locale}/tags/${tag.slug}`),
-      lastModified: getTagData(locale, tag.slug)?.lastModified || lastModified,
+async function getCmsEntries(): Promise<SitemapEntry[]> {
+  const posts = await getAllPublishedPosts();
+  const tagEntries = (
+    await Promise.all(
+      locales.map(async (locale) => {
+        const tags = await getAllTags(locale);
+
+        return Promise.all(
+          tags.map(async (tag) => ({
+            url: buildAbsoluteUrl(`/${locale}/tags/${tag.slug}`),
+            lastModified: (await getTagData(locale, tag.slug))?.lastModified,
+          })),
+        );
+      }),
+    )
+  ).flat();
+
+  return [
+    ...posts.map((post) => ({
+      url: buildAbsoluteUrl(post.url),
+      lastModified: post.updatedAt || post.publishedAt,
+      changeFrequency: 'weekly',
+      priority: 0.7,
     })),
-  );
+    ...tagEntries.map((entry) => ({
+      url: entry.url,
+      lastModified: entry.lastModified,
+    })),
+  ];
+}
 
-  return [...staticEntries, ...blogEntries, ...tagEntries];
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const lastModified = new Date();
+  const staticEntries = getStaticEntries(lastModified);
+
+  try {
+    const cmsEntries = await getCmsEntries();
+    return [...staticEntries, ...cmsEntries];
+  } catch {
+    return staticEntries;
+  }
 }

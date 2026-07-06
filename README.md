@@ -1,6 +1,6 @@
 # Trung Nguyen Blog Monorepo
 
-Phase 3 adds an MDX-powered About page on top of the existing typed blog pipeline. The project now uses Content Collections for both local blog posts and structured site pages, including `/about`, while preserving the existing App Router and MDX rendering flow.
+The public blog is CMS-backed. `/blog`, `/blog/[locale]/[slug]`, sitemap, RSS, homepage blog sections, and search all read from the public CMS API. The `/about` page remains local MDX loaded at runtime.
 
 ## Stack
 
@@ -22,9 +22,8 @@ Phase 3 adds an MDX-powered About page on top of the existing typed blog pipelin
 - `framer-motion` `12.42.0`
 - `kbar` `0.1.0-beta.48`
 - `minisearch` `7.2.0`
-- `@content-collections/core` `0.15.2`
-- `@content-collections/mdx` `0.2.2`
-- `@content-collections/next` `0.2.11`
+- `@mdx-js/mdx` `3.1.1`
+- `gray-matter` `4.0.3`
 - `zod` `4.4.1`
 - `reading-time` `1.5.0`
 - `remark-gfm` `4.0.1`
@@ -41,9 +40,9 @@ Phase 3 adds an MDX-powered About page on top of the existing typed blog pipelin
 - `next-themes` drives light/dark mode using a class on `<html>` so design tokens and browser color-scheme stay aligned.
 - The typography baseline uses local font stacks instead of remote font fetching so production builds remain deterministic in restricted or offline environments.
 - SEO defaults live in `apps/web/lib/seo.ts` and feed root metadata, canonical URLs, Open Graph, Twitter cards, `sitemap.ts`, and `robots.ts`.
-- Blog content lives under `apps/web/data/blogs` and page content lives under `apps/web/data/pages`, both compiled through `apps/web/content-collections.ts`.
-- Draft filtering is centralized in `apps/web/lib/blogs.ts` so future `draftMode()` preview support can extend one path instead of every route.
-- The About page is backed by the `pages` collection and loaded through `apps/web/lib/pages.ts`.
+- Public blog content is loaded from `CMS_BASE_URL` through the CMS public API.
+- CMS tag pages, sitemap entries, RSS, and search payloads are derived from the CMS post list at runtime.
+- The About page is loaded from `apps/web/data/pages/about.mdx` through `apps/web/lib/pages.ts`.
 
 ## Commands
 
@@ -60,37 +59,20 @@ pnpm format
 
 Search uses `kbar` for the command palette UI and `MiniSearch` for ranking and query matching. The shared search core lives in `packages/search`, while the web app keeps all kbar and UI-specific code under `apps/web/components/search`.
 
-The search build step generates these files from Content Collections blog data:
+Kbar blog search reads published CMS posts through server routes:
 
-- `apps/web/public/search-index.json`
-- `apps/web/public/search-docs.json`
+- `/api/search/index`
+- `/api/search/docs`
 
-Draft posts are excluded from both files. The generated assets have separate responsibilities:
+Those routes fetch the public CMS blog API on the server, build a MiniSearch index, and return cached JSON payloads for the client palette. Static navigation actions remain local to the app.
 
-- `search-index.json`: serialized MiniSearch index for fast client loading
-- `search-docs.json`: render metadata keyed by document id
-
-Useful commands:
-
-```bash
-pnpm --filter @apps/web generate:search
-pnpm build
-pnpm dev
-```
-
-Current cache strategy uses stable filenames, so the app serves:
+Current cache strategy for the CMS-backed search routes is:
 
 ```text
-Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+Cache-Control: public, s-maxage=60, stale-while-revalidate=86400
 ```
 
-When hashed filenames are introduced later, this can move to:
-
-```text
-Cache-Control: public, max-age=31536000, immutable
-```
-
-Search JSON files are also preloaded with `requestIdleCallback` and fall back to `setTimeout` when needed. That preload runs only once, improves the first search-open latency, and does not block the initial page render.
+Search payloads are also preloaded with `requestIdleCallback` and fall back to `setTimeout` when needed. That preload runs only once, improves the first search-open latency, and does not block the initial page render.
 
 Desktop keeps the centered command palette. Mobile uses a bottom-sheet style search popup so the input stays visible while results scroll inside the sheet.
 
@@ -105,73 +87,22 @@ Current staged-file checks:
 
 ## Environment
 
-Set `CMS_BASE_URL` for the public CMS blog API consumed by `apps/web`.
+Set `CMS_BASE_URL` for the public CMS blog API consumed by `apps/web`. This value is server-only.
 
-Set `NEXT_PUBLIC_SITE_URL` for canonical URLs, sitemap, and robots output in non-local environments.
+Set `SITE_URL` for canonical URLs, sitemap, robots output, RSS, and CMS blog structured data in non-local environments.
+
+Required CMS blog env vars:
+
+```text
+CMS_BASE_URL=
+SITE_URL=
+```
 
 Set `GITHUB_TOKEN` to enable the GitHub contribution calendar on `/about`. The token is used only on the server for GitHub GraphQL requests and is never exposed to the client.
 
-## Writing Blog Posts
-
-Create MDX files under `apps/web/data/blogs` using nested folders for route structure:
-
-```text
-apps/web/data/blogs/
-  spring-modulith/module-boundaries.mdx
-  nextjs/typed-mdx-blog.mdx
-  devops/kubernetes-jvm-memory.mdx
-```
-
-Route mapping is folder-based:
-
-- `apps/web/data/blogs/spring-modulith/module-boundaries.mdx` -> `/blog/spring-modulith/module-boundaries`
-- `apps/web/data/blogs/nextjs/typed-mdx-blog.mdx` -> `/blog/nextjs/typed-mdx-blog`
-
-### Frontmatter Schema
-
-Required fields:
-
-- `title`: non-empty string
-- `description`: non-empty string
-- `publishedAt`: ISO date string in `YYYY-MM-DD`
-- `author`: non-empty string
-- `tags`: string array
-- `draft`: boolean
-
-Optional fields:
-
-- `updatedAt`: ISO date string in `YYYY-MM-DD`
-- `thumbnail`: string path such as `/images/blogs/example-thumb.png`
-- `cover`: string path such as `/images/blogs/example-cover.png`
-
-Example:
-
-```mdx
----
-title: 'Designing Module Boundaries in Spring Modulith'
-description: 'Practical rules for keeping Spring Modulith modules clean and maintainable.'
-publishedAt: '2026-04-30'
-updatedAt: '2026-04-30'
-author: 'Trung Nguyen'
-tags:
-  - Spring Boot
-  - Architecture
-thumbnail: '/images/blogs/spring-modulith-thumb.png'
-cover: '/images/blogs/spring-modulith-cover.png'
-draft: false
----
-```
-
-### Publishing Rules
-
-- Public `/blog` listing excludes `draft: true` posts.
-- Draft posts are omitted from `sitemap.xml`.
-- Direct draft URLs return `notFound()` unless future preview support enables draft access.
-- Missing local thumbnail and cover files do not break the UI; those images are simply not rendered.
-
 ## Tags
 
-Tags are read from blog frontmatter and normalized into stable URL slugs before they are exposed publicly.
+Tags are derived from CMS post tags and normalized into stable URL slugs before they are exposed publicly.
 
 Public tag routes:
 
@@ -182,22 +113,21 @@ Notes:
 
 - Tag slugs are derived from the original label and normalized to lowercase URL-safe values.
 - The UI preserves the original display label while route matching uses the normalized slug.
-- Draft posts do not affect public tag indexes, tag detail pages, or sitemap tag entries.
 
 ## Table of Contents
 
-Blog detail pages generate a table of contents from MDX `h2` and `h3` headings.
+Blog detail pages generate a table of contents from CMS markdown `h2` and `h3` headings.
 
 Notes:
 
-- TOC items are extracted during the Content Collections blog transform.
+- TOC items are extracted at runtime from CMS markdown content.
 - Headings inside fenced code blocks are ignored.
 - Heading ids are linked through `rehype-slug` and `rehype-autolink-headings`.
 - The TOC appears on blog detail pages and links to the rendered heading anchors.
 
 ## Editing the About Page
 
-The `/about` route is powered by the `pages` Content Collections collection. Edit this file:
+The `/about` route is powered by a local MDX file. Edit this file:
 
 ```text
 apps/web/data/pages/about.mdx
