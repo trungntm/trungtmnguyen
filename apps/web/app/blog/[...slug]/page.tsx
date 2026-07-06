@@ -1,23 +1,60 @@
-import type { Route } from 'next';
+import type { Metadata, Route } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
 
-import { defaultLocale } from '@/lib/i18n';
-import { getPostByLegacySlug } from '@/lib/blogs';
+import { getPublishedPostBySlug } from '@/features/cms-blog/api/cms-blog-api';
+import { getLegacyBlogRedirect } from '@/lib/blogs';
+import { isValidLocale, type Locale } from '@/lib/i18n';
 
-type LegacyBlogDetailPageProps = {
+type LegacyBlogDetailRedirectPageProps = {
   params: Promise<{
     slug: string[];
   }>;
 };
 
-export default async function LegacyBlogDetailPage({ params }: LegacyBlogDetailPageProps) {
-  const { slug } = await params;
-  const legacySlug = slug.join('/');
-  const blog = getPostByLegacySlug(legacySlug, defaultLocale);
+function getCmsBlogParams(slugSegments: string[]) {
+  if (slugSegments.length !== 2) {
+    return null;
+  }
 
-  if (!blog) {
+  const [locale, slug] = slugSegments;
+
+  if (!locale || !slug || !isValidLocale(locale)) {
+    return null;
+  }
+
+  return {
+    locale,
+    slug,
+  } satisfies {
+    locale: Locale;
+    slug: string;
+  };
+}
+
+export async function generateMetadata(_: LegacyBlogDetailRedirectPageProps): Promise<Metadata> {
+  return {};
+}
+
+export default async function LegacyBlogDetailRedirectPage({ params }: LegacyBlogDetailRedirectPageProps) {
+  const { slug } = await params;
+  const cmsParams = getCmsBlogParams(slug);
+
+  if (cmsParams) {
+    const post = await getPublishedPostBySlug(cmsParams);
+
+    if (!post) {
+      notFound();
+    }
+
+    permanentRedirect(post.url as Route);
+  }
+
+  const legacySlug = slug.join('/');
+  const redirectPath = getLegacyBlogRedirect(legacySlug);
+
+  if (!redirectPath) {
     notFound();
   }
 
-  permanentRedirect(blog.url as Route);
+  permanentRedirect(redirectPath as Route);
 }

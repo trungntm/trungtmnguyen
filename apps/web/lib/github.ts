@@ -121,6 +121,7 @@ export async function getGithubContributionData(user: string): Promise<Contribut
 
   const response = await fetch(GITHUB_GRAPHQL_ENDPOINT, {
     method: 'POST',
+    signal: AbortSignal.timeout(5000),
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',

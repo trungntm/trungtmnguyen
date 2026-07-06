@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import { LanguageSwitcher } from '@/components/layout/language-switcher';
+import { useBlogTranslations } from '@/components/layout/blog-translations-context';
 import { SearchButton } from '@/components/search/search-button';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { HoverUnderlineLink } from '@/components/ui/hover-underline-link';
@@ -24,6 +25,7 @@ type SiteHeaderProps = {
 export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
   const [isPinned, setIsPinned] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const { translations } = useBlogTranslations();
   const links: Array<{ href: Route; label: string }> = [
     { href: '/' as Route, label: dictionary.navigation.home },
     { href: '/about' as Route, label: dictionary.navigation.about },
@@ -111,7 +113,10 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
             {dictionary.navigation.exploreNotes}
           </BaseLink>
           <SearchButton label={dictionary.common.search} openLabel={dictionary.common.openSearch} />
-          <LanguageSwitcher locale={locale} />
+          <LanguageSwitcher
+            locale={locale}
+            {...(translations ? { postTranslations: translations } : {})}
+          />
           <ThemeToggle label={dictionary.common.toggleTheme} />
         </div>
       </div>

@@ -1,8 +1,9 @@
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
 
-import { getAllTags, getTagUrl } from '@/lib/blogs';
+import { getAllTags } from '@/lib/blog-data';
 import { getDictionary, type Locale } from '@/lib/i18n';
+import { getTagUrl } from '@/lib/blogs';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 type LocalizedTagsPageProps = {
@@ -46,7 +47,13 @@ export async function generateMetadata({ params }: LocalizedTagsPageProps): Prom
 export default async function LocalizedTagsPage({ params }: LocalizedTagsPageProps) {
   const { locale } = await params;
   const dictionary = getDictionary(locale);
-  const tags = getAllTags(locale);
+  let tags: Awaited<ReturnType<typeof getAllTags>> = [];
+
+  try {
+    tags = await getAllTags(locale);
+  } catch {
+    tags = [];
+  }
 
   return (
     <section className="page-container px-4 py-14 md:px-6 md:py-18">

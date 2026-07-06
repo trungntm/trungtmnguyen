@@ -10,7 +10,12 @@ import { getLocalizedPath, isValidLocale } from '@/lib/i18n';
 type BaseLinkProps = ComponentProps<typeof Link>;
 
 function isExternalHref(href: string) {
-  return /^(?:[a-z]+:)?\/\//i.test(href) || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:');
+  return (
+    /^(?:[a-z]+:)?\/\//i.test(href) ||
+    href.startsWith('#') ||
+    href.startsWith('mailto:') ||
+    href.startsWith('tel:')
+  );
 }
 
 function localizeHref(href: string, locale: ReturnType<typeof useLocale>) {

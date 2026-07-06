@@ -46,7 +46,7 @@
     "viewAll": "Xem tất cả →",
     "latestEmptyLabel": "Chưa có bài public",
     "latestEmptyTitle": "Pipeline viết bài đã sẵn sàng. Các bài public sẽ xuất hiện tại đây khi được xuất bản.",
-    "latestEmptyDescription": "Bài draft sẽ tự động bị loại trừ. Chỉ cần thêm một bài MDX đã publish dưới `apps/web/data/blogs`, Content Collections sẽ tự nhận diện.",
+    "latestEmptyDescription": "Các bài viết đã xuất bản sẽ tự động xuất hiện tại đây khi CMS public blog API trả về dữ liệu.",
     "topicsEyebrow": "Chủ đề trọng tâm",
     "topicsTitle": "Hệ thống, nền tảng và các mảng delivery định hình hướng viết.",
     "philosophyEyebrow": "Triết lý kỹ thuật",
@@ -55,10 +55,10 @@
   },
   "blogPage": {
     "heading": "Các bài viết kỹ thuật về kiến trúc, delivery và thực hành engineering.",
-    "description": "Bài viết được biên dịch từ MDX cục bộ với metadata có kiểu, route rõ ràng và logic draft tập trung để sẵn sàng cho preview trong tương lai.",
+    "description": "Bài viết được tải từ CMS public blog API và hiển thị bằng layout cùng markdown pipeline hiện có.",
     "emptyLabel": "Chưa có bài viết",
     "emptyTitle": "Pipeline nội dung đã sẵn sàng. Danh sách bài public hiện đang trống.",
-    "emptyDescription": "Thêm một file MDX dưới `apps/web/data/blogs` với frontmatter hợp lệ và bài viết sẽ tự xuất hiện tại đây, trừ khi được đánh dấu draft."
+    "emptyDescription": "Các bài viết CMS đã xuất bản sẽ tự động xuất hiện tại đây khi public blog API trả về dữ liệu."
   },
   "tagsPage": {
     "heading": "Duyệt ghi chép kỹ thuật theo chủ đề.",

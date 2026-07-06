@@ -3,146 +3,188 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 import { LanguageSwitcher } from '@/components/layout/language-switcher';
+import { BlogDetailTranslationSync } from '@/components/layout/blog-detail-translation-sync';
 import { TableOfContents } from '@/components/blog/table-of-contents';
-import { TagLink } from '@/components/blog/tag-link';
+import { TagPill } from '@/components/blog/tag-pill';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
-import {
-  type Blog,
-  formatBlogDate,
-  getAllBlogParams,
-  getPostBySlug,
-  getPostTranslation,
-  getTranslationsByKey,
-} from '@/lib/blogs';
-import { getDictionary, type Locale, locales } from '@/lib/i18n';
-import { resolvePublicAsset } from '@/lib/public-assets';
-import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
+import { getPublishedPostBySlug } from '@/features/cms-blog/api/cms-blog-api';
+import { formatBlogDate } from '@/lib/blogs';
+import { getDictionary, isValidLocale, type Locale } from '@/lib/i18n';
+import { calculateReadingTime } from '@/lib/reading-time';
+import { buildAbsoluteUrl, getOpenGraphLocale, resolveAbsoluteUrl, siteConfig } from '@/lib/seo';
+import { extractTocFromMarkdown } from '@/lib/toc';
 import { cn } from '@/lib/utils';
+import type { PublicPostDetailDto } from '@/features/cms-blog/types';
 
-type BlogDetailPageProps = {
+type LocalizedBlogDetailPageProps = {
   params: Promise<{
     locale: Locale;
     slug: string;
   }>;
 };
 
-function resolveBlogImages(blog: Blog) {
-  const image = blog.cover ?? blog.thumbnail ?? siteConfig.ogImage;
-  return [new URL(image, siteConfig.url).toString()];
-}
-
-export async function generateStaticParams() {
-  return getAllBlogParams().map(({ locale, slug }) => ({
-    locale,
-    slug,
-  }));
-}
-
-export async function generateMetadata({ params }: BlogDetailPageProps): Promise<Metadata> {
-  const { locale, slug } = await params;
-  const blog = getPostBySlug(locale, slug);
-
-  if (!blog) {
-    return {};
+function resolveCmsCoverImage(coverImageUrl: string | null) {
+  if (!coverImageUrl) {
+    return undefined;
   }
 
-  const images = resolveBlogImages(blog);
-  const translations = getTranslationsByKey(blog.translationKey);
-  const canonicalBlog = getPostTranslation(blog, blog.canonicalLocale) ?? blog;
+  return [resolveAbsoluteUrl(coverImageUrl)];
+}
+
+function getCmsPostSeo(post: PublicPostDetailDto) {
+  const title = post.seoTitle ?? post.title;
+  const description = post.seoDescription ?? post.description ?? '';
+  const canonical = buildAbsoluteUrl(post.url);
+  const images = resolveCmsCoverImage(post.coverImageUrl);
   const languages = Object.fromEntries(
-    translations.map((translation) => [translation.locale, buildAbsoluteUrl(translation.url)]),
-  );
-  const canonicalUrl = buildAbsoluteUrl(canonicalBlog.url);
-  const publishedTime = new Date(blog.publishedAt).toISOString();
-  const updatedTime = blog.updatedAt ? new Date(blog.updatedAt).toISOString() : undefined;
+    post.translations.map((translation) => [translation.locale, buildAbsoluteUrl(translation.url)]),
+  ) as Partial<Record<Locale, string>>;
 
   return {
-    title: blog.title,
-    description: blog.description,
-    alternates: {
-      canonical: canonicalUrl,
-      languages,
-    },
-    openGraph: {
-      type: 'article',
-      locale: getOpenGraphLocale(locale),
-      url: buildAbsoluteUrl(blog.url),
-      title: blog.title,
-      description: blog.description,
-      images,
-      publishedTime,
-      ...(updatedTime ? { modifiedTime: updatedTime } : {}),
-    },
-    twitter: {
-      card: siteConfig.twitter.card,
-      title: blog.title,
-      description: blog.description,
-      images,
-    },
+    title,
+    description,
+    canonical,
+    images,
+    languages,
   };
 }
 
-export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
+export async function generateMetadata({ params }: LocalizedBlogDetailPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
-  const blog = getPostBySlug(locale, slug);
 
-  if (!blog) {
+  if (!isValidLocale(locale)) {
+    return {};
+  }
+
+  try {
+    const post = await getPublishedPostBySlug({ locale, slug });
+
+    if (!post) {
+      return {};
+    }
+
+    const { title, description, canonical, images, languages } = getCmsPostSeo(post);
+
+    return {
+      title,
+      description,
+      alternates: {
+        canonical,
+        languages,
+      },
+      openGraph: {
+        type: 'article',
+        locale: getOpenGraphLocale(post.locale),
+        url: canonical,
+        title,
+        description,
+        publishedTime: post.publishedAt,
+        modifiedTime: post.updatedAt,
+        ...(images ? { images } : {}),
+      },
+      twitter: {
+        card: post.coverImageUrl ? 'summary_large_image' : 'summary',
+        title,
+        description,
+        ...(images ? { images } : {}),
+      },
+    };
+  } catch {
+    return {};
+  }
+}
+
+export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogDetailPageProps) {
+  const { locale, slug } = await params;
+
+  if (!isValidLocale(locale)) {
+    notFound();
+  }
+
+  const post = await getPublishedPostBySlug({ locale, slug });
+
+  if (!post) {
     notFound();
   }
 
   const dictionary = getDictionary(locale);
-  const cover = resolvePublicAsset(blog.cover);
-  const hasToc = blog.toc.length >= 2;
-  const translationMap = Object.fromEntries(
-    locales.map((targetLocale) => [
-      targetLocale,
-      getPostTranslation(blog, targetLocale)?.slug,
-    ]),
-  ) as Partial<Record<Locale, string>>;
+  const readingTime = calculateReadingTime(post.contentMd);
+  const toc = extractTocFromMarkdown(post.contentMd);
+  const hasToc = toc.length >= 2;
+  const { title, description, canonical, images } = getCmsPostSeo(post);
+  const blogPostingStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description,
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt,
+    ...(images ? { image: images } : {}),
+    url: canonical,
+    mainEntityOfPage: canonical,
+    inLanguage: post.locale,
+    keywords: post.tags.map((tag) => tag.name).join(', '),
+    author: {
+      '@type': 'Person',
+      name: siteConfig.name,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: siteConfig.name,
+    },
+  };
 
   return (
     <article className="page-container px-4 py-14 md:px-6 md:py-18">
-      <div className="mx-auto max-w-[1180px] space-y-10">
+      <BlogDetailTranslationSync translations={post.translations} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(blogPostingStructuredData),
+        }}
+      />
+      <div className="mx-auto max-w-295 space-y-10">
         <header className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap gap-2">
-              {blog.tags.map((tag: string) => (
-                <TagLink key={tag} locale={locale} size="md" tag={tag} />
+              {post.tags.map((tag) => (
+                <TagPill key={tag.id} tag={tag.name} />
               ))}
             </div>
-            <LanguageSwitcher
-              locale={locale}
-              postTranslations={translationMap}
-            />
+            <LanguageSwitcher locale={locale} postTranslations={post.translations} />
           </div>
 
           <div className="space-y-4">
             <h1 className="text-4xl font-semibold tracking-tight text-balance md:text-6xl">
-              {blog.title}
+              {post.title}
             </h1>
-            <p className="max-w-3xl text-lg leading-8 text-muted md:text-xl">{blog.description}</p>
+            {post.description ? (
+              <p className="max-w-3xl text-lg leading-8 text-muted md:text-xl">
+                {post.description}
+              </p>
+            ) : null}
           </div>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted">
-            <span>{formatBlogDate(blog.publishedAt, locale)}</span>
-            <span>{blog.author}</span>
-            <span>{blog.readingTime.text}</span>
-            {blog.updatedAt ? (
+            <span>{formatBlogDate(post.publishedAt, locale)}</span>
+            <span>{readingTime.text}</span>
+            {post.updatedAt !== post.publishedAt ? (
               <span>
-                {dictionary.common.updatedAt} {formatBlogDate(blog.updatedAt, locale)}
+                {dictionary.common.updatedAt} {formatBlogDate(post.updatedAt, locale)}
               </span>
             ) : null}
           </div>
 
-          {cover ? (
+          {post.coverImageUrl ? (
             <div className="glass-card relative aspect-[16/9] overflow-hidden rounded-[2rem]">
               <Image
-                alt={blog.title}
+                alt={post.title}
                 className="object-cover"
                 fill
                 priority
                 sizes="(min-width: 1024px) 64rem, 100vw"
-                src={cover}
+                src={post.coverImageUrl}
+                unoptimized
               />
             </div>
           ) : null}
@@ -156,18 +198,18 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         >
           <div className="space-y-6">
             <div className="lg:hidden">
-              <TableOfContents items={blog.toc} />
+              <TableOfContents items={toc} />
             </div>
 
             <div className="glass-card rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
-              <MDXRenderer className="blog-prose" code={blog.mdx} />
+              <MDXRenderer className="blog-prose" slug={`${post.locale}-${post.slug}`} source={post.contentMd} />
             </div>
           </div>
 
           {hasToc ? (
             <aside className="hidden lg:block">
               <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
-                <TableOfContents items={blog.toc} />
+                <TableOfContents items={toc} />
               </div>
             </aside>
           ) : null}

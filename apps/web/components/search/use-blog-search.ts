@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { loadSearchIndex, type SearchRenderDocument } from '@repo/search';
 
@@ -26,17 +26,25 @@ let cachedError: Error | null = null;
 let loadPromise: Promise<void> | null = null;
 
 // Keep the loaded index in module scope so palette mounts stay hydration-safe and cheap.
-async function loadSearchAssets() {
-  if (cachedIndex && cachedDocsById) {
+async function loadSearchAssets(forceRefresh = false) {
+  if (!forceRefresh && cachedIndex && cachedDocsById) {
     return;
   }
 
-  if (cachedError) {
+  if (!forceRefresh && cachedError) {
     throw cachedError;
   }
 
+  if (forceRefresh) {
+    cachedError = null;
+    loadPromise = null;
+  }
+
   if (!loadPromise) {
-    loadPromise = Promise.all([fetchSearchIndexJson(), fetchSearchDocsJson()])
+    loadPromise = Promise.all([
+      fetchSearchIndexJson(forceRefresh ? 'refresh' : 'cache'),
+      fetchSearchDocsJson(forceRefresh ? 'refresh' : 'cache'),
+    ])
       .then(([serializedIndex, docsById]) => {
         cachedIndex = loadSearchIndex(serializedIndex);
         cachedDocsById = docsById;
@@ -61,9 +69,18 @@ function getLatestBlogs(locale: Locale) {
     .slice(0, 3);
 }
 
+function hasLocaleDocuments(locale: Locale) {
+  if (!cachedDocsById) {
+    return false;
+  }
+
+  return Object.values(cachedDocsById).some((document) => document.locale === locale);
+}
+
 export function useBlogSearch(locale: Locale): BlogSearchState {
   const [ready, setReady] = useState(() => cachedIndex !== null && cachedDocsById !== null);
   const [error, setError] = useState<Error | null>(cachedError);
+  const refreshAttemptedLocalesRef = useRef<Set<Locale>>(new Set());
 
   useEffect(() => {
     if (ready || error) {
@@ -88,6 +105,37 @@ export function useBlogSearch(locale: Locale): BlogSearchState {
       isSubscribed = false;
     };
   }, [error, ready]);
+
+  useEffect(() => {
+    if (!ready || error || hasLocaleDocuments(locale)) {
+      return;
+    }
+
+    if (refreshAttemptedLocalesRef.current.has(locale)) {
+      return;
+    }
+
+    refreshAttemptedLocalesRef.current.add(locale);
+
+    let isSubscribed = true;
+
+    void loadSearchAssets(true)
+      .then(() => {
+        if (isSubscribed) {
+          setReady(true);
+          setError(null);
+        }
+      })
+      .catch((loadError: unknown) => {
+        if (isSubscribed) {
+          setError(loadError instanceof Error ? loadError : new Error('Search unavailable'));
+        }
+      });
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [error, locale, ready]);
 
   return {
     ready,

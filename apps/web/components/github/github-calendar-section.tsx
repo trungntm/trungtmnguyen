@@ -17,7 +17,7 @@ export async function GithubCalendarSection({ user }: GithubCalendarSectionProps
   }
 
   return (
-    <section className="glass-card rounded-[2rem] p-6 md:p-8">
+    <section className="glass-card rounded-4xl p-6 md:p-8">
       <div className="space-y-6">
         <div className="space-y-2">
           <p className="text-xs font-semibold tracking-[0.2em] text-muted uppercase">
