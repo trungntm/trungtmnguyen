@@ -7,13 +7,13 @@ import {
   getTagData,
   getTagLabelFromSlug,
 } from '@/lib/blog-data';
-import { getDictionary, getTagCountLabel, type Locale } from '@/lib/i18n';
+import { getDictionary, getTagCountLabel, isValidLocale } from '@/lib/i18n';
 import { normalizeTag } from '@/lib/blogs';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 type TagDetailPageProps = {
   params: Promise<{
-    locale: Locale;
+    locale: string;
     tag: string;
   }>;
 };
@@ -24,6 +24,11 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: TagDetailPageProps): Promise<Metadata> {
   const { locale, tag } = await params;
+
+  if (!isValidLocale(locale)) {
+    return {};
+  }
+
   const tagSlug = normalizeTag(tag);
   let tagLabel: Awaited<ReturnType<typeof getTagLabelFromSlug>>;
   let tagData: Awaited<ReturnType<typeof getTagData>>;
@@ -73,6 +78,11 @@ export async function generateMetadata({ params }: TagDetailPageProps): Promise<
 
 export default async function TagDetailPage({ params }: TagDetailPageProps) {
   const { locale, tag } = await params;
+
+  if (!isValidLocale(locale)) {
+    notFound();
+  }
+
   const dictionary = getDictionary(locale);
   const tagSlug = normalizeTag(tag);
   let tagLabel: Awaited<ReturnType<typeof getTagLabelFromSlug>>;

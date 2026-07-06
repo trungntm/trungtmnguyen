@@ -1,20 +1,26 @@
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 import { BlogCard } from '@/components/blog/blog-card';
 import { getAllTags, getPublishedBlogs } from '@/lib/blog-data';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { getDictionary, isValidLocale } from '@/lib/i18n';
 import { getTagUrl } from '@/lib/blogs';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 type LocalizedBlogPageProps = {
   params: Promise<{
-    locale: Locale;
+    locale: string;
   }>;
 };
 
 export async function generateMetadata({ params }: LocalizedBlogPageProps): Promise<Metadata> {
   const { locale } = await params;
+
+  if (!isValidLocale(locale)) {
+    return {};
+  }
+
   const dictionary = getDictionary(locale);
   const canonicalPath = `/${locale}/blog`;
 
@@ -47,6 +53,11 @@ export async function generateMetadata({ params }: LocalizedBlogPageProps): Prom
 
 export default async function LocalizedBlogPage({ params }: LocalizedBlogPageProps) {
   const { locale } = await params;
+
+  if (!isValidLocale(locale)) {
+    notFound();
+  }
+
   const dictionary = getDictionary(locale);
   let blogs: Awaited<ReturnType<typeof getPublishedBlogs>> = [];
   let tags: Awaited<ReturnType<typeof getAllTags>> = [];

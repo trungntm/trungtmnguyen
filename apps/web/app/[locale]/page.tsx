@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 import { CoreTopics } from '@/components/home/core-topics';
 import { EngineeringPhilosophy } from '@/components/home/engineering-philosophy';
@@ -6,17 +7,22 @@ import { HomeHero } from '@/components/home/home-hero';
 import { LatestNotes } from '@/components/home/latest-notes';
 import { getPublishedPosts } from '@/features/cms-blog/api/cms-blog-api';
 import { mapCmsPostToPostCardViewModel } from '@/features/cms-blog/view-models';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { getDictionary, isValidLocale } from '@/lib/i18n';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 type LocalizedHomePageProps = {
   params: Promise<{
-    locale: Locale;
+    locale: string;
   }>;
 };
 
 export async function generateMetadata({ params }: LocalizedHomePageProps): Promise<Metadata> {
   const { locale } = await params;
+
+  if (!isValidLocale(locale)) {
+    return {};
+  }
+
   const dictionary = getDictionary(locale);
   const canonicalPath = `/${locale}`;
 
@@ -49,6 +55,11 @@ export async function generateMetadata({ params }: LocalizedHomePageProps): Prom
 
 export default async function LocalizedHomePage({ params }: LocalizedHomePageProps) {
   const { locale } = await params;
+
+  if (!isValidLocale(locale)) {
+    notFound();
+  }
+
   const dictionary = getDictionary(locale);
   let latestBlogs: ReturnType<typeof mapCmsPostToPostCardViewModel>[] = [];
 
