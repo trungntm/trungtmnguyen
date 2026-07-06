@@ -12,7 +12,7 @@ import { SkillsSection } from '@/components/about/skills-section';
 import { TimelineSection } from '@/components/about/timeline-section';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
 import { HoverUnderlineText } from '@/components/ui/hover-underline-text';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { getDictionary, isValidLocale } from '@/lib/i18n';
 import { getAboutPage } from '@/lib/pages';
 import { buildAbsoluteUrl, getOpenGraphLocale } from '@/lib/seo';
 import { cn } from '@/lib/utils';
@@ -47,12 +47,17 @@ const aboutMdxComponents = {
 
 type LocalizedAboutPageProps = {
   params: Promise<{
-    locale: Locale;
+    locale: string;
   }>;
 };
 
 export async function generateMetadata({ params }: LocalizedAboutPageProps): Promise<Metadata> {
   const { locale } = await params;
+
+  if (!isValidLocale(locale)) {
+    return {};
+  }
+
   const dictionary = getDictionary(locale);
   const about = await getAboutPage();
 
@@ -83,6 +88,11 @@ export async function generateMetadata({ params }: LocalizedAboutPageProps): Pro
 
 export default async function LocalizedAboutPage({ params }: LocalizedAboutPageProps) {
   const { locale } = await params;
+
+  if (!isValidLocale(locale)) {
+    notFound();
+  }
+
   const dictionary = getDictionary(locale);
   const about = await getAboutPage();
 

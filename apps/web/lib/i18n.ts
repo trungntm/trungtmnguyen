@@ -11,6 +11,14 @@ export function isValidLocale(locale: string): locale is Locale {
   return locales.includes(locale as Locale);
 }
 
+export function resolveLocale(locale: string | null | undefined): Locale {
+  if (locale && isValidLocale(locale)) {
+    return locale;
+  }
+
+  return defaultLocale;
+}
+
 const dictionaries = {
   vi: viDictionary,
   en: enDictionary,
@@ -18,8 +26,8 @@ const dictionaries = {
 
 export type Dictionary = (typeof dictionaries)[Locale];
 
-export function getDictionary(locale: Locale) {
-  return dictionaries[locale];
+export function getDictionary(locale: string | null | undefined) {
+  return dictionaries[resolveLocale(locale)];
 }
 
 export function formatMessage(

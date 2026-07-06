@@ -1,19 +1,25 @@
 import type { Metadata, Route } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 import { getAllTags } from '@/lib/blog-data';
-import { getDictionary, type Locale } from '@/lib/i18n';
+import { getDictionary, isValidLocale } from '@/lib/i18n';
 import { getTagUrl } from '@/lib/blogs';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 type LocalizedTagsPageProps = {
   params: Promise<{
-    locale: Locale;
+    locale: string;
   }>;
 };
 
 export async function generateMetadata({ params }: LocalizedTagsPageProps): Promise<Metadata> {
   const { locale } = await params;
+
+  if (!isValidLocale(locale)) {
+    return {};
+  }
+
   const dictionary = getDictionary(locale);
   const canonicalPath = `/${locale}/tags`;
 
@@ -46,6 +52,11 @@ export async function generateMetadata({ params }: LocalizedTagsPageProps): Prom
 
 export default async function LocalizedTagsPage({ params }: LocalizedTagsPageProps) {
   const { locale } = await params;
+
+  if (!isValidLocale(locale)) {
+    notFound();
+  }
+
   const dictionary = getDictionary(locale);
   let tags: Awaited<ReturnType<typeof getAllTags>> = [];
 
