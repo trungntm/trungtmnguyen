@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { loadSearchIndex, type SearchRenderDocument } from '@repo/search';
+import { loadSearchIndex, type SearchRenderDocument } from '@trungtmnguyen/search';
 
 import { fetchSearchDocsJson, fetchSearchIndexJson } from '@/components/search/use-preload-search';
 import type { Locale } from '@/lib/i18n';

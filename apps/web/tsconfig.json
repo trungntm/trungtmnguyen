@@ -4,8 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@repo/search": ["../../packages/search/src/index.ts"],
-      "@repo/ui": ["../../packages/ui/src/index.ts"]
+      "@trungtmnguyen/search": ["../../packages/search/src/index.ts"],
+      "@trungtmnguyen/ui": ["../../packages/ui/src/index.ts"]
     },
     "plugins": [
       {

@@ -1,4 +1,4 @@
-import { createSearchIndex } from '@repo/search';
+import { createSearchIndex } from '@trungtmnguyen/search';
 
 import { createCmsSearchPayload } from '@/features/cms-blog/lib/create-cms-search-payload';
 

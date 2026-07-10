@@ -26,10 +26,10 @@ importers:
       '@mdx-js/mdx':
         specifier: ^3.1.1
         version: 3.1.1
-      '@repo/search':
+      '@trungtmnguyen/search':
         specifier: workspace:*
         version: link:../../packages/search
-      '@repo/ui':
+      '@trungtmnguyen/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       class-variance-authority:
