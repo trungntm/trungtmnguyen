@@ -1,11 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["CMS_BASE_URL"],
   "tasks": {
     "dev": {
       "cache": false,
       "persistent": true
     },
     "build": {
+      "env": ["CMS_BASE_URL"],
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
