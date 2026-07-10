@@ -5,7 +5,7 @@ export const siteConfig = {
   title: 'Trung Nguyen - Software Engineering Blog',
   description:
     'Practical notes about software architecture, Java, Spring Boot, Next.js, DevOps, and modern engineering.',
-  url: 'https://yourdomain.com', // TODO replace
+  url: 'https://trungtmnguyen.com',
   ogImage: '/og/default.png',
   twitter: {
     card: 'summary_large_image',
@@ -19,7 +19,6 @@ function normalizeBaseUrl(value: string) {
 
 export function getSiteUrl() {
   return (
-    process.env.SITE_URL?.trim() ||
     process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
     siteConfig.url
   );
