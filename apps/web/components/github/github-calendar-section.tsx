@@ -1,4 +1,4 @@
-import { GithubCalendar } from '@repo/ui';
+import { GithubCalendar } from '@trungtmnguyen/ui';
 
 import { getGithubContributionData } from '@/lib/github';
 

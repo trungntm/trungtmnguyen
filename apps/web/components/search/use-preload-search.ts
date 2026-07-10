@@ -1,6 +1,6 @@
 'use client';
 
-import type { SearchRenderDocument } from '@repo/search';
+import type { SearchRenderDocument } from '@trungtmnguyen/search';
 
 export const SEARCH_INDEX_URL = '/api/search/index';
 export const SEARCH_DOCS_URL = '/api/search/docs';

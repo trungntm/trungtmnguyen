@@ -1,4 +1,4 @@
-import { createSearchIndex } from '@repo/search';
+import { createSearchIndex } from '@trungtmnguyen/search';
 import { unstable_cache } from 'next/cache';
 
 import { getAllPublishedPosts } from '@/features/cms-blog/api/cms-blog-api';

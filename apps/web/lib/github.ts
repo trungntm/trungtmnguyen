@@ -1,4 +1,4 @@
-import type { ContributionData } from '@repo/ui';
+import type { ContributionData } from '@trungtmnguyen/ui';
 
 type GithubCalendarResponse = {
   user: {
