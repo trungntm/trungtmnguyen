@@ -54,8 +54,8 @@
     "philosophyDescription": "I prefer systems that are understandable, observable, and built around clear contracts. The goal is not to chase patterns, but to choose structures that help products and teams grow without losing delivery speed."
   },
   "blogPage": {
-    "heading": "Typed MDX posts for architecture, delivery, and engineering practice.",
-    "description": "Published articles are loaded from the CMS public blog API and rendered with the existing article layout and markdown pipeline.",
+    "heading": "Knowledge & Insights",
+    "description": "Sharing practical knowledge, real-world experiences, and insights on software engineering, system architecture, and modern technologies.",
     "emptyLabel": "No posts yet",
     "emptyTitle": "The content pipeline is ready. The public article list is currently empty.",
     "emptyDescription": "Published CMS posts will appear here automatically when the public blog API returns data."
@@ -84,8 +84,8 @@
     "hideDetails": "Hide details"
   },
   "footer": {
-    "primary": "Built for practical engineering notes, architecture write-ups, and technical essays.",
-    "secondary": "Powered by typed MDX, Content Collections, and the Next.js App Router."
+    "primary": "Sharing practical knowledge, real-world experiences, and insights on software engineering, system architecture, and modern technologies.",
+    "secondary": "Thanks for stopping by. I hope these articles help you in your work and learning journey."
   },
   "search": {
     "placeholder": "Search posts, tags, and pages...",

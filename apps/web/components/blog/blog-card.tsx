@@ -44,15 +44,6 @@ export function BlogCard({ blog, locale, dictionary, disableTagLinks = false }: 
           {blog.readingTime?.text ? <span>{blog.readingTime.text}</span> : null}
         </div>
 
-        <div className="space-y-3">
-          <BaseLink className="block focus-visible:outline-none" href={blog.url as Route}>
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary">
-              {blog.title}
-            </h2>
-          </BaseLink>
-          <p className="text-sm leading-7 text-muted">{blog.description}</p>
-        </div>
-
         <div className="flex flex-wrap gap-2">
           {blog.tags.map((tag: string) =>
             disableTagLinks ? (
@@ -66,6 +57,15 @@ export function BlogCard({ blog, locale, dictionary, disableTagLinks = false }: 
               />
             ),
           )}
+        </div>
+
+        <div className="space-y-3">
+          <BaseLink className="block focus-visible:outline-none" href={blog.url as Route}>
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary">
+              {blog.title}
+            </h2>
+          </BaseLink>
+          <p className="text-sm leading-7 text-muted">{blog.description}</p>
         </div>
       </div>
     </article>

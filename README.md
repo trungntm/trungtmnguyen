@@ -89,13 +89,13 @@ Current staged-file checks:
 
 Set `CMS_BASE_URL` for the public CMS blog API consumed by `apps/web`. This value is server-only.
 
-Set `SITE_URL` for canonical URLs, sitemap, robots output, RSS, and CMS blog structured data in non-local environments.
+Set `NEXT_PUBLIC_SITE_URL` for canonical URLs, sitemap, robots output, RSS, and CMS blog structured data in non-local environments.
 
 Required CMS blog env vars:
 
 ```text
 CMS_BASE_URL=
-SITE_URL=
+NEXT_PUBLIC_SITE_URL=
 ```
 
 Set `GITHUB_TOKEN` to enable the GitHub contribution calendar on `/about`. The token is used only on the server for GitHub GraphQL requests and is never exposed to the client.

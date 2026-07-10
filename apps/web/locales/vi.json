@@ -54,8 +54,8 @@
     "philosophyDescription": "Tôi ưu tiên những hệ thống dễ hiểu, dễ quan sát và được xây dựng quanh các hợp đồng rõ ràng. Mục tiêu không phải chạy theo pattern, mà là chọn cấu trúc giúp sản phẩm và đội ngũ phát triển mà không mất tốc độ delivery."
   },
   "blogPage": {
-    "heading": "Các bài viết kỹ thuật về kiến trúc, delivery và thực hành engineering.",
-    "description": "Bài viết được tải từ CMS public blog API và hiển thị bằng layout cùng markdown pipeline hiện có.",
+    "heading": "Chia sẻ kiến thức & kinh nghiệm",
+    "description": "Chia sẻ kiến thức, kinh nghiệm thực tế và góc nhìn về phát triển phần mềm, kiến trúc hệ thống và các công nghệ hiện đại.",
     "emptyLabel": "Chưa có bài viết",
     "emptyTitle": "Pipeline nội dung đã sẵn sàng. Danh sách bài public hiện đang trống.",
     "emptyDescription": "Các bài viết CMS đã xuất bản sẽ tự động xuất hiện tại đây khi public blog API trả về dữ liệu."
@@ -84,8 +84,8 @@
     "hideDetails": "Ẩn chi tiết"
   },
   "footer": {
-    "primary": "Được xây dựng để chia sẻ ghi chép thực chiến, bài viết kiến trúc và những bài luận kỹ thuật.",
-    "secondary": "Vận hành bởi typed MDX, Content Collections và Next.js App Router."
+    "primary": "Chia sẻ kiến thức, kinh nghiệm thực tế và góc nhìn về phát triển phần mềm, kiến trúc hệ thống và các công nghệ hiện đại.",
+    "secondary": "Cảm ơn bạn đã ghé thăm. Hy vọng những bài viết này sẽ mang lại giá trị cho công việc và hành trình học tập của bạn."
   },
   "search": {
     "placeholder": "Tìm bài viết, tag và trang...",
