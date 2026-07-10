@@ -42,4 +42,6 @@ yarn-error.log*
 
 # Agents
 docs
+!apps/web/app/api/search/docs/
+!apps/web/app/api/search/docs/route.ts
 AGENTS.md
