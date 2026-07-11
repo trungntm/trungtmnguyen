@@ -4,11 +4,17 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import type { PublicPostTranslationLinkDto } from '@/features/cms-blog/types';
+import type {
+  PublicPostTranslationLinkDto,
+  PublicSeriesTranslationLinkDto,
+} from '@/features/cms-blog/types';
 import { type Locale, getLocalizedPath, locales } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
-type LanguageSwitcherTranslation = Pick<PublicPostTranslationLinkDto, 'locale' | 'url' | 'title'>;
+type LanguageSwitcherTranslation = Pick<
+  PublicPostTranslationLinkDto | PublicSeriesTranslationLinkDto,
+  'locale' | 'url' | 'title'
+>;
 
 type LanguageSwitcherProps = {
   locale: Locale;
@@ -17,7 +23,11 @@ type LanguageSwitcherProps = {
 
 function isLocalizedBlogDetail(pathname: string) {
   const segments = pathname.split('/').filter(Boolean);
-  return segments.length === 3 && locales.includes(segments[0] as Locale) && segments[1] === 'blog';
+  return (
+    segments.length === 3 &&
+    locales.includes(segments[0] as Locale) &&
+    ['blog', 'series'].includes(segments[1] ?? '')
+  );
 }
 
 export function LanguageSwitcher({ locale, postTranslations }: LanguageSwitcherProps) {

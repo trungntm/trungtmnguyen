@@ -28,28 +28,59 @@ let preloadStarted = false;
 
 type SearchFetchMode = 'cache' | 'refresh';
 
+const searchIndexRequests = new Map<SearchFetchMode, Promise<unknown>>();
+const searchDocsRequests = new Map<SearchFetchMode, Promise<SearchDocsMap>>();
+
 function getFetchOptions(mode: SearchFetchMode) {
   return mode === 'refresh' ? SEARCH_REFRESH_FETCH_OPTIONS : SEARCH_FETCH_OPTIONS;
 }
 
 export function fetchSearchIndexJson(mode: SearchFetchMode = 'cache') {
-  return fetch(SEARCH_INDEX_URL, getFetchOptions(mode)).then(async (response) => {
-    if (!response.ok) {
-      throw new Error(`Search index request failed with ${response.status}`);
-    }
+  const existingRequest = searchIndexRequests.get(mode);
 
-    return response.json();
-  });
+  if (existingRequest) {
+    return existingRequest;
+  }
+
+  const request = fetch(SEARCH_INDEX_URL, getFetchOptions(mode))
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`Search index request failed with ${response.status}`);
+      }
+
+      return response.json();
+    })
+    .catch((error: unknown) => {
+      searchIndexRequests.delete(mode);
+      throw error;
+    });
+
+  searchIndexRequests.set(mode, request);
+  return request;
 }
 
 export function fetchSearchDocsJson(mode: SearchFetchMode = 'cache') {
-  return fetch(SEARCH_DOCS_URL, getFetchOptions(mode)).then(async (response) => {
-    if (!response.ok) {
-      throw new Error(`Search docs request failed with ${response.status}`);
-    }
+  const existingRequest = searchDocsRequests.get(mode);
 
-    return response.json() as Promise<SearchDocsMap>;
-  });
+  if (existingRequest) {
+    return existingRequest;
+  }
+
+  const request = fetch(SEARCH_DOCS_URL, getFetchOptions(mode))
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`Search docs request failed with ${response.status}`);
+      }
+
+      return response.json() as Promise<SearchDocsMap>;
+    })
+    .catch((error: unknown) => {
+      searchDocsRequests.delete(mode);
+      throw error;
+    });
+
+  searchDocsRequests.set(mode, request);
+  return request;
 }
 
 export function preloadSearchAssets() {
@@ -61,8 +92,8 @@ export function preloadSearchAssets() {
 
   const run = () => {
     void Promise.allSettled([
-      fetch(SEARCH_INDEX_URL, SEARCH_FETCH_OPTIONS),
-      fetch(SEARCH_DOCS_URL, SEARCH_FETCH_OPTIONS),
+      fetchSearchIndexJson(),
+      fetchSearchDocsJson(),
     ]);
   };
 

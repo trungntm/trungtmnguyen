@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import type { Route } from 'next';
+import Link from 'next/link';
 
 import { BlogCard } from '@/components/blog/blog-card';
 import { getPublishedPosts } from '@/features/cms-blog/api/cms-blog-api';
@@ -53,9 +55,17 @@ export default async function PublicBlogIndexPage() {
     <section className="page-container px-4 py-14 md:px-6 md:py-18">
       <div className="space-y-10">
         <div className="space-y-5">
-          <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
-            {dictionary.blogPage.heading}
-          </h1>
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
+              {dictionary.blogPage.heading}
+            </h1>
+            <Link
+              className="text-sm font-semibold text-muted transition-colors hover:text-primary focus-visible:text-primary focus-visible:outline-none"
+              href={`/${defaultLocale}/series` as Route}
+            >
+              {dictionary.blogPage.seriesLink}
+            </Link>
+          </div>
           <p className="max-w-3xl text-lg leading-8 text-muted">
             {dictionary.blogPage.description}
           </p>

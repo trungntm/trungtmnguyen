@@ -2,11 +2,16 @@
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
-import type { PublicPostTranslationLinkDto } from '@/features/cms-blog/types';
+import type {
+  PublicPostTranslationLinkDto,
+  PublicSeriesTranslationLinkDto,
+} from '@/features/cms-blog/types';
+
+type LocalizedRouteTranslation = PublicPostTranslationLinkDto | PublicSeriesTranslationLinkDto;
 
 type BlogTranslationContextValue = {
-  translations: PublicPostTranslationLinkDto[] | undefined;
-  setTranslations: (translations: PublicPostTranslationLinkDto[] | undefined) => void;
+  translations: LocalizedRouteTranslation[] | undefined;
+  setTranslations: (translations: LocalizedRouteTranslation[] | undefined) => void;
 };
 
 const BlogTranslationContext = createContext<BlogTranslationContextValue | null>(null);
@@ -16,7 +21,7 @@ type BlogTranslationProviderProps = {
 };
 
 export function BlogTranslationProvider({ children }: BlogTranslationProviderProps) {
-  const [translations, setTranslations] = useState<PublicPostTranslationLinkDto[] | undefined>(undefined);
+  const [translations, setTranslations] = useState<LocalizedRouteTranslation[] | undefined>(undefined);
 
   return (
     <BlogTranslationContext.Provider

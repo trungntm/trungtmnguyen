@@ -38,6 +38,29 @@ function mapCmsPostToSearchSourcePost(post: Awaited<ReturnType<typeof getAllPubl
   } satisfies CmsSearchSourcePost;
 }
 
+function deduplicatePosts(posts: Awaited<ReturnType<typeof getAllPublishedPosts>>) {
+  const postMap = new Map<string, (typeof posts)[number]>();
+
+  for (const post of posts) {
+    const documentId = `${post.locale}:${post.id}`;
+    const existingPost = postMap.get(documentId);
+
+    if (!existingPost) {
+      postMap.set(documentId, post);
+      continue;
+    }
+
+    const existingTimestamp = Date.parse(existingPost.updatedAt || existingPost.publishedAt);
+    const nextTimestamp = Date.parse(post.updatedAt || post.publishedAt);
+
+    if (nextTimestamp >= existingTimestamp) {
+      postMap.set(documentId, post);
+    }
+  }
+
+  return [...postMap.values()];
+}
+
 async function buildCmsSearchPayload() {
   const posts = (
     await Promise.all(
@@ -45,7 +68,7 @@ async function buildCmsSearchPayload() {
     )
   ).flat();
 
-  return createSearchIndex(posts.map(mapCmsPostToSearchSourcePost));
+  return createSearchIndex(deduplicatePosts(posts).map(mapCmsPostToSearchSourcePost));
 }
 
 export const createCmsSearchPayload = unstable_cache(buildCmsSearchPayload, ['cms-search-payload'], {

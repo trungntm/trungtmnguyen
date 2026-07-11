@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-import { getAllPublishedPosts } from '@/features/cms-blog/api/cms-blog-api';
+import { getAllPublishedPosts, getAllPublishedSeries } from '@/features/cms-blog/api/cms-blog-api';
 import { getAllTags, getTagData } from '@/lib/blog-data';
 import { locales } from '@/lib/i18n';
 import { buildAbsoluteUrl } from '@/lib/seo';
@@ -11,7 +11,7 @@ export const revalidate = 60;
 
 function getStaticEntries(lastModified: Date): SitemapEntry[] {
   const localizedEntries = locales.flatMap((locale) =>
-    ['/', '/about', '/blog', '/tags'].map((path) => ({
+    ['/', '/about', '/blog', '/series', '/tags'].map((path) => ({
       url: buildAbsoluteUrl(path === '/' ? `/${locale}` : `/${locale}${path}`),
       lastModified,
     })),
@@ -34,6 +34,9 @@ function getStaticEntries(lastModified: Date): SitemapEntry[] {
 
 async function getCmsEntries(): Promise<SitemapEntry[]> {
   const posts = await getAllPublishedPosts();
+  const seriesEntries = (
+    await Promise.all(locales.map(async (locale) => getAllPublishedSeries({ locale })))
+  ).flat();
   const tagEntries = (
     await Promise.all(
       locales.map(async (locale) => {
@@ -55,6 +58,12 @@ async function getCmsEntries(): Promise<SitemapEntry[]> {
       lastModified: post.updatedAt || post.publishedAt,
       changeFrequency: 'weekly',
       priority: 0.7,
+    })),
+    ...seriesEntries.map((series) => ({
+      url: buildAbsoluteUrl(series.url),
+      lastModified: series.updatedAt || series.publishedAt,
+      changeFrequency: 'weekly',
+      priority: 0.65,
     })),
     ...tagEntries.map((entry) => ({
       url: entry.url,

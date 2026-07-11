@@ -1,6 +1,6 @@
 # Trung Nguyen Blog Monorepo
 
-The public blog is CMS-backed. `/blog`, `/blog/[locale]/[slug]`, sitemap, RSS, homepage blog sections, and search all read from the public CMS API. The `/about` page remains local MDX loaded at runtime.
+The public blog is CMS-backed. `/blog`, localized blog routes, localized series routes, sitemap, RSS, homepage blog sections, and search all read from the public CMS API. The `/about` page remains local MDX loaded at runtime.
 
 ## Stack
 
@@ -42,6 +42,7 @@ The public blog is CMS-backed. `/blog`, `/blog/[locale]/[slug]`, sitemap, RSS, h
 - SEO defaults live in `apps/web/lib/seo.ts` and feed root metadata, canonical URLs, Open Graph, Twitter cards, `sitemap.ts`, and `robots.ts`.
 - Public blog content is loaded from `CMS_BASE_URL` through the CMS public API.
 - CMS tag pages, sitemap entries, RSS, and search payloads are derived from the CMS post list at runtime.
+- CMS blog series are loaded through the same `CMS_BASE_URL` server-side client with Zod validation, 60 second revalidation, and localized metadata.
 - The About page is loaded from `apps/web/data/pages/about.mdx` through `apps/web/lib/pages.ts`.
 
 ## Commands
@@ -113,6 +114,29 @@ Notes:
 
 - Tag slugs are derived from the original label and normalized to lowercase URL-safe values.
 - The UI preserves the original display label while route matching uses the normalized slug.
+
+## Series
+
+Series are served from the CMS public API and exposed through localized App Router pages:
+
+- `/vi/series`
+- `/en/series`
+- `/vi/series/[slug]`
+- `/en/series/[slug]`
+
+CMS endpoints used by the web app:
+
+- `GET /api/public/blog/series?locale={vi|en}&page={n}&pageSize={n}`
+- `GET /api/public/blog/series/:locale/:slug`
+
+Notes:
+
+- All CMS requests use `process.env.CMS_BASE_URL` through `apps/web/features/cms-blog/api/cms-blog-api.ts`.
+- Series list pages support `?page=` and fall back to page `1` when the query is missing or invalid.
+- Series detail metadata uses the CMS-provided canonical `url` and alternate locale URLs from `translations`.
+- The language switcher uses series translation URLs directly on series detail pages instead of assuming shared slugs.
+- Sitemap generation includes localized series index pages and every published series detail URL by paging through the CMS list API.
+- Series fetches follow the existing CMS cache strategy with `next.revalidate = 60`.
 
 ## Table of Contents
 

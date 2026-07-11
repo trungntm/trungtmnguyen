@@ -6,10 +6,15 @@ import type {
   ApiError,
   ApiSuccess,
   BlogLocale,
+  ListPublishedSeriesResponseDto,
   ListPublishedPostsResponseDto,
   PublicPostDetailDto,
   PublicPostListItemDto,
   PublicPostTranslationLinkDto,
+  PublicSeriesDetailDto,
+  PublicSeriesListItemDto,
+  PublicSeriesPostDto,
+  PublicSeriesTranslationLinkDto,
 } from '@/features/cms-blog/types';
 
 const blogLocaleSchema = z.enum(['vi', 'en']);
@@ -63,8 +68,69 @@ const publicPostDetailDtoSchema = z.object({
   updatedAt: z.string(),
 });
 
+const publicSeriesTranslationLinkDtoSchema = z.object({
+  locale: blogLocaleSchema,
+  slug: z.string(),
+  url: z.string(),
+  title: z.string(),
+});
+
+const publicSeriesPostDtoSchema = z.object({
+  id: z.string(),
+  locale: blogLocaleSchema,
+  slug: z.string(),
+  url: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  coverImageObjectKey: z.string().nullable(),
+  coverImageUrl: z.string().nullable(),
+  tags: z.array(blogTagDtoSchema),
+  featured: z.boolean(),
+  seriesOrder: z.number().nullable(),
+  publishedAt: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+const publicSeriesListItemDtoSchema = z.object({
+  id: z.string(),
+  locale: blogLocaleSchema,
+  slug: z.string(),
+  url: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  coverImageUrl: z.string().nullable(),
+  postCount: z.number(),
+  publishedAt: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+const publicSeriesDetailDtoSchema = z.object({
+  id: z.string(),
+  locale: blogLocaleSchema,
+  slug: z.string(),
+  url: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  coverImageUrl: z.string().nullable(),
+  translations: z.array(publicSeriesTranslationLinkDtoSchema).default([]),
+  posts: z.array(publicSeriesPostDtoSchema),
+  postCount: z.number(),
+  publishedAt: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
 const listPublishedPostsResponseDtoSchema = z.object({
   items: z.array(publicPostListItemDtoSchema),
+  total: z.number(),
+  page: z.number(),
+  pageSize: z.number(),
+});
+
+const listPublishedSeriesResponseDtoSchema = z.object({
+  items: z.array(publicSeriesListItemDtoSchema),
   total: z.number(),
   page: z.number(),
   pageSize: z.number(),
@@ -87,6 +153,17 @@ type GetPublishedPostsInput = {
 };
 
 type GetPublishedPostBySlugInput = {
+  locale: BlogLocale;
+  slug: string;
+};
+
+type GetPublishedSeriesInput = {
+  locale: BlogLocale;
+  page?: number;
+  pageSize?: number;
+};
+
+type GetPublishedSeriesBySlugInput = {
   locale: BlogLocale;
   slug: string;
 };
@@ -211,6 +288,22 @@ function normalizeListQuery(input?: GetPublishedPostsInput) {
   return searchParams;
 }
 
+function normalizeSeriesListQuery(input: GetPublishedSeriesInput) {
+  const searchParams = new URLSearchParams({
+    locale: input.locale,
+  });
+
+  if (typeof input.page === 'number') {
+    searchParams.set('page', String(input.page));
+  }
+
+  if (typeof input.pageSize === 'number') {
+    searchParams.set('pageSize', String(input.pageSize));
+  }
+
+  return searchParams;
+}
+
 function sortPublishedPosts<T extends PublicPostListItemDto | PublicPostDetailDto>(posts: T[]) {
   return [...posts].sort((left, right) => {
     const publishedDiff = Date.parse(right.publishedAt) - Date.parse(left.publishedAt);
@@ -246,6 +339,59 @@ function normalizeTranslations(
       title: post.title,
     },
   ];
+}
+
+function normalizeSeriesTranslations(
+  series: PublicSeriesDetailDto,
+): PublicSeriesTranslationLinkDto[] {
+  const translations = series.translations.filter(
+    (translation, index, items) =>
+      items.findIndex((entry) => entry.locale === translation.locale) === index,
+  );
+
+  const hasCurrentLocale = translations.some((translation) => translation.locale === series.locale);
+
+  if (hasCurrentLocale) {
+    return translations;
+  }
+
+  return [
+    ...translations,
+    {
+      locale: series.locale,
+      slug: series.slug,
+      url: series.url,
+      title: series.title,
+    },
+  ];
+}
+
+function sortSeriesPosts(posts: PublicSeriesPostDto[]) {
+  return [...posts]
+    .map((post, index) => ({ post, index }))
+    .sort((left, right) => {
+      const leftOrder = left.post.seriesOrder;
+      const rightOrder = right.post.seriesOrder;
+
+      if (leftOrder === null && rightOrder === null) {
+        return left.index - right.index;
+      }
+
+      if (leftOrder === null) {
+        return 1;
+      }
+
+      if (rightOrder === null) {
+        return -1;
+      }
+
+      if (leftOrder !== rightOrder) {
+        return leftOrder - rightOrder;
+      }
+
+      return left.index - right.index;
+    })
+    .map(({ post }) => post);
 }
 
 type GetAllPublishedPostsInput = Omit<GetPublishedPostsInput, 'page' | 'pageSize'> & {
@@ -327,6 +473,88 @@ export async function getPublishedPostBySlug(
     return {
       ...post,
       translations: normalizeTranslations(post),
+    };
+  } catch (error) {
+    if (error instanceof CmsBlogApiError && (error.code as CmsApiErrorCode) === 'BLOG_NOT_FOUND') {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+type GetAllPublishedSeriesInput = Omit<GetPublishedSeriesInput, 'page' | 'pageSize'> & {
+  pageSize?: number;
+};
+
+export async function getPublishedSeries(
+  input: GetPublishedSeriesInput,
+): Promise<ListPublishedSeriesResponseDto> {
+  try {
+    const endpoint = buildCmsUrl('/api/public/blog/series', normalizeSeriesListQuery(input)).toString();
+    const payload = await fetchCms(endpoint);
+    return parseApiSuccess(payload, listPublishedSeriesResponseDtoSchema, endpoint).data;
+  } catch (error) {
+    if (
+      error instanceof CmsBlogApiError &&
+      (error.code as CmsApiErrorCode) === 'BLOG_VALIDATION_ERROR'
+    ) {
+      return {
+        items: [],
+        total: 0,
+        page: input.page ?? 1,
+        pageSize: input.pageSize ?? 10,
+      };
+    }
+
+    throw error;
+  }
+}
+
+export async function getAllPublishedSeries(
+  input: GetAllPublishedSeriesInput,
+): Promise<PublicSeriesListItemDto[]> {
+  const pageSize = input.pageSize ?? 100;
+  const firstPage = await getPublishedSeries({
+    ...input,
+    page: 1,
+    pageSize,
+  });
+
+  const totalPages = Math.max(1, Math.ceil(firstPage.total / pageSize));
+
+  if (totalPages === 1) {
+    return firstPage.items;
+  }
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, index) =>
+      getPublishedSeries({
+        ...input,
+        page: index + 2,
+        pageSize,
+      }),
+    ),
+  );
+
+  return [...firstPage.items, ...remainingPages.flatMap((page) => page.items)];
+}
+
+export async function getPublishedSeriesBySlug(
+  input: GetPublishedSeriesBySlugInput,
+): Promise<PublicSeriesDetailDto | null> {
+  const endpoint = buildCmsUrl(
+    `/api/public/blog/series/${encodeURIComponent(input.locale)}/${encodeURIComponent(input.slug)}`,
+  ).toString();
+
+  try {
+    const payload = await fetchCms(endpoint);
+    const series = parseApiSuccess(payload, publicSeriesDetailDtoSchema, endpoint).data;
+
+    return {
+      ...series,
+      translations: normalizeSeriesTranslations(series),
+      posts: sortSeriesPosts(series.posts),
     };
   } catch (error) {
     if (error instanceof CmsBlogApiError && (error.code as CmsApiErrorCode) === 'BLOG_NOT_FOUND') {

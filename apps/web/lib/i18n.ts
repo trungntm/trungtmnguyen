@@ -54,6 +54,15 @@ export function getTagCountLabel(
   );
 }
 
+export function getSeriesPostCountLabel(dictionary: Dictionary, count: number) {
+  return formatMessage(
+    count === 1
+      ? dictionary.seriesPage.postCountLabelOne
+      : dictionary.seriesPage.postCountLabelOther,
+    { count },
+  );
+}
+
 function normalizePathname(pathname: string) {
   if (!pathname || pathname === '/') {
     return '/';
