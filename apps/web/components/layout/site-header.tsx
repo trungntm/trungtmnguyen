@@ -30,6 +30,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
     { href: '/' as Route, label: dictionary.navigation.home },
     { href: '/about' as Route, label: dictionary.navigation.about },
     { href: '/blog' as Route, label: dictionary.navigation.blog },
+    { href: '/series' as Route, label: dictionary.navigation.series },
   ];
 
   useEffect(() => {

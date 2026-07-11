@@ -2,12 +2,15 @@
 
 import { useEffect } from 'react';
 
-import type { PublicPostTranslationLinkDto } from '@/features/cms-blog/types';
+import type {
+  PublicPostTranslationLinkDto,
+  PublicSeriesTranslationLinkDto,
+} from '@/features/cms-blog/types';
 
 import { useBlogTranslations } from './blog-translations-context';
 
 type BlogDetailTranslationSyncProps = {
-  translations: PublicPostTranslationLinkDto[];
+  translations: Array<PublicPostTranslationLinkDto | PublicSeriesTranslationLinkDto>;
 };
 
 export function BlogDetailTranslationSync({ translations }: BlogDetailTranslationSyncProps) {

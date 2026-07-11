@@ -5,10 +5,12 @@ import { CoreTopics } from '@/components/home/core-topics';
 import { EngineeringPhilosophy } from '@/components/home/engineering-philosophy';
 import { HomeHero } from '@/components/home/home-hero';
 import { LatestNotes } from '@/components/home/latest-notes';
-import { getPublishedPosts } from '@/features/cms-blog/api/cms-blog-api';
+import { LatestSeries } from '@/components/home/latest-series';
+import { getPublishedPosts, getPublishedSeries } from '@/features/cms-blog/api/cms-blog-api';
 import { mapCmsPostToPostCardViewModel } from '@/features/cms-blog/view-models';
 import { getDictionary, isValidLocale } from '@/lib/i18n';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
+import { mapCmsSeriesToSeriesCardViewModel } from '@/lib/series';
 
 type LocalizedHomePageProps = {
   params: Promise<{
@@ -62,19 +64,29 @@ export default async function LocalizedHomePage({ params }: LocalizedHomePagePro
 
   const dictionary = getDictionary(locale);
   let latestBlogs: ReturnType<typeof mapCmsPostToPostCardViewModel>[] = [];
+  let latestSeries: ReturnType<typeof mapCmsSeriesToSeriesCardViewModel>[] = [];
 
   try {
-    const cmsPosts = await getPublishedPosts({
-      locale,
-      page: 1,
-      pageSize: 6,
-    });
+    const [cmsPosts, cmsSeries] = await Promise.all([
+      getPublishedPosts({
+        locale,
+        page: 1,
+        pageSize: 6,
+      }),
+      getPublishedSeries({
+        locale,
+        page: 1,
+        pageSize: 3,
+      }),
+    ]);
     const featuredPosts = cmsPosts.items.filter((post) => post.featured);
     const latestPosts = cmsPosts.items.filter((post) => !post.featured);
 
     latestBlogs = [...featuredPosts, ...latestPosts].slice(0, 3).map(mapCmsPostToPostCardViewModel);
+    latestSeries = cmsSeries.items.slice(0, 3).map(mapCmsSeriesToSeriesCardViewModel);
   } catch {
     latestBlogs = [];
+    latestSeries = [];
   }
 
   return (
@@ -85,6 +97,7 @@ export default async function LocalizedHomePage({ params }: LocalizedHomePagePro
       <div className="space-y-16 pb-20 pt-6 md:space-y-24 md:pb-24 md:pt-8">
         <HomeHero dictionary={dictionary} />
         <LatestNotes blogs={latestBlogs} dictionary={dictionary} disableTagLinks locale={locale} />
+        <LatestSeries dictionary={dictionary} locale={locale} series={latestSeries} />
         <CoreTopics dictionary={dictionary} />
         <EngineeringPhilosophy dictionary={dictionary} />
       </div>
