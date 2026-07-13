@@ -3,7 +3,7 @@ import { createUniqueHeadingSlug } from './slugify';
 export type TocItem = {
   id: string;
   title: string;
-  depth: 2 | 3;
+  depth: 1 | 2 | 3;
 };
 
 function stripInlineMarkdown(value: string) {
@@ -67,11 +67,11 @@ export function extractTocFromMarkdown(content: string): TocItem[] {
 
     const id = createUniqueHeadingSlug(title, usedSlugs);
 
-    if (depth === 2 || depth === 3) {
+    if (depth === 1 || depth === 2 || depth === 3) {
       items.push({
         id,
         title,
-        depth,
+        depth: depth as 1 | 2 | 3,
       });
     }
   }

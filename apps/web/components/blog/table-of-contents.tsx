@@ -13,6 +13,8 @@ export function TableOfContents({ items, label = 'On this page' }: TableOfConten
     return null;
   }
 
+  const minDepth = Math.min(...items.map((item) => item.depth));
+
   return (
     <div className="glass-card rounded-[1.75rem] p-5">
       <nav aria-label="Table of contents">
@@ -21,7 +23,14 @@ export function TableOfContents({ items, label = 'On this page' }: TableOfConten
         </p>
         <ol className="mt-4 space-y-1.5">
           {items.map((item) => (
-            <li key={item.id} className={cn('relative pl-4', item.depth === 3 && 'ml-4')}>
+            <li
+              key={item.id}
+              className={cn(
+                'relative pl-4',
+                item.depth === minDepth + 1 && 'ml-4',
+                item.depth >= minDepth + 2 && 'ml-8',
+              )}
+            >
               <span
                 aria-hidden="true"
                 className="absolute top-1/2 left-0 size-1.5 -translate-y-1/2 rounded-full bg-muted/55 transition-colors"
