@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
-import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { BlogDetailTranslationSync } from '@/components/layout/blog-detail-translation-sync';
+import { BlogPostViewTracker } from '@/components/analytics/blog-post-view-tracker';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { TagPill } from '@/components/blog/tag-pill';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
@@ -137,6 +137,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
   return (
     <article className="page-container px-4 py-14 md:px-6 md:py-18">
       <BlogDetailTranslationSync translations={post.translations} />
+      <BlogPostViewTracker locale={post.locale} postId={post.id} slug={post.slug} title={post.title} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -151,7 +152,6 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
                 <TagPill key={tag.id} tag={tag.name} />
               ))}
             </div>
-            <LanguageSwitcher locale={locale} postTranslations={post.translations} />
           </div>
 
           <div className="space-y-4">
@@ -159,7 +159,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
               {post.title}
             </h1>
             {post.description ? (
-              <p className="max-w-3xl text-lg leading-8 text-muted md:text-xl">
+              <p className="text-lg leading-8 text-muted md:text-xl">
                 {post.description}
               </p>
             ) : null}
@@ -198,7 +198,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
         >
           <div className="space-y-6">
             <div className="lg:hidden">
-              <TableOfContents items={toc} />
+              <TableOfContents items={toc} label={dictionary.common.onThisPage} />
             </div>
 
             <div className="glass-card rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
@@ -209,7 +209,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
           {hasToc ? (
             <aside className="hidden lg:block">
               <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
-                <TableOfContents items={toc} />
+                <TableOfContents items={toc} label={dictionary.common.onThisPage} />
               </div>
             </aside>
           ) : null}

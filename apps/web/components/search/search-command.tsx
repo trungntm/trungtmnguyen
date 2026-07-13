@@ -19,6 +19,8 @@ import {
 } from 'kbar';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { AnalyticsEventNames } from '@trungtmnguyen/analytics';
+import { trackEvent } from '@trungtmnguyen/analytics/client';
 
 import { useBlogSearch } from '@/components/search/use-blog-search';
 import { formatBlogDate } from '@/lib/blogs';
@@ -193,6 +195,8 @@ type SearchCommandProps = {
   dictionary: Dictionary;
 };
 
+let lastTrackedSearchCommitKey: string | null = null;
+
 export function SearchCommand({ locale, dictionary }: SearchCommandProps) {
   const { results: navigationResults } = useMatches();
   const { search, ready, error, latestBlogs } = useBlogSearch(locale);
@@ -220,6 +224,17 @@ export function SearchCommand({ locale, dictionary }: SearchCommandProps) {
       name: result.title,
       subtitle: result.description,
       perform: () => {
+        const queryKey = `${locale}:${trimmedQuery}`;
+
+        if (trimmedQuery && lastTrackedSearchCommitKey !== queryKey) {
+          lastTrackedSearchCommitKey = queryKey;
+          trackEvent(AnalyticsEventNames.searchBlog, {
+            locale,
+            query: trimmedQuery,
+            resultCount: blogResults.length,
+          });
+        }
+
         router.push(result.url as Route);
       },
     };

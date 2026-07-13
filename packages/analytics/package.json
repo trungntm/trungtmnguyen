@@ -1,0 +1,29 @@
+{
+  "name": "@trungtmnguyen/analytics",
+  "private": true,
+  "version": "0.0.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client/index.ts",
+    "./next": "./src/next/index.ts",
+    "./providers": "./src/providers/index.ts"
+  },
+  "scripts": {
+    "build": "../../apps/web/node_modules/.bin/tsc --noEmit",
+    "lint": "../../apps/web/node_modules/.bin/eslint .",
+    "lint:fix": "../../apps/web/node_modules/.bin/eslint . --fix",
+    "typecheck": "../../apps/web/node_modules/.bin/tsc --noEmit"
+  },
+  "peerDependencies": {
+    "next": "16.2.9",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.9",
+    "typescript": "6.0.3"
+  }
+}

@@ -5,10 +5,12 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { LocaleProvider } from '@/components/i18n/locale-provider';
+import { AnalyticsProvider } from '@trungtmnguyen/analytics';
 import { BlogTranslationProvider } from '@/components/layout/blog-translations-context';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SearchProvider } from '@/components/search/search-provider';
+import { analyticsConfig } from '@/lib/analytics';
 import { defaultLocale, getDictionary, isValidLocale, type Locale } from '@/lib/i18n';
 
 type AppShellProps = {
@@ -37,18 +39,20 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <LocaleProvider locale={locale}>
       <BlogTranslationProvider>
-        <SearchProvider dictionary={dictionary} locale={locale}>
-          <div className="relative flex min-h-screen flex-col">
-            <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-              <div className="gradient-orb-left" />
-              <div className="gradient-orb-right" />
-              <div className="grid-overlay" />
+        <AnalyticsProvider config={analyticsConfig}>
+          <SearchProvider dictionary={dictionary} locale={locale}>
+            <div className="relative flex min-h-screen flex-col">
+              <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+                <div className="gradient-orb-left" />
+                <div className="gradient-orb-right" />
+                <div className="grid-overlay" />
+              </div>
+              <SiteHeader dictionary={dictionary} locale={locale} />
+              <main className="flex-1">{children}</main>
+              <SiteFooter dictionary={dictionary} />
             </div>
-            <SiteHeader dictionary={dictionary} locale={locale} />
-            <main className="flex-1">{children}</main>
-            <SiteFooter dictionary={dictionary} />
-          </div>
-        </SearchProvider>
+          </SearchProvider>
+        </AnalyticsProvider>
       </BlogTranslationProvider>
     </LocaleProvider>
   );

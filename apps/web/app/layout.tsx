@@ -69,7 +69,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html data-scroll-behavior="smooth" suppressHydrationWarning lang={defaultLocale}>
-      <body className={`${spaceGrotesk.variable} min-h-screen antialiased`}>
+      <body suppressHydrationWarning className={`${spaceGrotesk.variable} min-h-screen antialiased`}>
         <ThemeProvider disableTransitionOnChange>
           <AppShell>{children}</AppShell>
         </ThemeProvider>

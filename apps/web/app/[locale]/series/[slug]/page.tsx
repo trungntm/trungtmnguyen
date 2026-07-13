@@ -134,7 +134,7 @@ export default async function LocalizedSeriesDetailPage({
               {series.title}
             </h1>
             {series.description ? (
-              <p className="max-w-3xl text-lg leading-8 text-muted md:text-xl">
+              <p className="text-lg leading-8 text-muted md:text-xl">
                 {series.description}
               </p>
             ) : null}
@@ -168,6 +168,7 @@ export default async function LocalizedSeriesDetailPage({
                     dictionary={dictionary}
                     index={index}
                     locale={locale}
+                    seriesId={series.id}
                     post={post}
                   />
                 </li>

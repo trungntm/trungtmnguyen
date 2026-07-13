@@ -1,14 +1,16 @@
 import type { Route } from 'next';
 import Image from 'next/image';
 
+import { TrackedLink } from '@/components/analytics/tracked-link';
 import { TagPill } from '@/components/blog/tag-pill';
-import { BaseLink } from '@/components/ui/links';
 import { formatBlogDate } from '@/lib/blogs';
 import { formatMessage, type Dictionary, type Locale } from '@/lib/i18n';
 import type { SeriesPost } from '@/features/cms-blog/types';
+import { AnalyticsEventNames } from '@trungtmnguyen/analytics';
 
 type SeriesPostListItemProps = {
   post: SeriesPost;
+  seriesId: string;
   locale: Locale;
   dictionary: Dictionary;
   index: number;
@@ -20,10 +22,23 @@ function getPartLabel(dictionary: Dictionary, post: SeriesPost, index: number) {
   });
 }
 
-export function SeriesPostListItem({ post, locale, dictionary, index }: SeriesPostListItemProps) {
+export function SeriesPostListItem({ post, seriesId, locale, dictionary, index }: SeriesPostListItemProps) {
+  const eventParameters = {
+    locale,
+    postId: post.id,
+    position: post.seriesOrder ?? index + 1,
+    seriesId,
+    slug: post.slug,
+  } as const;
+
   return (
     <article className="glass-card group h-full overflow-hidden rounded-[1.75rem] transition duration-300 hover:-translate-y-1 hover:border-primary/55 focus-within:-translate-y-1 focus-within:border-primary/55">
-      <BaseLink className="block focus-visible:outline-none" href={post.url as Route}>
+      <TrackedLink
+        className="block focus-visible:outline-none"
+        eventName={AnalyticsEventNames.selectSeriesPost}
+        eventParameters={eventParameters}
+        href={post.url as Route}
+      >
         {post.coverImageUrl ? (
           <div className="relative aspect-[16/9] overflow-hidden border-b border-border/80">
             <Image
@@ -42,7 +57,7 @@ export function SeriesPostListItem({ post, locale, dictionary, index }: SeriesPo
             </span>
           </div>
         )}
-      </BaseLink>
+      </TrackedLink>
 
       <div className="space-y-5 p-6">
         <div className="space-y-2 text-sm text-muted">
@@ -63,16 +78,21 @@ export function SeriesPostListItem({ post, locale, dictionary, index }: SeriesPo
         ) : null}
 
         <div className="space-y-3">
-          <BaseLink className="block focus-visible:outline-none" href={post.url as Route}>
+          <TrackedLink
+            className="block focus-visible:outline-none"
+            eventName={AnalyticsEventNames.selectSeriesPost}
+            eventParameters={eventParameters}
+            href={post.url as Route}
+          >
             <h2 className="text-2xl font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary">
               {post.title}
             </h2>
-          </BaseLink>
+          </TrackedLink>
           {post.description ? (
             <p className="text-sm leading-7 text-muted">{post.description}</p>
           ) : null}
-          </div>
         </div>
+      </div>
     </article>
   );
 }

@@ -5,9 +5,10 @@ import { cn } from '@/lib/utils';
 
 type TableOfContentsProps = {
   items: TocItem[];
+  label?: string;
 };
 
-export function TableOfContents({ items }: TableOfContentsProps) {
+export function TableOfContents({ items, label = 'On this page' }: TableOfContentsProps) {
   if (items.length < 2) {
     return null;
   }
@@ -16,7 +17,7 @@ export function TableOfContents({ items }: TableOfContentsProps) {
     <div className="glass-card rounded-[1.75rem] p-5">
       <nav aria-label="Table of contents">
         <p className="text-xs font-semibold tracking-[0.24em] text-muted uppercase">
-          On this page
+          {label}
         </p>
         <ol className="mt-4 space-y-1.5">
           {items.map((item) => (

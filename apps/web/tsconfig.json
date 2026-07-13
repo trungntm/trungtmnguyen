@@ -4,6 +4,15 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
+      "react": ["./node_modules/@types/react/index.d.ts"],
+      "react-dom": ["./node_modules/@types/react-dom/index.d.ts"],
+      "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime.d.ts"],
+      "next": ["./node_modules/next"],
+      "next/*": ["./node_modules/next/*"],
+      "@trungtmnguyen/analytics": ["../../packages/analytics/src/index.ts"],
+      "@trungtmnguyen/analytics/client": ["../../packages/analytics/src/client/index.ts"],
+      "@trungtmnguyen/analytics/next": ["../../packages/analytics/src/next/index.ts"],
+      "@trungtmnguyen/analytics/providers": ["../../packages/analytics/src/providers/index.ts"],
       "@trungtmnguyen/search": ["../../packages/search/src/index.ts"],
       "@trungtmnguyen/ui": ["../../packages/ui/src/index.ts"]
     },

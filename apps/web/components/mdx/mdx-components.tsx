@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ComponentProps, ComponentPropsWithoutRef } from 'react';
 
 import { cn } from '@/lib/utils';
 
+import { BaseLink } from '@/components/ui/links';
 import { CodeBlockFigure } from './code-block-figure';
 
-type AnchorProps = ComponentPropsWithoutRef<'a'>;
+type AnchorProps = ComponentProps<typeof BaseLink>;
 type CodeProps = ComponentPropsWithoutRef<'code'>;
 type ImgProps = ComponentPropsWithoutRef<'img'>;
 
@@ -32,7 +33,7 @@ export const mdxComponents = {
     <p className={cn('text-base leading-8 text-foreground/90', className)} {...props} />
   ),
   a: ({ className, ...props }: AnchorProps) => (
-    <a
+    <BaseLink
       className={cn(
         'transition-colors hover:text-primary',
         !className?.includes('heading-anchor') &&
@@ -68,7 +69,7 @@ export const mdxComponents = {
       return <CodeBlockFigure className={className} {...props} />;
     }
 
-    return <figure className={className} {...props} />;
+    return <figure className={cn('mx-auto', className)} {...props} />;
   },
   code: ({ className, ...props }: CodeProps) => {
     const isBlockCode =
@@ -105,7 +106,7 @@ export const mdxComponents = {
     <img
       alt={alt ?? ''}
       className={cn(
-        'rounded-[1.5rem] border border-border/70 shadow-[0_18px_55px_-38px_var(--shadow-color)]',
+        'block mx-auto rounded-[1.5rem] border border-border/70 shadow-[0_18px_55px_-38px_var(--shadow-color)]',
         className,
       )}
       loading="lazy"
