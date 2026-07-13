@@ -67,8 +67,27 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
   return (
     <html data-scroll-behavior="smooth" suppressHydrationWarning lang={defaultLocale}>
+      <link
+        rel="apple-touch-icon"
+        sizes="76x76"
+        href={`${basePath}/favicons/apple-touch-icon.png`}
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href={`${basePath}/favicons/favicon-32x32.png`}
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href={`${basePath}/favicons/favicon-16x16.png`}
+      />
+      <link rel="manifest" href={`${basePath}/favicons/site.webmanifest`} />
       <body suppressHydrationWarning className={`${spaceGrotesk.variable} min-h-screen antialiased`}>
         <ThemeProvider disableTransitionOnChange>
           <AppShell>{children}</AppShell>
