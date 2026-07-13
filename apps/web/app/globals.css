@@ -219,8 +219,8 @@
     color: var(--primary);
   }
 
-  .blog-prose :is(h2, h3),
-  .mdx-prose :is(h2, h3) {
+  .blog-prose :is(h1, h2, h3),
+  .mdx-prose :is(h1, h2, h3) {
     scroll-margin-top: 96px;
   }
 
