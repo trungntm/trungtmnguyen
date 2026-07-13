@@ -1,9 +1,10 @@
 import type { Route } from 'next';
 import Image from 'next/image';
 
-import { BaseLink } from '@/components/ui/links';
+import { TrackedLink } from '@/components/analytics/tracked-link';
 import { formatBlogDate } from '@/lib/blogs';
 import { getSeriesPostCountLabel, type Dictionary, type Locale } from '@/lib/i18n';
+import { AnalyticsEventNames } from '@trungtmnguyen/analytics';
 
 import type { SeriesPreview } from './series-preview';
 import { TagPill } from './tag-pill';
@@ -14,10 +15,23 @@ type SeriesCardProps = {
   dictionary: Dictionary;
 };
 
+function getSeriesSlugFromUrl(url: string) {
+  return url.split('/').filter(Boolean).at(-1) ?? '';
+}
+
 export function SeriesCard({ series, locale, dictionary }: SeriesCardProps) {
   return (
     <article className="glass-card group h-full overflow-hidden rounded-[1.75rem] transition duration-300 hover:-translate-y-1 hover:border-primary/55 focus-within:-translate-y-1 focus-within:border-primary/55">
-      <BaseLink className="block focus-visible:outline-none" href={series.url as Route}>
+      <TrackedLink
+        className="block focus-visible:outline-none"
+        eventName={AnalyticsEventNames.selectSeries}
+        eventParameters={{
+          locale,
+          seriesId: series.id,
+          slug: getSeriesSlugFromUrl(series.url),
+        }}
+        href={series.url as Route}
+      >
         {series.coverImageUrl ? (
           <div className="relative aspect-[16/9] overflow-hidden border-b border-border/80">
             <Image
@@ -36,7 +50,7 @@ export function SeriesCard({ series, locale, dictionary }: SeriesCardProps) {
             </p>
           </div>
         )}
-      </BaseLink>
+      </TrackedLink>
 
       <div className="space-y-5 p-6">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted">
@@ -48,11 +62,20 @@ export function SeriesCard({ series, locale, dictionary }: SeriesCardProps) {
         </div>
 
         <div className="space-y-3">
-          <BaseLink className="block focus-visible:outline-none" href={series.url as Route}>
+          <TrackedLink
+            className="block focus-visible:outline-none"
+            eventName={AnalyticsEventNames.selectSeries}
+            eventParameters={{
+              locale,
+              seriesId: series.id,
+              slug: getSeriesSlugFromUrl(series.url),
+            }}
+            href={series.url as Route}
+          >
             <h2 className="text-2xl font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary">
               {series.title}
             </h2>
-          </BaseLink>
+          </TrackedLink>
           <p className="text-sm leading-7 text-muted">{series.description}</p>
         </div>
       </div>

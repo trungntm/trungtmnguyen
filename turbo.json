@@ -1,13 +1,23 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["CMS_BASE_URL"],
+  "globalEnv": [
+    "CMS_BASE_URL",
+    "NEXT_PUBLIC_GOOGLE_ANALYTICS_ID",
+    "NEXT_PUBLIC_UMAMI_WEBSITE_ID",
+    "NEXT_PUBLIC_UMAMI_SCRIPT_URL"
+  ],
   "tasks": {
     "dev": {
       "cache": false,
       "persistent": true
     },
     "build": {
-      "env": ["CMS_BASE_URL"],
+      "env": [
+        "CMS_BASE_URL",
+        "NEXT_PUBLIC_GOOGLE_ANALYTICS_ID",
+        "NEXT_PUBLIC_UMAMI_WEBSITE_ID",
+        "NEXT_PUBLIC_UMAMI_SCRIPT_URL"
+      ],
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     },

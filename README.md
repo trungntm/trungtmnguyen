@@ -91,12 +91,25 @@ Current staged-file checks:
 Set `CMS_BASE_URL` for the public CMS blog API consumed by `apps/web`. This value is server-only.
 
 Set `NEXT_PUBLIC_SITE_URL` for canonical URLs, sitemap, robots output, RSS, and CMS blog structured data in non-local environments.
+Set analytics env vars in the web app only when you want to enable provider-specific analytics:
+
+- `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID`
+- `NEXT_PUBLIC_UMAMI_WEBSITE_ID`
+- `NEXT_PUBLIC_UMAMI_SCRIPT_URL`
 
 Required CMS blog env vars:
 
 ```text
 CMS_BASE_URL=
 NEXT_PUBLIC_SITE_URL=
+```
+
+Optional analytics env vars:
+
+```text
+NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=
+NEXT_PUBLIC_UMAMI_WEBSITE_ID=
+NEXT_PUBLIC_UMAMI_SCRIPT_URL=
 ```
 
 Set `GITHUB_TOKEN` to enable the GitHub contribution calendar on `/about`. The token is used only on the server for GitHub GraphQL requests and is never exposed to the client.

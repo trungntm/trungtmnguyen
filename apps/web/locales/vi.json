@@ -35,7 +35,16 @@
     "previous": "Trang trước",
     "next": "Trang sau",
     "copy": "Sao chép",
-    "copied": "Đã sao chép"
+    "copied": "Đã sao chép",
+    "onThisPage": "Mục lục"
+  },
+  "errors": {
+    "eyebrow": "Có lỗi xảy ra",
+    "title": "Trang này không thể hiển thị.",
+    "description": "Bạn có thể thử lại hoặc quay về trang chính để tiếp tục.",
+    "retry": "Thử lại",
+    "home": "Về trang chủ",
+    "blog": "Mở blog"
   },
   "seriesPage": {
     "heading": "Chuỗi bài viết",

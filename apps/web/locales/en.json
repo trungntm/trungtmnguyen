@@ -35,7 +35,16 @@
     "previous": "Previous",
     "next": "Next",
     "copy": "Copy",
-    "copied": "Copied"
+    "copied": "Copied",
+    "onThisPage": "On this page"
+  },
+  "errors": {
+    "eyebrow": "Something went wrong",
+    "title": "This page could not be rendered.",
+    "description": "You can try again or go back to the main site and continue from there.",
+    "retry": "Try again",
+    "home": "Go home",
+    "blog": "Open blog"
   },
   "seriesPage": {
     "heading": "Article Series",
