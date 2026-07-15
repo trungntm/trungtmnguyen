@@ -7,29 +7,29 @@ import { HeroImageCard, type HeroVisualItem, type HeroVisualSlot } from './hero-
 
 const heroVisualItems: HeroVisualItem[] = [
   {
-    label: 'Architecture Notes',
-    image: 'https://placehold.co/260x180?text=Architecture&font=roboto',
+    label: 'Software Architecture',
+    image: '/images/hero/software-architect.png',
     fallbackGradient: 'linear-gradient(135deg, #1e293b, #2563eb 48%, #22d3ee)',
     size: 'large',
     kind: 'technical',
   },
   {
-    label: 'Next.js Patterns',
-    image: 'https://placehold.co/260x180?text=Next.js&font=roboto',
+    label: 'Backend Engineering',
+    image: '/images/hero/backend-engineering.png',
     fallbackGradient: 'linear-gradient(135deg, #111827, #7c3aed 52%, #60a5fa)',
     size: 'medium',
     kind: 'technical',
   },
   {
-    label: 'DevOps Runtime',
-    image: 'https://placehold.co/260x180?text=DevOps&font=roboto',
+    label: 'Cloud & DevOps',
+    image: '/images/hero/cloud-devops.png',
     fallbackGradient: 'linear-gradient(135deg, #020617, #334155 42%, #a78bfa)',
     size: 'large',
     kind: 'technical',
   },
   {
-    label: 'Systems',
-    image: 'https://placehold.co/260x180?text=Systems&font=roboto',
+    label: 'AI for Developers',
+    image: '/images/hero/AI-for-developers.png',
     fallbackGradient: 'linear-gradient(135deg, #0f172a, #0891b2 52%, #22d3ee)',
     size: 'small',
     kind: 'technical',
@@ -43,12 +43,55 @@ const heroVisualItems: HeroVisualItem[] = [
   },
 ];
 
-const heroVisualSlots: HeroVisualSlot[] = [
-  { x: 18, y: 16, rotate: -7, zIndex: 3, duration: 5.6, delay: -1 },
-  { x: 210, y: 42, rotate: 5, zIndex: 4, duration: 6.4, delay: -2.3 },
-  { x: 92, y: 184, rotate: 3, zIndex: 5, duration: 5.2, delay: -0.6 },
-  { x: 300, y: 210, rotate: -6, zIndex: 2, duration: 7, delay: -3.1 },
-  { x: -8, y: 272, rotate: 8, zIndex: 1, duration: 6.8, delay: -1.8 },
+type LayoutPreset = {
+  large: HeroVisualSlot[];
+  medium: HeroVisualSlot[];
+  small: HeroVisualSlot[];
+};
+
+const layoutPresets: LayoutPreset[] = [
+  // Preset 1: Classic spread
+  {
+    large: [
+      { x: 170, y: 20, rotate: 5, zIndex: 2, duration: 6.4, delay: -2.3 },
+      { x: 12, y: 240, rotate: 8, zIndex: 1, duration: 6.8, delay: -1.8 },
+    ],
+    medium: [
+      { x: 12, y: 14, rotate: -7, zIndex: 3, duration: 5.6, delay: -1 },
+      { x: 245, y: 285, rotate: -6, zIndex: 4, duration: 7, delay: -3.1 },
+    ],
+    small: [
+      { x: 150, y: 160, rotate: 3, zIndex: 5, duration: 5.2, delay: -0.6 },
+    ],
+  },
+  // Preset 2: Alternate spread
+  {
+    large: [
+      { x: 15, y: 20, rotate: -6, zIndex: 2, duration: 6.2, delay: -2.0 },
+      { x: 175, y: 240, rotate: 4, zIndex: 1, duration: 6.5, delay: -1.5 },
+    ],
+    medium: [
+      { x: 245, y: 15, rotate: 7, zIndex: 3, duration: 5.8, delay: -1.2 },
+      { x: 15, y: 285, rotate: -5, zIndex: 4, duration: 7.2, delay: -3.5 },
+    ],
+    small: [
+      { x: 160, y: 170, rotate: -3, zIndex: 5, duration: 5.5, delay: -0.8 },
+    ],
+  },
+  // Preset 3: Centered emphasis
+  {
+    large: [
+      { x: 94, y: 20, rotate: 3, zIndex: 1, duration: 6.4, delay: -1.0 },
+      { x: 94, y: 240, rotate: -4, zIndex: 2, duration: 6.1, delay: -2.5 },
+    ],
+    medium: [
+      { x: 12, y: 130, rotate: -6, zIndex: 3, duration: 5.9, delay: -1.5 },
+      { x: 246, y: 110, rotate: 5, zIndex: 4, duration: 6.8, delay: -3.0 },
+    ],
+    small: [
+      { x: 290, y: 280, rotate: -8, zIndex: 5, duration: 5.3, delay: -0.5 },
+    ],
+  },
 ];
 
 const stackVariants = {
@@ -74,9 +117,29 @@ function shuffleItems(items: HeroVisualItem[]) {
   return nextItems;
 }
 
+type MappedItem = {
+  item: HeroVisualItem;
+  slot: HeroVisualSlot;
+};
+
+function mapItemsToLayout(items: HeroVisualItem[], layout: LayoutPreset): MappedItem[] {
+  const availableSlots = {
+    large: [...layout.large],
+    medium: [...layout.medium],
+    small: [...layout.small],
+  };
+
+  return items.map((item) => {
+    const slot = availableSlots[item.size]!.shift()!;
+    return { item, slot };
+  });
+}
+
 export function HeroVisualBoard() {
   const shouldReduceMotion = useReducedMotion();
-  const [items, setItems] = useState(heroVisualItems);
+  const [mappedItems, setMappedItems] = useState<MappedItem[]>(() => 
+    mapItemsToLayout(heroVisualItems, layoutPresets[0]!)
+  );
   const boardRef = useRef<HTMLElement | null>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -84,7 +147,9 @@ export function HeroVisualBoard() {
   useEffect(() => {
     // Keep the first render deterministic, then shuffle the content mapping on mount.
     const timeoutId = window.setTimeout(() => {
-      setItems(shuffleItems(heroVisualItems));
+      const shuffledItems = shuffleItems(heroVisualItems);
+      const randomLayout = layoutPresets[Math.floor(Math.random() * layoutPresets.length)]!;
+      setMappedItems(mapItemsToLayout(shuffledItems, randomLayout));
     }, 0);
 
     return () => {
@@ -180,7 +245,7 @@ export function HeroVisualBoard() {
         initial="hidden"
         variants={stackVariants}
       >
-        {items.map((item, index) => (
+        {mappedItems.map(({ item, slot }, index) => (
           <HeroImageCard
             key={`${item.label}-${index}`}
             index={index}
@@ -188,19 +253,12 @@ export function HeroVisualBoard() {
             parallaxX={x}
             parallaxY={y}
             shouldReduceMotion={!!shouldReduceMotion}
-            slot={heroVisualSlots[index]!}
+            slot={slot}
           />
         ))}
       </motion.div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background/94 via-background/58 to-transparent dark:from-background/96" />
-      <div className="relative flex min-h-[420px] items-end md:min-h-[470px]">
-        <div className="space-y-2">
-          <h2 className="max-w-sm text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            Randomized covers for notes, systems, and engineering ideas
-          </h2>
-        </div>
-      </div>
     </motion.aside>
   );
 }

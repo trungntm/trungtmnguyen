@@ -61,8 +61,9 @@ export function HomeHero({ dictionary }: HomeHeroProps) {
             <p className="text-sm font-medium tracking-[0.3em] text-muted uppercase">
               {dictionary.home.eyebrow}
             </p>
-            <h1 className="max-w-3xl text-5xl font-semibold tracking-tight text-balance md:text-7xl">
-              {dictionary.home.title} <span className="gradient-text">{dictionary.home.titleHighlight}</span>
+            <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+              {dictionary.home.title}{' '}
+              <span className="gradient-text">{dictionary.home.titleHighlight}</span>
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-muted md:text-xl">
               {dictionary.home.description}
