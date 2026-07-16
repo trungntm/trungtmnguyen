@@ -14,7 +14,7 @@ import { MDXRenderer } from '@/components/mdx/mdx-renderer';
 import { HoverUnderlineText } from '@/components/ui/hover-underline-text';
 import { getDictionary, isValidLocale } from '@/lib/i18n';
 import { getAboutPage } from '@/lib/pages';
-import { buildAbsoluteUrl, getOpenGraphLocale } from '@/lib/seo';
+import { buildAbsoluteUrl, getOpenGraphLocale, resolveAbsoluteUrl } from '@/lib/seo';
 import { cn } from '@/lib/utils';
 
 const aboutMdxComponents = {
@@ -100,6 +100,19 @@ export default async function LocalizedAboutPage({ params }: LocalizedAboutPageP
     notFound();
   }
 
+  const profilePageStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    mainEntity: {
+      '@type': 'Person',
+      name: about.name,
+      url: buildAbsoluteUrl(`/${locale}/about`),
+      ...(about.avatarImage ? { image: resolveAbsoluteUrl(about.avatarImage) } : {}),
+      jobTitle: about.role,
+      ...(Object.values(about.socials || {}).length > 0 ? { sameAs: Object.values(about.socials || {}) } : {}),
+    },
+  };
+
   return (
     <AboutLayout
       description={about.description}
@@ -122,6 +135,12 @@ export default async function LocalizedAboutPage({ params }: LocalizedAboutPageP
       }
       title={about.headline}
     >
+      <script
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(profilePageStructuredData),
+        }}
+        type="application/ld+json"
+      />
       <section className="glass-card rounded-4xl px-6 py-8 md:px-10 md:py-10">
         <MDXRenderer components={aboutMdxComponents} slug={about.slug} source={about.contentMd} />
       </section>

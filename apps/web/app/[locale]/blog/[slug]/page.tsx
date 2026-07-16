@@ -127,9 +127,34 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
       name: siteConfig.name,
     },
     publisher: {
-      '@type': 'Organization',
+      '@type': 'Person',
       name: siteConfig.name,
     },
+  };
+
+  const breadcrumbListStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: dictionary.navigation.home,
+        item: buildAbsoluteUrl(`/${locale}`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: dictionary.common.blog,
+        item: buildAbsoluteUrl(`/${locale}/blog`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: canonical,
+      },
+    ],
   };
 
   return (
@@ -139,7 +164,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(blogPostingStructuredData),
+          __html: JSON.stringify([blogPostingStructuredData, breadcrumbListStructuredData]),
         }}
       />
       <div className="mx-auto max-w-295 space-y-10">

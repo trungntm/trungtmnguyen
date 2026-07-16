@@ -107,13 +107,38 @@ export default async function LocalizedSeriesDetailPage({
   const dictionary = getDictionary(locale);
   const { canonical } = getCmsSeriesSeo(series);
   const structuredData = getSeriesStructuredData(series, canonical);
+  
+  const breadcrumbListStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: dictionary.navigation.home,
+        item: buildAbsoluteUrl(`/${locale}`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: dictionary.seriesPage.heading,
+        item: buildAbsoluteUrl(`/${locale}/series`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: series.title,
+        item: canonical,
+      },
+    ],
+  };
 
   return (
     <article className="page-container px-4 py-14 md:px-6 md:py-18">
       <BlogDetailTranslationSync translations={series.translations} />
       <script
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
+          __html: JSON.stringify([structuredData, breadcrumbListStructuredData]),
         }}
         type="application/ld+json"
       />

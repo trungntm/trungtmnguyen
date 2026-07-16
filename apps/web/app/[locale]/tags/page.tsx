@@ -39,13 +39,11 @@ export async function generateMetadata({ params }: LocalizedTagsPageProps): Prom
       url: buildAbsoluteUrl(canonicalPath),
       title: dictionary.metadata.tagsTitle,
       description: dictionary.metadata.tagsDescription,
-      images: [siteConfig.ogImage],
     },
     twitter: {
       card: siteConfig.twitter.card,
       title: dictionary.metadata.tagsTitle,
       description: dictionary.metadata.tagsDescription,
-      images: [siteConfig.ogImage],
     },
   };
 }
