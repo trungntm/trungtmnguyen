@@ -2,11 +2,11 @@ import type { Locale } from '@/lib/i18n';
 
 export const siteConfig = {
   name: 'Trung Nguyen',
-  title: 'Trung Nguyen - Software Engineering Blog',
+  title: 'Trung Nguyen - Software Engineering',
   description:
-    'Practical notes about software architecture, Java, Spring Boot, Next.js, DevOps, and modern engineering.',
+    'Personal website where I share what I learn while building software, designing systems, and exploring modern technologies.',
   url: 'https://trungtmnguyen.com',
-  ogImage: '/og/default.png',
+  ogImage: '/og/default.jpg',
   twitter: {
     card: 'summary_large_image',
   },
@@ -18,10 +18,7 @@ function normalizeBaseUrl(value: string) {
 }
 
 export function getSiteUrl() {
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
-    siteConfig.url
-  );
+  return process.env.NEXT_PUBLIC_SITE_URL?.trim() || siteConfig.url;
 }
 
 export function getCanonicalSiteUrl() {
