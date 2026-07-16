@@ -3,7 +3,10 @@
   "git": {
     "deploymentEnabled": {
       "feature/*": false,
-      "bugfix/*": false
+      "bugfix/*": false,
+      "hotfix/*": false,
+      "release/*": false,
+      "develop": false
     }
   }
 }

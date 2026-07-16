@@ -47,11 +47,15 @@ export function HomeHero({ dictionary }: HomeHeroProps) {
       <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <motion.div animate="show" className="space-y-8" initial="hidden" variants={container}>
           <motion.div
-            className="inline-flex rounded-full border border-border bg-surface/80 px-4 py-2 text-xs font-medium tracking-[0.2em] text-muted uppercase shadow-sm backdrop-blur"
+            className="inline-flex items-center gap-3 rounded-full border border-border bg-surface/80 px-4 py-2 text-xs font-medium tracking-[0.2em] text-muted uppercase shadow-sm backdrop-blur"
             variants={item}
             {...(shouldReduceMotion ? { transition: { duration: 0.01 } } : {})}
           >
-            {dictionary.home.badge}
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+            </span>
+            👋 {dictionary.home.badge}
           </motion.div>
           <motion.div
             className="space-y-5"
@@ -61,8 +65,9 @@ export function HomeHero({ dictionary }: HomeHeroProps) {
             <p className="text-sm font-medium tracking-[0.3em] text-muted uppercase">
               {dictionary.home.eyebrow}
             </p>
-            <h1 className="max-w-3xl text-5xl font-semibold tracking-tight text-balance md:text-7xl">
-              {dictionary.home.title} <span className="gradient-text">{dictionary.home.titleHighlight}</span>
+            <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-balance md:text-5xl">
+              {dictionary.home.title}{' '}
+              <span className="gradient-text">{dictionary.home.titleHighlight}</span>
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-muted md:text-xl">
               {dictionary.home.description}

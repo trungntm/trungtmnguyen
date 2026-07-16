@@ -1,34 +1,24 @@
 'use client';
 
 import Image from 'next/image';
-import type { MotionValue, Variants } from 'framer-motion';
-import { motion, useTransform } from 'framer-motion';
+import type { MotionValue } from 'framer-motion';
+import { motion, useTransform, useMotionValue } from 'framer-motion';
 import { useState } from 'react';
+import type { HeroVisualItem } from './hero-visual-data';
 
-export type HeroVisualItem = {
-  fallbackGradient: string;
-  image: string;
-  kind: 'technical' | 'profile';
-  label: string;
-  size: 'large' | 'medium' | 'small';
-};
-
-export type HeroVisualSlot = {
-  delay: number;
-  duration: number;
-  rotate: number;
-  x: number;
-  y: number;
-  zIndex: number;
-};
-
-type HeroImageCardProps = {
-  index: number;
+export type HeroImageCardProps = {
+  className?: string;
+  depthIndex?: number;
+  floatingAnimation?: {
+    delay: number;
+    duration: number;
+  };
   item: HeroVisualItem;
-  parallaxX: MotionValue<number>;
-  parallaxY: MotionValue<number>;
+  parallaxX?: MotionValue<number>;
+  parallaxY?: MotionValue<number>;
   shouldReduceMotion: boolean;
-  slot: HeroVisualSlot;
+  style?: import('framer-motion').MotionStyle;
+  variant?: 'desktop' | 'mobile';
 };
 
 const cardSizeClasses: Record<HeroVisualItem['size'], string> = {
@@ -37,62 +27,48 @@ const cardSizeClasses: Record<HeroVisualItem['size'], string> = {
   small: 'h-[108px] w-[140px]',
 };
 
-const cardVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 40,
-    rotate: -10,
-    scale: 0.9,
-  },
-  show: (slot: HeroVisualSlot) => ({
-    opacity: 1,
-    y: 0,
-    rotate: slot.rotate,
-    scale: 1,
-    transition: {
-      duration: 0.7,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  }),
-};
-
 export function HeroImageCard({
-  index,
+  className = '',
+  depthIndex = 0,
+  floatingAnimation,
   item,
   parallaxX,
   parallaxY,
   shouldReduceMotion,
-  slot,
+  style,
+  variant = 'desktop',
 }: HeroImageCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
-  const depth = shouldReduceMotion ? 0 : Math.min(10 + index * 2.5, 20);
-  const x = useTransform(parallaxX, (value) => value * depth);
-  const y = useTransform(parallaxY, (value) => value * depth);
+  
+  // Depth calculation for parallax effect
+  const depth = shouldReduceMotion ? 0 : Math.min(10 + depthIndex * 2.5, 20);
+  
+  // We need fallback motion values if parallax isn't provided (e.g. on mobile)
+  const defaultMotionValue = useMotionValue(0);
+  const x = useTransform(parallaxX || defaultMotionValue, (value: number) => value * depth);
+  const y = useTransform(parallaxY || defaultMotionValue, (value: number) => value * depth);
+  
   const isProfileCard = item.kind === 'profile';
+  const sizeClass = variant === 'desktop' ? cardSizeClasses[item.size] : 'w-full h-full';
 
   return (
     <motion.figure
-      className={`absolute ${cardSizeClasses[item.size]}`}
-      custom={slot}
-      initial="hidden"
-      style={{
-        left: slot.x,
-        top: slot.y,
-        x,
-        y,
-        zIndex: slot.zIndex,
-      }}
-      variants={cardVariants}
+      className={`${sizeClass} ${className}`}
+      style={{ ...style, x, y }}
     >
       <motion.div
-        animate={shouldReduceMotion ? { y: 0 } : { y: [0, -12, 0] }}
+        animate={
+          shouldReduceMotion || !floatingAnimation
+            ? { y: 0 }
+            : { y: [0, -12, 0] }
+        }
         className="relative h-full w-full"
         transition={
-          shouldReduceMotion
+          shouldReduceMotion || !floatingAnimation
             ? { duration: 0.01 }
             : {
-                duration: slot.duration,
-                delay: slot.delay,
+                duration: floatingAnimation.duration,
+                delay: floatingAnimation.delay,
                 repeat: Infinity,
                 ease: 'easeInOut',
               }
@@ -108,7 +84,7 @@ export function HeroImageCard({
                 },
               }
             : {})}
-          {...(!shouldReduceMotion
+          {...(!shouldReduceMotion && variant === 'desktop'
             ? {
                 whileHover: {
                   y: -10,
@@ -131,7 +107,7 @@ export function HeroImageCard({
               alt={item.label}
               className="object-cover"
               fill
-              sizes="(min-width: 1280px) 260px, (min-width: 1024px) 220px, 190px"
+              sizes="(min-width: 1280px) 260px, (min-width: 1024px) 220px, 100vw"
               src={item.image}
               unoptimized
               onError={() => setImageFailed(true)}

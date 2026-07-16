@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: LocalizedAboutPageProps): Pro
   }
 
   const dictionary = getDictionary(locale);
-  const about = await getAboutPage();
+  const about = await getAboutPage(locale);
 
   return {
     title: about?.title ?? dictionary.metadata.aboutTitle,
@@ -94,7 +94,7 @@ export default async function LocalizedAboutPage({ params }: LocalizedAboutPageP
   }
 
   const dictionary = getDictionary(locale);
-  const about = await getAboutPage();
+  const about = await getAboutPage(locale);
 
   if (!about) {
     notFound();

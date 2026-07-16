@@ -11,6 +11,15 @@ type CodeProps = ComponentPropsWithoutRef<'code'>;
 type ImgProps = ComponentPropsWithoutRef<'img'>;
 
 export const mdxComponents = {
+  h1: ({ className, ...props }: ComponentPropsWithoutRef<'h1'>) => (
+    <h1
+      className={cn(
+        'mt-14 scroll-mt-28 text-4xl font-bold tracking-tight text-foreground',
+        className,
+      )}
+      {...props}
+    />
+  ),
   h2: ({ className, ...props }: ComponentPropsWithoutRef<'h2'>) => (
     <h2
       className={cn(
