@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import 'server-only';
 
 import { z } from 'zod';
@@ -482,6 +483,10 @@ export async function getPublishedPostBySlug(
     throw error;
   }
 }
+
+export const getCachedPublishedPostBySlug = cache(
+  async (locale: BlogLocale, slug: string) => getPublishedPostBySlug({ locale, slug }),
+);
 
 type GetAllPublishedSeriesInput = Omit<GetPublishedSeriesInput, 'page' | 'pageSize'> & {
   pageSize?: number;

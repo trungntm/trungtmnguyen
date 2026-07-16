@@ -7,7 +7,7 @@ import { BlogPostViewTracker } from '@/components/analytics/blog-post-view-track
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { TagPill } from '@/components/blog/tag-pill';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
-import { getPublishedPostBySlug } from '@/features/cms-blog/api/cms-blog-api';
+import { getCachedPublishedPostBySlug } from '@/features/cms-blog/api/cms-blog-api';
 import { formatBlogDate } from '@/lib/blogs';
 import { getDictionary, isValidLocale, type Locale } from '@/lib/i18n';
 import { calculateReadingTime } from '@/lib/reading-time';
@@ -57,13 +57,13 @@ export async function generateMetadata({ params }: LocalizedBlogDetailPageProps)
   }
 
   try {
-    const post = await getPublishedPostBySlug({ locale, slug });
+    const post = await getCachedPublishedPostBySlug(locale, slug);
 
     if (!post) {
       return {};
     }
 
-    const { title, description, canonical, images, languages } = getCmsPostSeo(post);
+    const { title, description, canonical, languages } = getCmsPostSeo(post);
 
     return {
       title,
@@ -80,13 +80,11 @@ export async function generateMetadata({ params }: LocalizedBlogDetailPageProps)
         description,
         publishedTime: post.publishedAt,
         modifiedTime: post.updatedAt,
-        ...(images ? { images } : {}),
       },
       twitter: {
-        card: post.coverImageUrl ? 'summary_large_image' : 'summary',
+        card: 'summary_large_image',
         title,
         description,
-        ...(images ? { images } : {}),
       },
     };
   } catch {
@@ -101,7 +99,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
     notFound();
   }
 
-  const post = await getPublishedPostBySlug({ locale, slug });
+  const post = await getCachedPublishedPostBySlug(locale, slug);
 
   if (!post) {
     notFound();
