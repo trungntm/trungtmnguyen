@@ -100,9 +100,9 @@ function normalizeSlug(slug: string) {
   return slug.replace(/^\/+|\/+$/g, '');
 }
 
-const getPageBySlugCached = cache(async (slug: string): Promise<Page | null> => {
+const getPageBySlugCached = cache(async (slug: string, locale: string): Promise<Page | null> => {
   const normalizedSlug = normalizeSlug(slug);
-  const filePath = path.join(appRoot, 'data', 'pages', `${normalizedSlug}.mdx`);
+  const filePath = path.join(appRoot, 'data', 'pages', normalizedSlug, `${locale}.mdx`);
 
   try {
     const source = await readFile(filePath, 'utf8');
@@ -112,7 +112,7 @@ const getPageBySlugCached = cache(async (slug: string): Promise<Page | null> => 
     return {
       ...data,
       slug: normalizedSlug,
-      url: `/${normalizedSlug}`,
+      url: `/${locale}/${normalizedSlug}`,
       contentMd: parsed.content.trim(),
     };
   } catch {
@@ -120,10 +120,10 @@ const getPageBySlugCached = cache(async (slug: string): Promise<Page | null> => 
   }
 });
 
-export async function getPageBySlug(slug: string) {
-  return getPageBySlugCached(slug);
+export async function getPageBySlug(slug: string, locale: string) {
+  return getPageBySlugCached(slug, locale);
 }
 
-export async function getAboutPage() {
-  return getPageBySlug('about');
+export async function getAboutPage(locale: string) {
+  return getPageBySlug('about', locale);
 }
