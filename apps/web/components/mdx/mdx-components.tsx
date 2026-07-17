@@ -4,6 +4,7 @@ import type { ComponentProps, ComponentPropsWithoutRef } from 'react';
 import { cn } from '@/lib/utils';
 
 import { BaseLink } from '@/components/ui/links';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { CodeBlockFigure } from './code-block-figure';
 
 type AnchorProps = ComponentProps<typeof BaseLink>;
@@ -111,17 +112,48 @@ export const mdxComponents = {
       {...props}
     />
   ),
-  img: ({ className, alt, ...props }: ImgProps) => (
-    <img
-      alt={alt ?? ''}
-      className={cn(
-        'block mx-auto rounded-[1.5rem] border border-border/70 shadow-[0_18px_55px_-38px_var(--shadow-color)]',
-        className,
-      )}
-      loading="lazy"
-      {...props}
-    />
-  ),
+  img: ({ className, alt, src, width, height, ...props }: ImgProps) => {
+    if (!src) return null;
+    
+    // For markdown images without explicit width/height, we can use responsive fill, 
+    // but Next.js requires width/height if we aren't using fill.
+    // If we have width and height from rehype, we pass them.
+    // Otherwise we'll render it as fill with an aspect-ratio wrapper, 
+    // or just fallback to native img if it's too complex to guess. 
+    // Since rehype plugins (like rehype-img-size) usually provide width/height:
+    
+    const parsedWidth = width ? parseInt(String(width), 10) : undefined;
+    const parsedHeight = height ? parseInt(String(height), 10) : undefined;
+    
+    if (parsedWidth && parsedHeight) {
+      return (
+        <OptimizedImage
+          alt={alt ?? ''}
+          className={cn(
+            'block mx-auto rounded-[1.5rem] border border-border/70 shadow-[0_18px_55px_-38px_var(--shadow-color)]',
+            className,
+          )}
+          src={src as string}
+          width={parsedWidth}
+          height={parsedHeight}
+          sizes="(min-width: 1024px) 768px, 100vw"
+        />
+      );
+    }
+    
+    return (
+      <img
+        alt={alt ?? ''}
+        className={cn(
+          'block mx-auto rounded-[1.5rem] border border-border/70 shadow-[0_18px_55px_-38px_var(--shadow-color)]',
+          className,
+        )}
+        loading="lazy"
+        src={src}
+        {...props}
+      />
+    );
+  },
   table: ({ className, ...props }: ComponentPropsWithoutRef<'table'>) => (
     <div className="overflow-x-auto">
       <table className={cn('w-full border-collapse text-left text-sm', className)} {...props} />

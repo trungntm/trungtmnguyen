@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { notFound } from 'next/navigation';
 
 import { SeriesPostListItem } from '@/components/blog/series-post-list-item';
@@ -107,13 +107,38 @@ export default async function LocalizedSeriesDetailPage({
   const dictionary = getDictionary(locale);
   const { canonical } = getCmsSeriesSeo(series);
   const structuredData = getSeriesStructuredData(series, canonical);
+  
+  const breadcrumbListStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: dictionary.navigation.home,
+        item: buildAbsoluteUrl(`/${locale}`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: dictionary.seriesPage.heading,
+        item: buildAbsoluteUrl(`/${locale}/series`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: series.title,
+        item: canonical,
+      },
+    ],
+  };
 
   return (
     <article className="page-container px-4 py-14 md:px-6 md:py-18">
       <BlogDetailTranslationSync translations={series.translations} />
       <script
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
+          __html: JSON.stringify([structuredData, breadcrumbListStructuredData]),
         }}
         type="application/ld+json"
       />
@@ -146,14 +171,13 @@ export default async function LocalizedSeriesDetailPage({
 
           {series.coverImageUrl ? (
             <div className="glass-card relative aspect-[16/9] overflow-hidden rounded-[2rem]">
-              <Image
+              <OptimizedImage
                 alt={series.title}
                 className="object-cover"
                 fill
                 priority
                 sizes="(min-width: 1024px) 64rem, 100vw"
                 src={series.coverImageUrl}
-                unoptimized
               />
             </div>
           ) : null}

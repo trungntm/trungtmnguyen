@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { notFound } from 'next/navigation';
 
 import { BlogDetailTranslationSync } from '@/components/layout/blog-detail-translation-sync';
@@ -7,7 +7,7 @@ import { BlogPostViewTracker } from '@/components/analytics/blog-post-view-track
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { TagPill } from '@/components/blog/tag-pill';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
-import { getPublishedPostBySlug } from '@/features/cms-blog/api/cms-blog-api';
+import { getCachedPublishedPostBySlug } from '@/features/cms-blog/api/cms-blog-api';
 import { formatBlogDate } from '@/lib/blogs';
 import { getDictionary, isValidLocale, type Locale } from '@/lib/i18n';
 import { calculateReadingTime } from '@/lib/reading-time';
@@ -57,13 +57,13 @@ export async function generateMetadata({ params }: LocalizedBlogDetailPageProps)
   }
 
   try {
-    const post = await getPublishedPostBySlug({ locale, slug });
+    const post = await getCachedPublishedPostBySlug(locale, slug);
 
     if (!post) {
       return {};
     }
 
-    const { title, description, canonical, images, languages } = getCmsPostSeo(post);
+    const { title, description, canonical, languages } = getCmsPostSeo(post);
 
     return {
       title,
@@ -80,13 +80,11 @@ export async function generateMetadata({ params }: LocalizedBlogDetailPageProps)
         description,
         publishedTime: post.publishedAt,
         modifiedTime: post.updatedAt,
-        ...(images ? { images } : {}),
       },
       twitter: {
-        card: post.coverImageUrl ? 'summary_large_image' : 'summary',
+        card: 'summary_large_image',
         title,
         description,
-        ...(images ? { images } : {}),
       },
     };
   } catch {
@@ -101,7 +99,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
     notFound();
   }
 
-  const post = await getPublishedPostBySlug({ locale, slug });
+  const post = await getCachedPublishedPostBySlug(locale, slug);
 
   if (!post) {
     notFound();
@@ -129,9 +127,34 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
       name: siteConfig.name,
     },
     publisher: {
-      '@type': 'Organization',
+      '@type': 'Person',
       name: siteConfig.name,
     },
+  };
+
+  const breadcrumbListStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: dictionary.navigation.home,
+        item: buildAbsoluteUrl(`/${locale}`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: dictionary.common.blog,
+        item: buildAbsoluteUrl(`/${locale}/blog`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: canonical,
+      },
+    ],
   };
 
   return (
@@ -141,7 +164,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(blogPostingStructuredData),
+          __html: JSON.stringify([blogPostingStructuredData, breadcrumbListStructuredData]),
         }}
       />
       <div className="mx-auto max-w-295 space-y-10">
@@ -177,14 +200,13 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
 
           {post.coverImageUrl ? (
             <div className="glass-card relative aspect-[16/9] overflow-hidden rounded-[2rem]">
-              <Image
+              <OptimizedImage
                 alt={post.title}
                 className="object-cover"
                 fill
                 priority
                 sizes="(min-width: 1024px) 64rem, 100vw"
                 src={post.coverImageUrl}
-                unoptimized
               />
             </div>
           ) : null}

@@ -44,13 +44,11 @@ export async function generateMetadata({ params }: LocalizedHomePageProps): Prom
       url: buildAbsoluteUrl(canonicalPath),
       title: dictionary.metadata.siteTitle,
       description: dictionary.metadata.siteDescription,
-      images: [siteConfig.ogImage],
     },
     twitter: {
       card: siteConfig.twitter.card,
       title: dictionary.metadata.siteTitle,
       description: dictionary.metadata.siteDescription,
-      images: [siteConfig.ogImage],
     },
   };
 }
@@ -89,8 +87,29 @@ export default async function LocalizedHomePage({ params }: LocalizedHomePagePro
     latestSeries = [];
   }
 
+  const webSiteStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: dictionary.metadata.siteTitle,
+    url: buildAbsoluteUrl(`/${locale}`),
+    description: dictionary.metadata.siteDescription,
+    inLanguage: locale,
+    publisher: {
+      '@type': 'Person',
+      name: siteConfig.name,
+      url: siteConfig.url,
+      image: buildAbsoluteUrl(siteConfig.avatarImage),
+    },
+  };
+
   return (
     <div className="page-shell">
+      <script
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(webSiteStructuredData),
+        }}
+        type="application/ld+json"
+      />
       <div className="glow-background pointer-events-none absolute inset-0 -z-10" />
       <div className="grid-background pointer-events-none absolute inset-0 -z-10" />
 

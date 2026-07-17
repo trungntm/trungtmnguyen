@@ -2,11 +2,7 @@ import type { Locale } from '@/lib/i18n';
 
 export const siteConfig = {
   name: 'Trung Nguyen',
-  title: 'Trung Nguyen - Software Engineering',
-  description:
-    'Personal website where I share what I learn while building software, designing systems, and exploring modern technologies.',
   url: 'https://trungtmnguyen.com',
-  ogImage: '/og/default.jpg',
   twitter: {
     card: 'summary_large_image',
   },

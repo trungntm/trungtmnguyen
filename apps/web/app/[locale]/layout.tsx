@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 
-import { isValidLocale, locales } from '@/lib/i18n';
-import { buildAbsoluteUrl } from '@/lib/seo';
+import { getDictionary, isValidLocale, locales } from '@/lib/i18n';
+import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 type LocaleLayoutProps = Readonly<{
   children: ReactNode;
@@ -29,7 +29,23 @@ export async function generateMetadata({ params }: LocaleMetadataProps): Promise
     return {};
   }
 
+  const dictionary = getDictionary(locale);
+
   return {
+    title: {
+      default: dictionary.metadata.siteTitle,
+      template: `%s | ${siteConfig.name}`,
+    },
+    description: dictionary.metadata.siteDescription,
+    openGraph: {
+      title: dictionary.metadata.siteTitle,
+      description: dictionary.metadata.siteDescription,
+      locale: getOpenGraphLocale(locale),
+    },
+    twitter: {
+      title: dictionary.metadata.siteTitle,
+      description: dictionary.metadata.siteDescription,
+    },
     alternates: {
       types: {
         'application/rss+xml': buildAbsoluteUrl(`/${locale}/rss.xml`),

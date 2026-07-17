@@ -4,11 +4,13 @@ import type { ReactNode } from 'react';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { ThemeProvider } from '@/components/theme/theme-provider';
-import { defaultLocale } from '@/lib/i18n';
+import { defaultLocale, getDictionary } from '@/lib/i18n';
 import { getOpenGraphLocale, getSiteUrl, siteConfig } from '@/lib/seo';
 
 import './globals.css';
 import './prism.css';
+
+const defaultDictionary = getDictionary(defaultLocale);
 
 const spaceGrotesk = localFont({
   src: [
@@ -45,24 +47,22 @@ const spaceGrotesk = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: siteConfig.title,
+    default: defaultDictionary.metadata.siteTitle,
     template: `%s | ${siteConfig.name}`,
   },
-  description: siteConfig.description,
+  description: defaultDictionary.metadata.siteDescription,
   openGraph: {
     type: 'website',
     locale: getOpenGraphLocale(defaultLocale),
     url: getSiteUrl(),
     siteName: siteConfig.name,
-    title: siteConfig.title,
-    description: siteConfig.description,
-    images: [siteConfig.ogImage],
+    title: defaultDictionary.metadata.siteTitle,
+    description: defaultDictionary.metadata.siteDescription,
   },
   twitter: {
     card: siteConfig.twitter.card,
-    title: siteConfig.title,
-    description: siteConfig.description,
-    images: [siteConfig.ogImage],
+    title: defaultDictionary.metadata.siteTitle,
+    description: defaultDictionary.metadata.siteDescription,
   },
 };
 

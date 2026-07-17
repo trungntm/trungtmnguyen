@@ -40,13 +40,11 @@ export async function generateMetadata({ params }: LocalizedBlogPageProps): Prom
       url: buildAbsoluteUrl(canonicalPath),
       title: dictionary.metadata.blogTitle,
       description: dictionary.metadata.blogDescription,
-      images: [siteConfig.ogImage],
     },
     twitter: {
       card: siteConfig.twitter.card,
       title: dictionary.metadata.blogTitle,
       description: dictionary.metadata.blogDescription,
-      images: [siteConfig.ogImage],
     },
   };
 }

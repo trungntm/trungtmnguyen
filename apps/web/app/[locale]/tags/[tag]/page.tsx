@@ -65,13 +65,11 @@ export async function generateMetadata({ params }: TagDetailPageProps): Promise<
       url: canonicalUrl,
       title: `#${tagLabel}`,
       description,
-      images: [siteConfig.ogImage],
     },
     twitter: {
       card: siteConfig.twitter.card,
       title: `#${tagLabel}`,
       description,
-      images: [siteConfig.ogImage],
     },
   };
 }
