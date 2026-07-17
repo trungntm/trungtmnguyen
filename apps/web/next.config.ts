@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { permanentRedirects } from './features/redirects';
 
 const ContentSecurityPolicy = `
   default-src 'self';
@@ -42,7 +43,6 @@ const ContentSecurityPolicy = `
   frame-ancestors 'none';
 `;
 
-
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
@@ -72,7 +72,7 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()',
   },
-]
+];
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -97,6 +97,9 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
     ];
+  },
+  async redirects() {
+    return permanentRedirects;
   },
 };
 
