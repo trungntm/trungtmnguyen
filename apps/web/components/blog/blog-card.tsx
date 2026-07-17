@@ -1,6 +1,6 @@
 import type { Route } from 'next';
-import Image from 'next/image';
 
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { BaseLink } from '@/components/ui/links';
 import { formatBlogDate } from '@/lib/blogs';
 import type { Dictionary, Locale } from '@/lib/i18n';
@@ -25,13 +25,12 @@ export function BlogCard({ blog, locale, dictionary, disableTagLinks = false }: 
       <BaseLink className="block focus-visible:outline-none" href={blog.url as Route}>
         {thumbnail ? (
           <div className="relative aspect-[16/9] overflow-hidden border-b border-border/80">
-            <Image
+            <OptimizedImage
               alt={blog.title}
               className="object-cover"
               fill
               sizes="(min-width: 1024px) 22rem, (min-width: 768px) 50vw, 100vw"
               src={thumbnail}
-              unoptimized={!thumbnail.startsWith('/')}
             />
           </div>
         ) : null}

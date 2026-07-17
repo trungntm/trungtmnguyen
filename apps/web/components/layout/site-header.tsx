@@ -1,7 +1,7 @@
 'use client';
 
 import type { Route } from 'next';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { useEffect, useState } from 'react';
 
 import { LanguageSwitcher } from '@/components/layout/language-switcher';
@@ -75,13 +75,12 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
             {avatarFailed ? (
               'TN'
             ) : (
-              <Image
+              <OptimizedImage
                 alt="Trung Nguyen"
                 className="object-cover"
                 fill
                 sizes="40px"
                 src={headerAvatarSrc}
-                unoptimized
                 onError={() => setAvatarFailed(true)}
               />
             )}

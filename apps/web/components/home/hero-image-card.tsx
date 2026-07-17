@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import type { MotionValue } from 'framer-motion';
 import { motion, useTransform, useMotionValue } from 'framer-motion';
 import { useState } from 'react';
@@ -103,13 +103,12 @@ export function HeroImageCard({
           <div className="absolute inset-0" style={{ backgroundImage: item.fallbackGradient }} />
 
           {!imageFailed ? (
-            <Image
+            <OptimizedImage
               alt={item.label}
               className="object-cover"
               fill
               sizes="(min-width: 1280px) 260px, (min-width: 1024px) 220px, 100vw"
               src={item.image}
-              unoptimized
               onError={() => setImageFailed(true)}
             />
           ) : null}

@@ -1,5 +1,6 @@
 import type { Route } from 'next';
-import Image from 'next/image';
+
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 import { TrackedLink } from '@/components/analytics/tracked-link';
 import { TagPill } from '@/components/blog/tag-pill';
@@ -41,13 +42,12 @@ export function SeriesPostListItem({ post, seriesId, locale, dictionary, index }
       >
         {post.coverImageUrl ? (
           <div className="relative aspect-[16/9] overflow-hidden border-b border-border/80">
-            <Image
+            <OptimizedImage
               alt={post.title}
               className="object-cover"
               fill
               sizes="(min-width: 1024px) 22rem, (min-width: 768px) 50vw, 100vw"
               src={post.coverImageUrl}
-              unoptimized
             />
           </div>
         ) : (

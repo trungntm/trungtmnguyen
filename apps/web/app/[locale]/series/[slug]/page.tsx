@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { notFound } from 'next/navigation';
 
 import { SeriesPostListItem } from '@/components/blog/series-post-list-item';
@@ -171,14 +171,13 @@ export default async function LocalizedSeriesDetailPage({
 
           {series.coverImageUrl ? (
             <div className="glass-card relative aspect-[16/9] overflow-hidden rounded-[2rem]">
-              <Image
+              <OptimizedImage
                 alt={series.title}
                 className="object-cover"
                 fill
                 priority
                 sizes="(min-width: 1024px) 64rem, 100vw"
                 src={series.coverImageUrl}
-                unoptimized
               />
             </div>
           ) : null}
