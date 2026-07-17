@@ -1,5 +1,5 @@
 import type { NextConfig } from 'next';
-import { permanentRedirects } from './features/redirects';
+import { getRedirects } from './features/redirects/get-redirects';
 
 const ContentSecurityPolicy = `
   default-src 'self';
@@ -99,7 +99,7 @@ const nextConfig: NextConfig = {
     ];
   },
   async redirects() {
-    return permanentRedirects;
+    return getRedirects();
   },
 };
 
