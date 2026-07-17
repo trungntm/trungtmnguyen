@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 
 import type { Page } from '@/lib/pages';
@@ -34,12 +34,11 @@ export function ProfileCard({
       <div className="space-y-6 px-6 pb-6">
         <div className="-mt-10 flex items-end justify-between gap-4">
           {avatarImage ? (
-            <Image
+            <OptimizedImage
               alt={name}
               className="glass-card size-20 rounded-[1.75rem] border border-white/20 object-cover"
               height={80}
               src={avatarImage}
-              unoptimized
               width={80}
             />
           ) : (

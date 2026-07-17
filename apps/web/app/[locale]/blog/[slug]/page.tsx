@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { notFound } from 'next/navigation';
 
 import { BlogDetailTranslationSync } from '@/components/layout/blog-detail-translation-sync';
@@ -200,14 +200,13 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
 
           {post.coverImageUrl ? (
             <div className="glass-card relative aspect-[16/9] overflow-hidden rounded-[2rem]">
-              <Image
+              <OptimizedImage
                 alt={post.title}
                 className="object-cover"
                 fill
                 priority
                 sizes="(min-width: 1024px) 64rem, 100vw"
                 src={post.coverImageUrl}
-                unoptimized
               />
             </div>
           ) : null}

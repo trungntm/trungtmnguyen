@@ -81,6 +81,15 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd().replace(/\/apps\/web$/, ''),
   },
+  images: {
+    qualities: [75, 85],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+  },
   async headers() {
     return [
       {
