@@ -5,8 +5,7 @@
       "feature/*": false,
       "bugfix/*": false,
       "hotfix/*": false,
-      "release/*": false,
-      "develop": false
+      "release/*": false
     }
   }
 }
