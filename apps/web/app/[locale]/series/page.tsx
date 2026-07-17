@@ -51,13 +51,11 @@ export async function generateMetadata({ params }: LocalizedSeriesPageProps): Pr
       url: buildAbsoluteUrl(canonicalPath),
       title: dictionary.metadata.seriesTitle,
       description: dictionary.metadata.seriesDescription,
-      images: [siteConfig.ogImage],
     },
     twitter: {
       card: siteConfig.twitter.card,
       title: dictionary.metadata.seriesTitle,
       description: dictionary.metadata.seriesDescription,
-      images: [siteConfig.ogImage],
     },
   };
 }

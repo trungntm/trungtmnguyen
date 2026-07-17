@@ -7,6 +7,13 @@ import { buildAbsoluteUrl } from '@/lib/seo';
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
 
+type GroupedEntry = {
+  lastModified?: string | Date | undefined;
+  changeFrequency?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never' | undefined;
+  priority?: number | undefined;
+  alternates: { languages: Record<string, string> };
+};
+
 export const revalidate = 60;
 
 function getStaticEntries(lastModified: Date): SitemapEntry[] {
@@ -14,6 +21,11 @@ function getStaticEntries(lastModified: Date): SitemapEntry[] {
     ['/', '/about', '/blog', '/series', '/tags'].map((path) => ({
       url: buildAbsoluteUrl(path === '/' ? `/${locale}` : `/${locale}${path}`),
       lastModified,
+      alternates: {
+        languages: Object.fromEntries(
+          locales.map((l) => [l, buildAbsoluteUrl(path === '/' ? `/${l}` : `/${l}${path}`)])
+        ),
+      },
     })),
   );
 
@@ -21,12 +33,18 @@ function getStaticEntries(lastModified: Date): SitemapEntry[] {
     {
       url: buildAbsoluteUrl('/'),
       lastModified,
+      alternates: {
+        languages: Object.fromEntries(locales.map((l) => [l, buildAbsoluteUrl(`/${l}`)]))
+      }
     },
     {
       url: buildAbsoluteUrl('/blog'),
       lastModified,
       changeFrequency: 'weekly',
       priority: 0.9,
+      alternates: {
+        languages: Object.fromEntries(locales.map((l) => [l, buildAbsoluteUrl(`/${l}/blog`)]))
+      }
     },
     ...localizedEntries,
   ];
@@ -52,23 +70,115 @@ async function getCmsEntries(): Promise<SitemapEntry[]> {
     )
   ).flat();
 
-  return [
-    ...posts.map((post) => ({
-      url: buildAbsoluteUrl(post.url),
-      lastModified: post.updatedAt || post.publishedAt,
-      changeFrequency: 'weekly',
-      priority: 0.7,
-    })),
-    ...seriesEntries.map((series) => ({
-      url: buildAbsoluteUrl(series.url),
-      lastModified: series.updatedAt || series.publishedAt,
-      changeFrequency: 'weekly',
-      priority: 0.65,
-    })),
-    ...tagEntries.map((entry) => ({
-      url: entry.url,
+  const postSitemapEntries = Object.values(
+    posts.reduce((acc, post) => {
+      if (!acc[post.id]) {
+        acc[post.id] = {
+          lastModified: post.updatedAt || post.publishedAt,
+          changeFrequency: 'weekly',
+          priority: 0.7,
+          alternates: { languages: {} },
+        };
+      }
+      
+      const currentEntry = acc[post.id]!;
+      currentEntry.alternates.languages[post.locale] = buildAbsoluteUrl(post.url);
+      
+      const currentLastModified = new Date(currentEntry.lastModified as string | Date).getTime();
+      const postLastModified = new Date(post.updatedAt || post.publishedAt).getTime();
+      if (postLastModified > currentLastModified) {
+        currentEntry.lastModified = post.updatedAt || post.publishedAt;
+      }
+      
+      return acc;
+    }, {} as Record<string, GroupedEntry>)
+  ).flatMap((entry): SitemapEntry[] => {
+    return Object.entries(entry.alternates.languages).map(([_locale, url]) => ({
+      url,
       lastModified: entry.lastModified,
-    })),
+      changeFrequency: entry.changeFrequency,
+      priority: entry.priority,
+      alternates: entry.alternates,
+    }));
+  });
+
+  const seriesSitemapEntries = Object.values(
+    seriesEntries.reduce((acc, series) => {
+      if (!acc[series.id]) {
+        acc[series.id] = {
+          lastModified: series.updatedAt || series.publishedAt,
+          changeFrequency: 'weekly',
+          priority: 0.65,
+          alternates: { languages: {} },
+        };
+      }
+      
+      const currentEntry = acc[series.id]!;
+      currentEntry.alternates.languages[series.locale] = buildAbsoluteUrl(series.url);
+      
+      const currentLastModified = new Date(currentEntry.lastModified as string | Date).getTime();
+      const seriesLastModified = new Date(series.updatedAt || series.publishedAt).getTime();
+      if (seriesLastModified > currentLastModified) {
+        currentEntry.lastModified = series.updatedAt || series.publishedAt;
+      }
+      
+      return acc;
+    }, {} as Record<string, GroupedEntry>)
+  ).flatMap((entry): SitemapEntry[] => {
+    return Object.entries(entry.alternates.languages).map(([_locale, url]) => ({
+      url,
+      lastModified: entry.lastModified,
+      changeFrequency: entry.changeFrequency,
+      priority: entry.priority,
+      alternates: entry.alternates,
+    }));
+  });
+
+  const tagSitemapEntries = Object.values(
+    tagEntries.reduce((acc, tagEntry) => {
+      const url = new URL(tagEntry.url);
+      const urlParts = url.pathname.split('/').filter(Boolean);
+      const slug = urlParts[urlParts.length - 1];
+      const locale = urlParts[0];
+      
+      if (!slug || !locale) {
+        return acc;
+      }
+      
+      if (!acc[slug]) {
+        acc[slug] = {
+          lastModified: tagEntry.lastModified,
+          alternates: { languages: {} },
+        };
+      }
+      
+      const currentEntry = acc[slug]!;
+      currentEntry.alternates.languages[locale] = tagEntry.url;
+      
+      if (tagEntry.lastModified && currentEntry.lastModified) {
+        const currentLastModified = new Date(currentEntry.lastModified).getTime();
+        const tagLastModified = new Date(tagEntry.lastModified).getTime();
+        if (tagLastModified > currentLastModified) {
+          currentEntry.lastModified = tagEntry.lastModified;
+        }
+      } else if (tagEntry.lastModified) {
+        currentEntry.lastModified = tagEntry.lastModified;
+      }
+      
+      return acc;
+    }, {} as Record<string, GroupedEntry>)
+  ).flatMap((entry): SitemapEntry[] => {
+    return Object.entries(entry.alternates.languages).map(([_locale, url]) => ({
+      url,
+      lastModified: entry.lastModified,
+      alternates: entry.alternates,
+    }));
+  });
+
+  return [
+    ...postSitemapEntries,
+    ...seriesSitemapEntries,
+    ...tagSitemapEntries,
   ];
 }
 

@@ -24,13 +24,11 @@ export function generateMetadata(): Metadata {
       url: buildAbsoluteUrl(canonicalPath),
       title: dictionary.metadata.blogTitle,
       description: dictionary.metadata.blogDescription,
-      images: [siteConfig.ogImage],
     },
     twitter: {
       card: siteConfig.twitter.card,
       title: dictionary.metadata.blogTitle,
       description: dictionary.metadata.blogDescription,
-      images: [siteConfig.ogImage],
     },
   };
 }
