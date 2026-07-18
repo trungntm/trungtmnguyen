@@ -47,6 +47,7 @@ const ContentSecurityPolicy = `
     www.google-analytics.com
     region1.google-analytics.com
     cloud.umami.is
+    gateway.umami.is
     challenges.cloudflare.com
     ${cmsConnectSource};
 
