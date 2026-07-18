@@ -10,6 +10,7 @@
       "@trungtmnguyen/analytics/client": ["../../packages/analytics/src/client/index.ts"],
       "@trungtmnguyen/analytics/next": ["../../packages/analytics/src/next/index.ts"],
       "@trungtmnguyen/analytics/providers": ["../../packages/analytics/src/providers/index.ts"],
+      "@trungtmnguyen/blog-comments": ["../../packages/blog-comments/src/index.ts"],
       "@trungtmnguyen/search": ["../../packages/search/src/index.ts"],
       "@trungtmnguyen/ui": ["../../packages/ui/src/index.ts"]
     },

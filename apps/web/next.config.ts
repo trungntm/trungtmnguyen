@@ -1,6 +1,23 @@
 import type { NextConfig } from 'next';
 import { getRedirects } from './features/redirects/get-redirects';
 
+function getCmsConnectSource() {
+  const cmsBaseUrl = process.env.CMS_BASE_URL?.trim();
+
+  if (!cmsBaseUrl) {
+    return '';
+  }
+
+  try {
+    const url = new URL(cmsBaseUrl);
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.origin : '';
+  } catch {
+    return '';
+  }
+}
+
+const cmsConnectSource = getCmsConnectSource();
+
 const ContentSecurityPolicy = `
   default-src 'self';
 
@@ -11,6 +28,7 @@ const ContentSecurityPolicy = `
     www.googletagmanager.com
     www.google-analytics.com
     cloud.umami.is
+    challenges.cloudflare.com
     giscus.app;
 
   style-src
@@ -29,13 +47,15 @@ const ContentSecurityPolicy = `
     www.google-analytics.com
     region1.google-analytics.com
     cloud.umami.is
-    studio.trungtmnguyen.com;
+    challenges.cloudflare.com
+    ${cmsConnectSource};
 
   font-src
     'self'
     data:;
 
   frame-src
+    challenges.cloudflare.com
     giscus.app;
 
   object-src 'none';
@@ -76,7 +96,12 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@trungtmnguyen/analytics', '@trungtmnguyen/search', '@trungtmnguyen/ui'],
+  transpilePackages: [
+    '@trungtmnguyen/blog-comments',
+    '@trungtmnguyen/analytics',
+    '@trungtmnguyen/search',
+    '@trungtmnguyen/ui',
+  ],
   typedRoutes: true,
   turbopack: {
     root: process.cwd().replace(/\/apps\/web$/, ''),
@@ -86,6 +111,10 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
         hostname: '**',
       },
     ],
