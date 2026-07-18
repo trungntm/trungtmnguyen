@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
+import { CommentProvider, CommentSection } from '@trungtmnguyen/blog-comments';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { notFound } from 'next/navigation';
 
 import { BlogDetailTranslationSync } from '@/components/layout/blog-detail-translation-sync';
 import { BlogPostViewTracker } from '@/components/analytics/blog-post-view-tracker';
+import { MobileTableOfContents } from '@/components/blog/mobile-table-of-contents';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { TagPill } from '@/components/blog/tag-pill';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
@@ -49,7 +51,9 @@ function getCmsPostSeo(post: PublicPostDetailDto) {
   };
 }
 
-export async function generateMetadata({ params }: LocalizedBlogDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: LocalizedBlogDetailPageProps): Promise<Metadata> {
   const { locale, slug } = await params;
 
   if (!isValidLocale(locale)) {
@@ -158,85 +162,107 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
   };
 
   return (
-    <article className="page-container px-4 py-14 md:px-6 md:py-18">
+    <div className="relative mx-auto w-full max-w-[100rem] px-4 py-14 md:px-6 md:py-18 xl:px-8">
       <BlogDetailTranslationSync translations={post.translations} />
-      <BlogPostViewTracker locale={post.locale} postId={post.id} slug={post.slug} title={post.title} />
+      <BlogPostViewTracker
+        locale={post.locale}
+        postId={post.id}
+        slug={post.slug}
+        title={post.title}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify([blogPostingStructuredData, breadcrumbListStructuredData]),
         }}
       />
-      <div className="mx-auto max-w-295 space-y-10">
-        <header className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <TagPill key={tag.id} tag={tag.name} />
-              ))}
+      <div
+        className={cn(
+          'mx-auto w-full',
+          hasToc &&
+            'xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(51.25rem,56.25rem)_18rem] xl:gap-12',
+        )}
+      >
+        {hasToc ? <div aria-hidden="true" className="hidden xl:block" /> : null}
+
+        <article className="mx-auto min-w-0 w-full max-w-[69rem] space-y-10">
+          <header className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <TagPill key={tag.id} tag={tag.name} />
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-4">
-            <h1 className="text-4xl font-semibold tracking-tight text-balance md:text-6xl">
-              {post.title}
-            </h1>
-            {post.description ? (
-              <p className="text-lg leading-8 text-muted md:text-xl">
-                {post.description}
-              </p>
-            ) : null}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted">
-            <span>{formatBlogDate(post.publishedAt, locale)}</span>
-            <span>{readingTime.text}</span>
-            {post.updatedAt !== post.publishedAt ? (
-              <span>
-                {dictionary.common.updatedAt} {formatBlogDate(post.updatedAt, locale)}
-              </span>
-            ) : null}
-          </div>
-
-          {post.coverImageUrl ? (
-            <div className="glass-card relative aspect-[16/9] overflow-hidden rounded-[2rem]">
-              <OptimizedImage
-                alt={post.title}
-                className="object-cover"
-                fill
-                priority
-                sizes="(min-width: 1024px) 64rem, 100vw"
-                src={post.coverImageUrl}
-              />
+            <div className="space-y-4">
+              <h1 className="text-4xl font-semibold tracking-tight text-balance md:text-6xl">
+                {post.title}
+              </h1>
+              {post.description ? (
+                <p className="text-lg leading-8 text-muted md:text-xl">{post.description}</p>
+              ) : null}
             </div>
-          ) : null}
-        </header>
 
-        <div
-          className={cn(
-            'grid gap-6 xl:gap-10',
-            hasToc && 'lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start',
-          )}
-        >
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted">
+              <span>{formatBlogDate(post.publishedAt, locale)}</span>
+              <span>{readingTime.text}</span>
+              {post.updatedAt !== post.publishedAt ? (
+                <span>
+                  {dictionary.common.updatedAt} {formatBlogDate(post.updatedAt, locale)}
+                </span>
+              ) : null}
+            </div>
+
+            {post.coverImageUrl ? (
+              <div className="glass-card relative aspect-[16/9] overflow-hidden rounded-[2rem]">
+                <OptimizedImage
+                  alt={post.title}
+                  className="object-cover"
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 64rem, 100vw"
+                  src={post.coverImageUrl}
+                />
+              </div>
+            ) : null}
+          </header>
+
           <div className="space-y-6">
-            <div className="lg:hidden">
-              <TableOfContents items={toc} label={dictionary.common.onThisPage} />
+            <div className="xl:hidden">
+              <MobileTableOfContents items={toc} label={dictionary.common.tableOfContents} />
             </div>
 
             <div className="glass-card rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
-              <MDXRenderer className="blog-prose" slug={`${post.locale}-${post.slug}`} source={post.contentMd} />
+              <MDXRenderer
+                className="blog-prose"
+                slug={`${post.locale}-${post.slug}`}
+                source={post.contentMd}
+              />
             </div>
           </div>
 
-          {hasToc ? (
-            <aside className="hidden lg:block">
-              <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
-                <TableOfContents items={toc} label={dictionary.common.onThisPage} />
-              </div>
-            </aside>
-          ) : null}
-        </div>
+          <div className="mx-auto w-full max-w-4xl">
+            <CommentProvider
+              apiBaseUrl={process.env.CMS_BASE_URL ?? ''}
+              locale={locale}
+              messages={dictionary.comments}
+              turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
+            >
+              <CommentSection postId={post.id} />
+            </CommentProvider>
+          </div>
+        </article>
+
+        {hasToc ? (
+          <aside
+            aria-label={dictionary.common.onThisPage}
+            className="sticky top-32 mt-32 hidden max-h-[calc(100vh-8rem)] self-start overflow-y-auto overscroll-contain [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin] xl:block"
+          >
+            <TableOfContents items={toc} label={dictionary.common.onThisPage} />
+          </aside>
+        ) : null}
       </div>
-    </article>
+    </div>
   );
 }

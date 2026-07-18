@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 @source '../../../packages/ui/src';
+@source '../../../packages/blog-comments/src';
 
 :root {
   --background: #f8fafc;

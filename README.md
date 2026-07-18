@@ -88,7 +88,10 @@ Current staged-file checks:
 
 ## Environment
 
-Set `CMS_BASE_URL` for the public CMS blog API consumed by `apps/web`. This value is server-only.
+Set `CMS_BASE_URL` for the public CMS blog API consumed by `apps/web`. The server also injects this
+base URL into the public comment provider so its browser client can call the existing CMS API.
+
+Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY` to render Cloudflare Turnstile in public comment forms.
 
 Set `NEXT_PUBLIC_SITE_URL` for canonical URLs, sitemap, robots output, RSS, and CMS blog structured data in non-local environments.
 Set analytics env vars in the web app only when you want to enable provider-specific analytics:
@@ -101,6 +104,7 @@ Required CMS blog env vars:
 
 ```text
 CMS_BASE_URL=
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=
 NEXT_PUBLIC_SITE_URL=
 ```
 
@@ -144,7 +148,9 @@ CMS endpoints used by the web app:
 
 Notes:
 
-- All CMS requests use `process.env.CMS_BASE_URL` through `apps/web/features/cms-blog/api/cms-blog-api.ts`.
+- Server-side CMS content requests use `process.env.CMS_BASE_URL` through
+  `apps/web/features/cms-blog/api/cms-blog-api.ts`; the comment provider receives the same base URL
+  as configuration for its browser API client.
 - Series list pages support `?page=` and fall back to page `1` when the query is missing or invalid.
 - Series detail metadata uses the CMS-provided canonical `url` and alternate locale URLs from `translations`.
 - The language switcher uses series translation URLs directly on series detail pages instead of assuming shared slugs.
