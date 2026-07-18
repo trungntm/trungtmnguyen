@@ -1,7 +1,7 @@
 {
   "name": "@trungtmnguyen/analytics",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.2",
   "exports": {
     ".": "./src/index.ts",
     "./client": "./src/client/index.ts",

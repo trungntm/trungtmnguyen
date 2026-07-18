@@ -1,7 +1,7 @@
 {
   "name": "@trungtmnguyen/config",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.2",
   "dependencies": {
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.9"
