@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import type { Page } from '@/lib/pages';
 import { cn } from '@/lib/utils';
+import { BaseLink } from '@/components/ui/links';
 
 type CareerItem = NonNullable<Page['career']>[number];
 
@@ -63,7 +64,10 @@ function CareerProjectItem({
           <ul className="space-y-2">
             {item.description.map((description: string) => (
               <li key={description} className="flex gap-3 text-sm leading-7 text-muted">
-                <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                <span
+                  aria-hidden="true"
+                  className="mt-2 size-1.5 shrink-0 rounded-full bg-primary"
+                />
                 <span>{description}</span>
               </li>
             ))}
@@ -72,7 +76,7 @@ function CareerProjectItem({
           {item.links?.length ? (
             <div className="flex flex-wrap gap-2">
               {item.links.map((link: NonNullable<CareerItem['links']>[number]) => (
-                <a
+                <BaseLink
                   key={link.href}
                   className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/80 px-3 py-2 text-sm font-medium text-foreground/85 hover:text-primary"
                   href={link.href}
@@ -81,7 +85,7 @@ function CareerProjectItem({
                 >
                   <span>{link.text}</span>
                   <ArrowUpRight className="size-3.5" />
-                </a>
+                </BaseLink>
               ))}
             </div>
           ) : null}
@@ -133,7 +137,10 @@ export function CareerTimeline({
               <ul className="mt-5 space-y-2">
                 {item.description.map((description: string) => (
                   <li key={description} className="flex gap-3 text-sm leading-7 text-muted">
-                    <span aria-hidden="true" className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                    <span
+                      aria-hidden="true"
+                      className="mt-2 size-1.5 shrink-0 rounded-full bg-primary"
+                    />
                     <span>{description}</span>
                   </li>
                 ))}

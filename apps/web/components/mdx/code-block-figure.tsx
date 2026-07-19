@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { defaultLocale, getDictionary, isValidLocale } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import { AnalyticsEventNames, trackEvent } from '@trungtmnguyen/analytics';
 
 type CodeBlockFigureProps = ComponentPropsWithoutRef<'figure'>;
 
@@ -36,6 +37,13 @@ export function CodeBlockFigure({ className, children, ...props }: CodeBlockFigu
     }
 
     await navigator.clipboard.writeText(code);
+    const slug = pathname?.split('/').filter(Boolean).at(-1) ?? 'unknown';
+
+    trackEvent(AnalyticsEventNames.copyCode, {
+      language: language ?? 'unknown',
+      locale,
+      slug,
+    });
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
   }

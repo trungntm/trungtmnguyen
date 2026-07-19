@@ -24,7 +24,7 @@ export function CommentForm({
   postId,
   replyToName,
 }: CommentFormProps) {
-  const { locale, messages, turnstileSiteKey } = useCommentContext();
+  const { locale, messages, onCommentSubmitted, turnstileSiteKey } = useCommentContext();
   const { error, fieldErrors, isSubmitting, submit } = useCreateComment();
   const [displayName, setDisplayName] = useState('');
   const [content, setContent] = useState('');
@@ -53,6 +53,7 @@ export function CommentForm({
 
     setContent('');
     setSubmitted(true);
+    onCommentSubmitted?.(parentId ? 'reply' : 'comment');
     onSubmitted?.();
   }
 

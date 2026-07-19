@@ -1,10 +1,11 @@
 import type { Metadata, Route } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { getAllTags } from '@/lib/blog-data';
 import { getDictionary, isValidLocale } from '@/lib/i18n';
 import { getTagUrl } from '@/lib/blogs';
+import { AnalyticsEventNames } from '@trungtmnguyen/analytics';
+import { TrackedLink } from '@/components/analytics/tracked-link';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 type LocalizedTagsPageProps = {
@@ -79,9 +80,11 @@ export default async function LocalizedTagsPage({ params }: LocalizedTagsPagePro
         {tags.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {tags.map((tag) => (
-              <Link
+              <TrackedLink
                 key={tag.slug}
                 className="glass-card group rounded-[1.5rem] p-5 transition duration-300 hover:-translate-y-1 hover:border-primary/55 focus-visible:-translate-y-1 focus-visible:border-primary/55 focus-visible:outline-none"
+                eventName={AnalyticsEventNames.selectBlogTag}
+                eventParameters={{ locale, tag: tag.label }}
                 href={getTagUrl(locale, tag.slug) as Route}
               >
                 <div className="flex items-center justify-between gap-4">
@@ -97,7 +100,7 @@ export default async function LocalizedTagsPage({ params }: LocalizedTagsPagePro
                     {tag.count}
                   </span>
                 </div>
-              </Link>
+              </TrackedLink>
             ))}
           </div>
         ) : (

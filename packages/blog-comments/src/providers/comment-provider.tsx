@@ -10,6 +10,7 @@ type CommentContextValue = {
   locale: string;
   messages: CommentMessages;
   turnstileSiteKey: string;
+  onCommentSubmitted: ((kind: 'comment' | 'reply') => void) | undefined;
 };
 
 const CommentContext = createContext<CommentContextValue | null>(null);
@@ -20,6 +21,7 @@ export type CommentProviderProps = {
   locale: string;
   messages: CommentMessages;
   turnstileSiteKey: string;
+  onCommentSubmitted?: (kind: 'comment' | 'reply') => void;
 };
 
 export function CommentProvider({
@@ -28,11 +30,12 @@ export function CommentProvider({
   locale,
   messages,
   turnstileSiteKey,
+  onCommentSubmitted,
 }: CommentProviderProps) {
   const api = useMemo(() => createCommentApi({ apiBaseUrl }), [apiBaseUrl]);
   const value = useMemo(
-    () => ({ api, locale, messages, turnstileSiteKey }),
-    [api, locale, messages, turnstileSiteKey],
+    () => ({ api, locale, messages, onCommentSubmitted, turnstileSiteKey }),
+    [api, locale, messages, onCommentSubmitted, turnstileSiteKey],
   );
 
   return <CommentContext.Provider value={value}>{children}</CommentContext.Provider>;

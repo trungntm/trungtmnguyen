@@ -1,4 +1,5 @@
 import { OptimizedImage } from '@/components/ui/optimized-image';
+import { BaseLink } from '@/components/ui/links';
 import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 
 import type { Page } from '@/lib/pages';
@@ -90,7 +91,7 @@ export function ProfileCard({
             <p className="text-xs font-semibold tracking-[0.2em] text-muted uppercase">Elsewhere</p>
             <div className="flex flex-wrap gap-2">
               {socials.map((social) => (
-                <a
+                <BaseLink
                   key={social.href}
                   className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface/80 px-3 py-2 text-sm font-medium text-foreground/85 hover:text-primary"
                   href={social.href}
@@ -99,7 +100,7 @@ export function ProfileCard({
                 >
                   <span>{social.label}</span>
                   <ArrowUpRight className="size-3.5" />
-                </a>
+                </BaseLink>
               ))}
             </div>
           </div>

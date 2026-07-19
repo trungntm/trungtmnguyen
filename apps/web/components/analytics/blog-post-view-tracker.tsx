@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-import { AnalyticsEventNames } from '@trungtmnguyen/analytics';
-import { trackEvent } from '@trungtmnguyen/analytics/client';
+import { AnalyticsEventNames, trackEvent } from '@trungtmnguyen/analytics';
 
 type BlogPostViewTrackerProps = {
   postId: string;
@@ -12,17 +11,17 @@ type BlogPostViewTrackerProps = {
   title: string;
 };
 
-let lastTrackedBlogPostKey: string | null = null;
-
 export function BlogPostViewTracker({ postId, slug, locale, title }: BlogPostViewTrackerProps) {
+  const lastTrackedKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
     const key = `${locale}:${postId}:${slug}`;
 
-    if (lastTrackedBlogPostKey === key) {
+    if (lastTrackedKeyRef.current === key) {
       return;
     }
 
-    lastTrackedBlogPostKey = key;
+    lastTrackedKeyRef.current = key;
 
     trackEvent(AnalyticsEventNames.viewBlogPost, {
       locale,

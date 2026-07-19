@@ -3,10 +3,7 @@
   "private": true,
   "version": "1.0.2",
   "exports": {
-    ".": "./src/index.ts",
-    "./client": "./src/client/index.ts",
-    "./next": "./src/next/index.ts",
-    "./providers": "./src/providers/index.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "build": "../../apps/web/node_modules/.bin/tsc --noEmit",
