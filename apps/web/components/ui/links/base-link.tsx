@@ -3,11 +3,16 @@
 import type { Route } from 'next';
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
+import type { MouseEvent } from 'react';
 
 import { useLocale } from '@/components/i18n/locale-provider';
 import { getLocalizedPath, isValidLocale } from '@/lib/i18n';
+import { AnalyticsEventNames, trackEvent } from '@trungtmnguyen/analytics';
 
-type BaseLinkProps = ComponentProps<typeof Link>;
+type BaseLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
+  href: string | ComponentProps<typeof Link>['href'];
+  trackExternal?: boolean;
+};
 
 function isExternalHref(href: string) {
   return (
@@ -32,12 +37,36 @@ function localizeHref(href: string, locale: ReturnType<typeof useLocale>) {
   return getLocalizedPath(locale, href);
 }
 
-export function BaseLink({ href, ...props }: BaseLinkProps) {
+export function BaseLink({ href, onClick, trackExternal = true, ...props }: BaseLinkProps) {
   const locale = useLocale();
 
-  if (typeof href === 'string') {
-    return <Link {...props} href={localizeHref(href, locale) as Route} />;
+  function handleClick(event: MouseEvent<HTMLAnchorElement>) {
+    onClick?.(event);
+
+    if (event.defaultPrevented || !trackExternal || typeof href !== 'string') {
+      return;
+    }
+
+    try {
+      const destination = new URL(href, window.location.origin);
+      const isExternalHttpLink =
+        ['http:', 'https:'].includes(destination.protocol) &&
+        destination.origin !== window.location.origin;
+
+      if (isExternalHttpLink) {
+        trackEvent(AnalyticsEventNames.clickExternalLink, {
+          destinationHost: destination.hostname,
+          locale,
+        });
+      }
+    } catch {}
   }
 
-  return <Link {...props} href={href} />;
+  if (typeof href === 'string') {
+    return <Link {...props} href={localizeHref(href, locale) as Route} onClick={handleClick} />;
+  }
+
+  return (
+    <Link {...props} href={href as ComponentProps<typeof Link>['href']} onClick={handleClick} />
+  );
 }

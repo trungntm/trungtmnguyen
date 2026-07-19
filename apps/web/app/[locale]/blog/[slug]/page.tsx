@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
-import { CommentProvider, CommentSection } from '@trungtmnguyen/blog-comments';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { notFound } from 'next/navigation';
 
 import { BlogDetailTranslationSync } from '@/components/layout/blog-detail-translation-sync';
 import { BlogPostViewTracker } from '@/components/analytics/blog-post-view-tracker';
+import { BlogShareActions } from '@/components/analytics/blog-share-actions';
+import { TrackedBlogComments } from '@/components/analytics/tracked-blog-comments';
 import { MobileTableOfContents } from '@/components/blog/mobile-table-of-contents';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { TagPill } from '@/components/blog/tag-pill';
@@ -214,6 +215,17 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
               ) : null}
             </div>
 
+            <BlogShareActions
+              copiedLabel={dictionary.common.copied}
+              copyLabel={dictionary.common.copyLink}
+              locale={post.locale}
+              postId={post.id}
+              shareLabel={dictionary.common.share}
+              slug={post.slug}
+              title={post.title}
+              url={canonical}
+            />
+
             {post.coverImageUrl ? (
               <div className="glass-card relative aspect-[16/9] overflow-hidden rounded-[2rem]">
                 <OptimizedImage
@@ -243,14 +255,13 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
           </div>
 
           <div className="mx-auto w-full max-w-4xl">
-            <CommentProvider
+            <TrackedBlogComments
               apiBaseUrl={process.env.CMS_BASE_URL ?? ''}
               locale={locale}
               messages={dictionary.comments}
+              postId={post.id}
               turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
-            >
-              <CommentSection postId={post.id} />
-            </CommentProvider>
+            />
           </div>
         </article>
 

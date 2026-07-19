@@ -1,4 +1,7 @@
-export * from './client';
-export * from './next';
-export * from './providers';
-export * from './types';
+export { Analytics } from './analytics';
+export {
+  AnalyticsEventNames,
+  trackEvent,
+  type AnalyticsEventName,
+  type AnalyticsEventParameters,
+} from './events';
