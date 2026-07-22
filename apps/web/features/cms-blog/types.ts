@@ -20,6 +20,11 @@ export type PublicSeriesTranslationLinkDto = {
   title: string;
 };
 
+export type PublicPostLinkDto = {
+  title: string;
+  url: string;
+};
+
 export type PublicPostListItemDto = {
   id: string;
   locale: BlogLocale;
@@ -51,6 +56,13 @@ export type PublicPostDetailDto = {
   coverImageUrl: string | null;
   tags: BlogTagDto[];
   featured: boolean;
+  seriesId: string | null;
+  seriesOrder: number | null;
+  navigation: {
+    previous: PublicPostLinkDto | null;
+    next: PublicPostLinkDto | null;
+  } | null;
+  continueLearning: PublicPostLinkDto[];
   publishedAt: string;
   createdAt: string;
   updatedAt: string;

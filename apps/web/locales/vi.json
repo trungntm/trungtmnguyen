@@ -101,7 +101,9 @@
     "seriesLink": "Xem series",
     "emptyLabel": "Chưa có bài viết",
     "emptyTitle": "Chưa có bài viết nào.",
-    "emptyDescription": "Mình chưa đăng bài nào. Bạn quay lại sau nhé."
+    "emptyDescription": "Mình chưa đăng bài nào. Bạn quay lại sau nhé.",
+    "seriesNavigation": "Tiếp tục series",
+    "continueLearning": "Tiếp tục tìm hiểu"
   },
   "tagsPage": {
     "heading": "Bài viết theo chủ đề",
