@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
+import type { Route } from 'next';
 import { OptimizedImage } from '@/components/ui/optimized-image';
+import { BaseLink } from '@/components/ui/links';
 import { notFound } from 'next/navigation';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { BlogDetailTranslationSync } from '@/components/layout/blog-detail-translation-sync';
 import { BlogPostViewTracker } from '@/components/analytics/blog-post-view-tracker';
@@ -253,6 +256,98 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
               />
             </div>
           </div>
+
+          {(post.navigation?.previous || post.navigation?.next || (post.continueLearning && post.continueLearning.length > 0)) ? (
+            <div className="space-y-10 border-t border-border/80 pt-10">
+              {post.navigation && (post.navigation.previous || post.navigation.next) ? (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-muted">
+                    {dictionary.blogPage.seriesNavigation}
+                  </h3>
+                  <div
+                    className={cn(
+                      'flex flex-col gap-3 sm:grid',
+                      post.navigation.previous && post.navigation.next
+                        ? 'sm:grid-cols-2'
+                        : 'sm:grid-cols-1'
+                    )}
+                  >
+                    {post.navigation.previous ? (
+                      <BaseLink
+                        className="glass-card group flex items-center justify-start gap-4 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/55 focus-visible:-translate-y-1 focus-visible:border-primary/55"
+                        href={post.navigation.previous.url as Route}
+                      >
+                        <ArrowLeft className="h-5 w-5 shrink-0 text-muted transition-transform duration-300 group-hover:-translate-x-1 group-hover:text-primary" />
+                        <div className="flex min-w-0 flex-col text-left">
+                          <span className="text-xs font-medium uppercase tracking-wider text-muted/60">
+                            {dictionary.common.previous}
+                          </span>
+                          <span className="line-clamp-2 font-medium text-foreground transition-colors group-hover:text-primary">
+                            {post.navigation.previous.title}
+                          </span>
+                        </div>
+                      </BaseLink>
+                    ) : null}
+
+                    {post.navigation.next ? (
+                      <BaseLink
+                        className={cn(
+                          'glass-card group flex items-center gap-4 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/55 focus-visible:-translate-y-1 focus-visible:border-primary/55',
+                          post.navigation.previous
+                            ? 'justify-between sm:justify-end'
+                            : 'justify-between sm:justify-start'
+                        )}
+                        href={post.navigation.next.url as Route}
+                      >
+                        <div
+                          className={cn(
+                            'flex min-w-0 flex-col text-left',
+                            post.navigation.previous ? 'sm:items-end sm:text-right' : 'sm:items-start'
+                          )}
+                        >
+                          <span className="text-xs font-medium uppercase tracking-wider text-muted/60">
+                            {dictionary.common.next}
+                          </span>
+                          <span className="line-clamp-2 font-medium text-foreground transition-colors group-hover:text-primary">
+                            {post.navigation.next.title}
+                          </span>
+                        </div>
+                        <ArrowRight className="h-5 w-5 shrink-0 text-muted transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary" />
+                      </BaseLink>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
+              {post.continueLearning && post.continueLearning.length > 0 ? (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium text-muted">
+                    {dictionary.blogPage.continueLearning}
+                  </h3>
+                  <ul className="flex flex-col gap-3">
+                    {post.continueLearning.map((item, index) => (
+                      <li key={item.url}>
+                        <BaseLink
+                          className="glass-card group flex items-center justify-between gap-4 rounded-2xl p-4 transition duration-300 hover:-translate-y-1 hover:border-primary/55 focus-visible:-translate-y-1 focus-visible:border-primary/55"
+                          href={item.url as Route}
+                        >
+                          <div className="flex items-center gap-4 min-w-0">
+                            <span className="text-sm font-medium text-muted/60 transition-colors group-hover:text-primary/60">
+                              {String(index + 1).padStart(2, '0')}
+                            </span>
+                            <span className="truncate font-medium text-foreground transition-colors group-hover:text-primary">
+                              {item.title}
+                            </span>
+                          </div>
+                          <ArrowRight className="h-5 w-5 shrink-0 text-muted transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary" />
+                        </BaseLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="mx-auto w-full max-w-4xl">
             <TrackedBlogComments

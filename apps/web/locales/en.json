@@ -101,7 +101,9 @@
     "seriesLink": "Browse series",
     "emptyLabel": "No notes yet",
     "emptyTitle": "No notes yet.",
-    "emptyDescription": "I haven't published anything here yet. Check back later."
+    "emptyDescription": "I haven't published anything here yet. Check back later.",
+    "seriesNavigation": "Continue the Series",
+    "continueLearning": "Continue Learning"
   },
   "tagsPage": {
     "heading": "Notes by topic",

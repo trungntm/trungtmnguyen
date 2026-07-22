@@ -33,6 +33,11 @@ const publicPostTranslationLinkDtoSchema = z.object({
   title: z.string(),
 });
 
+const publicPostLinkDtoSchema = z.object({
+  title: z.string(),
+  url: z.string(),
+});
+
 const publicPostListItemDtoSchema = z.object({
   id: z.string(),
   locale: blogLocaleSchema,
@@ -64,6 +69,13 @@ const publicPostDetailDtoSchema = z.object({
   coverImageUrl: z.string().nullable(),
   tags: z.array(blogTagDtoSchema),
   featured: z.boolean(),
+  seriesId: z.string().nullable(),
+  seriesOrder: z.number().nullable(),
+  navigation: z.object({
+    previous: publicPostLinkDtoSchema.nullable(),
+    next: publicPostLinkDtoSchema.nullable(),
+  }).nullable(),
+  continueLearning: z.array(publicPostLinkDtoSchema),
   publishedAt: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
