@@ -59,6 +59,7 @@ export function SiteHeader({ locale, dictionary }: SiteHeaderProps) {
 
   return (
     <header
+      data-site-header
       className={cn(
         'sticky z-40 px-4 transition-[padding] duration-300 md:px-6',
         isPinned ? 'top-0 pt-3' : 'top-0 pt-4',

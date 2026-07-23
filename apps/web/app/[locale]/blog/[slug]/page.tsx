@@ -10,6 +10,7 @@ import { BlogPostViewTracker } from '@/components/analytics/blog-post-view-track
 import { BlogShareActions } from '@/components/analytics/blog-share-actions';
 import { TrackedBlogComments } from '@/components/analytics/tracked-blog-comments';
 import { MobileTableOfContents } from '@/components/blog/mobile-table-of-contents';
+import { ReadingProgressBar } from '@/components/blog/reading-progress-bar';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { TagPill } from '@/components/blog/tag-pill';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
@@ -167,6 +168,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
 
   return (
     <div className="relative mx-auto w-full max-w-[100rem] px-4 py-14 md:px-6 md:py-18 xl:px-8">
+      <ReadingProgressBar targetId="article-content" />
       <BlogDetailTranslationSync translations={post.translations} />
       <BlogPostViewTracker
         locale={post.locale}
@@ -249,11 +251,13 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
             </div>
 
             <div className="glass-card rounded-[2rem] px-6 py-8 md:px-10 md:py-10">
-              <MDXRenderer
-                className="blog-prose"
-                slug={`${post.locale}-${post.slug}`}
-                source={post.contentMd}
-              />
+              <div id="article-content">
+                <MDXRenderer
+                  className="blog-prose"
+                  slug={`${post.locale}-${post.slug}`}
+                  source={post.contentMd}
+                />
+              </div>
             </div>
           </div>
 
