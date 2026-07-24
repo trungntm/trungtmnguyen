@@ -12,6 +12,7 @@ import { TrackedBlogComments } from '@/components/analytics/tracked-blog-comment
 import { MobileTableOfContents } from '@/components/blog/mobile-table-of-contents';
 import { ReadingProgressBar } from '@/components/blog/reading-progress-bar';
 import { TableOfContents } from '@/components/blog/table-of-contents';
+import { AuthorBox } from '@/components/blog/author-box';
 import { TagPill } from '@/components/blog/tag-pill';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
 import { getCachedPublishedPostBySlug } from '@/features/cms-blog/api/cms-blog-api';
@@ -353,7 +354,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
             </div>
           ) : null}
 
-          <div className="mx-auto w-full max-w-4xl">
+          <div className="mx-auto w-full max-w-4xl space-y-16">
             <TrackedBlogComments
               apiBaseUrl={process.env.CMS_BASE_URL ?? ''}
               locale={locale}
@@ -361,6 +362,8 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
               postId={post.id}
               turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
             />
+            
+            <AuthorBox locale={locale} messages={dictionary.authorBox} />
           </div>
         </article>
 

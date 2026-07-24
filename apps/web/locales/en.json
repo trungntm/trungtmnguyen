@@ -204,5 +204,10 @@
   },
   "tagLink": {
     "ariaLabel": "View posts tagged {tag}"
+  },
+  "authorBox": {
+    "about": "About the author",
+    "bio": "Software engineer building simple, reliable systems. I write about architecture, Java, and things I learn along the way.",
+    "moreAbout": "More about me"
   }
 }
