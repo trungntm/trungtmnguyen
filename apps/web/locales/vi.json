@@ -204,5 +204,10 @@
   },
   "tagLink": {
     "ariaLabel": "Xem bài viết với tag {tag}"
+  },
+  "authorBox": {
+    "about": "Về tác giả",
+    "bio": "Software engineer xây dựng các hệ thống đơn giản, đáng tin cậy. Mình viết về kiến trúc, Java và những gì mình học được trên chặng đường.",
+    "moreAbout": "Xem thêm về mình"
   }
 }
