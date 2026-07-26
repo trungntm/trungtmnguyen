@@ -1,7 +1,7 @@
 {
   "name": "@trungtmnguyen/search",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "exports": {
     ".": "./src/index.ts"
   },

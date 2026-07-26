@@ -35,14 +35,12 @@ apps/web/public/search-docs.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-store
 
 # Misc
 .DS_Store
 *.pem
 .nodeterm
 
-# Agents
-docs
-!apps/web/app/api/search/docs/
-!apps/web/app/api/search/docs/route.ts
-AGENTS.md
+# CodeGraph
+.codegraph
