@@ -36,6 +36,8 @@
     "next": "Next",
     "copy": "Copy",
     "copied": "Copied",
+    "copyLink": "Copy link",
+    "share": "Share",
     "onThisPage": "On this page",
     "tableOfContents": "Table of contents"
   },
@@ -99,7 +101,9 @@
     "seriesLink": "Browse series",
     "emptyLabel": "No notes yet",
     "emptyTitle": "No notes yet.",
-    "emptyDescription": "I haven't published anything here yet. Check back later."
+    "emptyDescription": "I haven't published anything here yet. Check back later.",
+    "seriesNavigation": "Continue the Series",
+    "continueLearning": "Continue Learning"
   },
   "tagsPage": {
     "heading": "Notes by topic",
@@ -200,5 +204,10 @@
   },
   "tagLink": {
     "ariaLabel": "View posts tagged {tag}"
+  },
+  "authorBox": {
+    "about": "About the author",
+    "bio": "Software engineer building simple, reliable systems. I write about architecture, Java, and things I learn along the way.",
+    "moreAbout": "More about me"
   }
 }

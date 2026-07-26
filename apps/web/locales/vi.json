@@ -36,6 +36,8 @@
     "next": "Trang sau",
     "copy": "Sao chép",
     "copied": "Đã sao chép",
+    "copyLink": "Sao chép liên kết",
+    "share": "Chia sẻ",
     "onThisPage": "Mục lục",
     "tableOfContents": "Mục lục"
   },
@@ -99,7 +101,9 @@
     "seriesLink": "Xem series",
     "emptyLabel": "Chưa có bài viết",
     "emptyTitle": "Chưa có bài viết nào.",
-    "emptyDescription": "Mình chưa đăng bài nào. Bạn quay lại sau nhé."
+    "emptyDescription": "Mình chưa đăng bài nào. Bạn quay lại sau nhé.",
+    "seriesNavigation": "Tiếp tục series",
+    "continueLearning": "Tiếp tục tìm hiểu"
   },
   "tagsPage": {
     "heading": "Bài viết theo chủ đề",
@@ -200,5 +204,10 @@
   },
   "tagLink": {
     "ariaLabel": "Xem bài viết với tag {tag}"
+  },
+  "authorBox": {
+    "about": "Về tác giả",
+    "bio": "Software engineer xây dựng các hệ thống đơn giản, đáng tin cậy. Mình viết về kiến trúc, Java và những gì mình học được trên chặng đường.",
+    "moreAbout": "Xem thêm về mình"
   }
 }

@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  forwardRef,
-  useEffect,
-  useState,
-  type CSSProperties,
-} from 'react';
+import { forwardRef, useEffect, useState, type CSSProperties } from 'react';
 
 import type { Route } from 'next';
 import {
@@ -19,8 +14,7 @@ import {
 } from 'kbar';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { AnalyticsEventNames } from '@trungtmnguyen/analytics';
-import { trackEvent } from '@trungtmnguyen/analytics/client';
+import { AnalyticsEventNames, trackEvent } from '@trungtmnguyen/analytics';
 
 import { useBlogSearch } from '@/components/search/use-blog-search';
 import { formatBlogDate } from '@/lib/blogs';
@@ -195,8 +189,6 @@ type SearchCommandProps = {
   dictionary: Dictionary;
 };
 
-let lastTrackedSearchCommitKey: string | null = null;
-
 export function SearchCommand({ locale, dictionary }: SearchCommandProps) {
   const { results: navigationResults } = useMatches();
   const { search, ready, error, latestBlogs } = useBlogSearch(locale);
@@ -224,13 +216,10 @@ export function SearchCommand({ locale, dictionary }: SearchCommandProps) {
       name: result.title,
       subtitle: result.description,
       perform: () => {
-        const queryKey = `${locale}:${trimmedQuery}`;
-
-        if (trimmedQuery && lastTrackedSearchCommitKey !== queryKey) {
-          lastTrackedSearchCommitKey = queryKey;
+        if (trimmedQuery) {
           trackEvent(AnalyticsEventNames.searchBlog, {
             locale,
-            query: trimmedQuery,
+            queryLength: trimmedQuery.length,
             resultCount: blogResults.length,
           });
         }
@@ -290,7 +279,9 @@ export function SearchCommand({ locale, dictionary }: SearchCommandProps) {
       'transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms cubic-bezier(0.22, 1, 0.36, 1)',
   };
 
-  const actionIndexes = resultItems.flatMap((entry, index) => (entry.type === 'action' ? index : []));
+  const actionIndexes = resultItems.flatMap((entry, index) =>
+    entry.type === 'action' ? index : [],
+  );
 
   useEffect(() => {
     if (actionIndexes.length === 0) {
@@ -349,7 +340,10 @@ export function SearchCommand({ locale, dictionary }: SearchCommandProps) {
             return actionIndexes[0] ?? currentIndex;
           }
 
-          return actionIndexes[Math.min(currentActionPosition + 1, actionIndexes.length - 1)] ?? currentIndex;
+          return (
+            actionIndexes[Math.min(currentActionPosition + 1, actionIndexes.length - 1)] ??
+            currentIndex
+          );
         });
       } else if (event.key === 'ArrowUp' || (event.ctrlKey && event.key === 'p')) {
         event.preventDefault();

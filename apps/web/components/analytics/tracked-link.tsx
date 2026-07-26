@@ -3,8 +3,11 @@
 import type { ReactNode, MouseEvent } from 'react';
 import type { ComponentProps } from 'react';
 
-import type { AnalyticsEventName, AnalyticsEventParameters } from '@trungtmnguyen/analytics';
-import { trackEvent } from '@trungtmnguyen/analytics/client';
+import {
+  trackEvent,
+  type AnalyticsEventName,
+  type AnalyticsEventParameters,
+} from '@trungtmnguyen/analytics';
 
 import { BaseLink } from '@/components/ui/links';
 
@@ -34,7 +37,14 @@ export function TrackedLink<TEventName extends AnalyticsEventName>({
   };
 
   return (
-    <BaseLink aria-label={ariaLabel} className={className} href={href} title={title} onClick={handleClick}>
+    <BaseLink
+      aria-label={ariaLabel}
+      className={className}
+      href={href}
+      title={title}
+      onClick={handleClick}
+      trackExternal={false}
+    >
       {children}
     </BaseLink>
   );

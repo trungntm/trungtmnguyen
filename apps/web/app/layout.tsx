@@ -7,6 +7,10 @@ import { ThemeProvider } from '@/components/theme/theme-provider';
 import { defaultLocale, getDictionary } from '@/lib/i18n';
 import { getOpenGraphLocale, getSiteUrl, siteConfig } from '@/lib/seo';
 
+import { SpeedInsights as VercelSpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
+
+
 import './globals.css';
 import './prism.css';
 
@@ -91,6 +95,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body suppressHydrationWarning className={`${spaceGrotesk.variable} min-h-screen antialiased`}>
         <ThemeProvider disableTransitionOnChange>
           <AppShell>{children}</AppShell>
+          <VercelSpeedInsights />
+          <VercelAnalytics />
         </ThemeProvider>
       </body>
     </html>

@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { BlogCard } from '@/components/blog/blog-card';
+import { TagLink } from '@/components/blog/tag-link';
 import { getAllTags, getPublishedBlogs } from '@/lib/blog-data';
 import { getDictionary, isValidLocale } from '@/lib/i18n';
-import { getTagUrl } from '@/lib/blogs';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
 
 type LocalizedBlogPageProps = {
@@ -88,13 +88,12 @@ export default async function LocalizedBlogPage({ params }: LocalizedBlogPagePro
           {tags.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <Link
+                <TagLink
                   key={tag.slug}
                   className="rounded-full border border-border bg-surface/80 px-3 py-1 text-xs font-medium tracking-[0.18em] text-muted uppercase transition-colors hover:border-primary/35 hover:text-primary focus-visible:border-primary/35 focus-visible:text-primary focus-visible:outline-none"
-                  href={getTagUrl(locale, tag.slug) as Route}
-                >
-                  {tag.label}
-                </Link>
+                  locale={locale}
+                  tag={tag.label}
+                />
               ))}
             </div>
           ) : null}

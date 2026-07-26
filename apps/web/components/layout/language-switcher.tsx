@@ -3,8 +3,7 @@
 import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AnalyticsEventNames } from '@trungtmnguyen/analytics';
-import { trackEvent } from '@trungtmnguyen/analytics/client';
+import { AnalyticsEventNames, trackEvent } from '@trungtmnguyen/analytics';
 
 import type {
   PublicPostTranslationLinkDto,
@@ -68,7 +67,7 @@ export function LanguageSwitcher({ locale, postTranslations }: LanguageSwitcherP
               }
 
               trackEvent(AnalyticsEventNames.changeLocale, {
-                destinationUrl: href,
+                destinationPath: href.split('?')[0] ?? href,
                 fromLocale: locale,
                 toLocale: targetLocale,
               });

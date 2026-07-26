@@ -29,6 +29,7 @@ const ContentSecurityPolicy = `
     www.google-analytics.com
     cloud.umami.is
     challenges.cloudflare.com
+    va.vercel-scripts.com
     giscus.app;
 
   style-src
@@ -47,6 +48,7 @@ const ContentSecurityPolicy = `
     www.google-analytics.com
     region1.google-analytics.com
     cloud.umami.is
+    gateway.umami.is
     challenges.cloudflare.com
     ${cmsConnectSource};
 
