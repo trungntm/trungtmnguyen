@@ -1,7 +1,7 @@
 {
   "name": "@apps/web",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scripts": {
     "pretypecheck": "next typegen",
     "dev": "next dev",
