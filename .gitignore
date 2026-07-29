@@ -44,3 +44,6 @@ yarn-error.log*
 
 # CodeGraph
 .codegraph
+
+# Local Git worktrees
+.worktrees
