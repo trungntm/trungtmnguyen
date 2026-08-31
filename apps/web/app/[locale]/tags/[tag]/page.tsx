@@ -2,11 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { BlogCard } from '@/components/blog/blog-card';
-import {
-  getBlogsByTag,
-  getTagData,
-  getTagLabelFromSlug,
-} from '@/lib/blog-data';
+import { logCmsPageError } from '@/features/cms-blog/api/cms-blog-api';
+import { getCachedTagDetailData } from '@/lib/blog-data';
 import { getDictionary, getTagCountLabel, isValidLocale } from '@/lib/i18n';
 import { normalizeTag } from '@/lib/blogs';
 import { buildAbsoluteUrl, getOpenGraphLocale, siteConfig } from '@/lib/seo';
@@ -17,6 +14,8 @@ type TagDetailPageProps = {
     tag: string;
   }>;
 };
+
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   return [];
@@ -30,31 +29,25 @@ export async function generateMetadata({ params }: TagDetailPageProps): Promise<
   }
 
   const tagSlug = normalizeTag(tag);
-  let tagLabel: Awaited<ReturnType<typeof getTagLabelFromSlug>>;
-  let tagData: Awaited<ReturnType<typeof getTagData>>;
-  let blogs: Awaited<ReturnType<typeof getBlogsByTag>>;
+  let tagData: Awaited<ReturnType<typeof getCachedTagDetailData>>;
 
   try {
-    [tagLabel, tagData, blogs] = await Promise.all([
-      getTagLabelFromSlug(locale, tagSlug),
-      getTagData(locale, tagSlug),
-      getBlogsByTag(locale, tagSlug),
-    ]);
+    tagData = await getCachedTagDetailData(locale, tagSlug);
   } catch {
     return {};
   }
 
-  if (!tagLabel) {
+  if (!tagData.label) {
     return {};
   }
 
   const dictionary = getDictionary(locale);
-  const blogCount = tagData?.count ?? blogs.length;
-  const description = getTagCountLabel(dictionary, blogCount, tagLabel);
+  const blogCount = tagData.tag?.count ?? tagData.blogs.length;
+  const description = getTagCountLabel(dictionary, blogCount, tagData.label);
   const canonicalUrl = buildAbsoluteUrl(`/${locale}/tags/${tagSlug}`);
 
   return {
-    title: `#${tagLabel}`,
+    title: `#${tagData.label}`,
     description,
     alternates: {
       canonical: canonicalUrl,
@@ -63,12 +56,12 @@ export async function generateMetadata({ params }: TagDetailPageProps): Promise<
       type: 'website',
       locale: getOpenGraphLocale(locale),
       url: canonicalUrl,
-      title: `#${tagLabel}`,
+      title: `#${tagData.label}`,
       description,
     },
     twitter: {
       card: siteConfig.twitter.card,
-      title: `#${tagLabel}`,
+      title: `#${tagData.label}`,
       description,
     },
   };
@@ -83,19 +76,16 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
 
   const dictionary = getDictionary(locale);
   const tagSlug = normalizeTag(tag);
-  let tagLabel: Awaited<ReturnType<typeof getTagLabelFromSlug>>;
-  let blogs: Awaited<ReturnType<typeof getBlogsByTag>>;
+  let tagData: Awaited<ReturnType<typeof getCachedTagDetailData>>;
 
   try {
-    [tagLabel, blogs] = await Promise.all([
-      getTagLabelFromSlug(locale, tagSlug),
-      getBlogsByTag(locale, tagSlug),
-    ]);
-  } catch {
-    notFound();
+    tagData = await getCachedTagDetailData(locale, tagSlug);
+  } catch (error) {
+    logCmsPageError({ route: '/[locale]/tags/[tag]', locale, slug: tagSlug, error });
+    throw error;
   }
 
-  if (!tagLabel) {
+  if (!tagData.label) {
     notFound();
   }
 
@@ -103,15 +93,15 @@ export default async function TagDetailPage({ params }: TagDetailPageProps) {
     <section className="page-container px-4 py-14 md:px-6 md:py-18">
       <div className="space-y-10">
         <div className="space-y-5">
-          <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">#{tagLabel}</h1>
+          <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">#{tagData.label}</h1>
           <p className="max-w-3xl text-lg leading-8 text-muted">
-            {getTagCountLabel(dictionary, blogs.length, tagLabel)}
+            {getTagCountLabel(dictionary, tagData.blogs.length, tagData.label)}
           </p>
         </div>
 
-        {blogs.length > 0 ? (
+        {tagData.blogs.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {blogs.map((blog) => (
+            {tagData.blogs.map((blog) => (
               <BlogCard key={blog.id} blog={blog} dictionary={dictionary} locale={locale} />
             ))}
           </div>

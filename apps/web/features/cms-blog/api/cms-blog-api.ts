@@ -71,10 +71,12 @@ const publicPostDetailDtoSchema = z.object({
   featured: z.boolean(),
   seriesId: z.string().nullable(),
   seriesOrder: z.number().nullable(),
-  navigation: z.object({
-    previous: publicPostLinkDtoSchema.nullable(),
-    next: publicPostLinkDtoSchema.nullable(),
-  }).nullable(),
+  navigation: z
+    .object({
+      previous: publicPostLinkDtoSchema.nullable(),
+      next: publicPostLinkDtoSchema.nullable(),
+    })
+    .nullable(),
   continueLearning: z.array(publicPostLinkDtoSchema),
   publishedAt: z.string(),
   createdAt: z.string(),
@@ -192,6 +194,28 @@ export class CmsBlogApiError extends Error {
     this.code = options.code;
     this.status = options.status;
   }
+}
+
+export function logCmsPageError(input: {
+  route: string;
+  locale: string;
+  slug: string;
+  error: unknown;
+}) {
+  const isTimeout =
+    input.error instanceof Error &&
+    (input.error.name === 'TimeoutError' || input.error.name === 'AbortError');
+  const cmsError = input.error instanceof CmsBlogApiError ? input.error : null;
+
+  console.error('CMS page data fetch failed.', {
+    route: input.route,
+    locale: input.locale,
+    slug: input.slug,
+    errorType: input.error instanceof Error ? input.error.name : 'UnknownError',
+    errorCode: cmsError?.code ?? (isTimeout ? 'CMS_TIMEOUT' : 'CMS_UNKNOWN_ERROR'),
+    status: cmsError?.status,
+    timeout: isTimeout,
+  });
 }
 
 function getCmsBaseUrl() {
@@ -329,9 +353,7 @@ function sortPublishedPosts<T extends PublicPostListItemDto | PublicPostDetailDt
   });
 }
 
-function normalizeTranslations(
-  post: PublicPostDetailDto,
-): PublicPostTranslationLinkDto[] {
+function normalizeTranslations(post: PublicPostDetailDto): PublicPostTranslationLinkDto[] {
   const translations = post.translations.filter(
     (translation, index, items) =>
       items.findIndex((entry) => entry.locale === translation.locale) === index,
@@ -466,10 +488,7 @@ export async function getAllPublishedPosts(
     ),
   );
 
-  return sortPublishedPosts([
-    ...firstPage.items,
-    ...remainingPages.flatMap((page) => page.items),
-  ]);
+  return sortPublishedPosts([...firstPage.items, ...remainingPages.flatMap((page) => page.items)]);
 }
 
 export async function getPublishedPostBySlug(
@@ -496,8 +515,8 @@ export async function getPublishedPostBySlug(
   }
 }
 
-export const getCachedPublishedPostBySlug = cache(
-  async (locale: BlogLocale, slug: string) => getPublishedPostBySlug({ locale, slug }),
+export const getCachedPublishedPostBySlug = cache(async (locale: BlogLocale, slug: string) =>
+  getPublishedPostBySlug({ locale, slug }),
 );
 
 type GetAllPublishedSeriesInput = Omit<GetPublishedSeriesInput, 'page' | 'pageSize'> & {
@@ -508,7 +527,10 @@ export async function getPublishedSeries(
   input: GetPublishedSeriesInput,
 ): Promise<ListPublishedSeriesResponseDto> {
   try {
-    const endpoint = buildCmsUrl('/api/public/blog/series', normalizeSeriesListQuery(input)).toString();
+    const endpoint = buildCmsUrl(
+      '/api/public/blog/series',
+      normalizeSeriesListQuery(input),
+    ).toString();
     const payload = await fetchCms(endpoint);
     return parseApiSuccess(payload, listPublishedSeriesResponseDtoSchema, endpoint).data;
   } catch (error) {
@@ -581,3 +603,7 @@ export async function getPublishedSeriesBySlug(
     throw error;
   }
 }
+
+export const getCachedPublishedSeriesBySlug = cache(async (locale: BlogLocale, slug: string) =>
+  getPublishedSeriesBySlug({ locale, slug }),
+);
