@@ -15,7 +15,10 @@ import { TableOfContents } from '@/components/blog/table-of-contents';
 import { AuthorBox } from '@/components/blog/author-box';
 import { TagPill } from '@/components/blog/tag-pill';
 import { MDXRenderer } from '@/components/mdx/mdx-renderer';
-import { getCachedPublishedPostBySlug } from '@/features/cms-blog/api/cms-blog-api';
+import {
+  getCachedPublishedPostBySlug,
+  logCmsPageError,
+} from '@/features/cms-blog/api/cms-blog-api';
 import { formatBlogDate } from '@/lib/blogs';
 import { getDictionary, isValidLocale, type Locale } from '@/lib/i18n';
 import { calculateReadingTime } from '@/lib/reading-time';
@@ -30,6 +33,12 @@ type LocalizedBlogDetailPageProps = {
     slug: string;
   }>;
 };
+
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  return [];
+}
 
 function resolveCmsCoverImage(coverImageUrl: string | null) {
   if (!coverImageUrl) {
@@ -109,7 +118,14 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
     notFound();
   }
 
-  const post = await getCachedPublishedPostBySlug(locale, slug);
+  let post: Awaited<ReturnType<typeof getCachedPublishedPostBySlug>>;
+
+  try {
+    post = await getCachedPublishedPostBySlug(locale, slug);
+  } catch (error) {
+    logCmsPageError({ route: '/[locale]/blog/[slug]', locale, slug, error });
+    throw error;
+  }
 
   if (!post) {
     notFound();
@@ -262,7 +278,9 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
             </div>
           </div>
 
-          {(post.navigation?.previous || post.navigation?.next || (post.continueLearning && post.continueLearning.length > 0)) ? (
+          {post.navigation?.previous ||
+          post.navigation?.next ||
+          (post.continueLearning && post.continueLearning.length > 0) ? (
             <div className="space-y-10 border-t border-border/80 pt-10">
               {post.navigation && (post.navigation.previous || post.navigation.next) ? (
                 <div className="space-y-4">
@@ -274,7 +292,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
                       'flex flex-col gap-3 sm:grid',
                       post.navigation.previous && post.navigation.next
                         ? 'sm:grid-cols-2'
-                        : 'sm:grid-cols-1'
+                        : 'sm:grid-cols-1',
                     )}
                   >
                     {post.navigation.previous ? (
@@ -300,14 +318,16 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
                           'glass-card group flex items-center gap-4 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/55 focus-visible:-translate-y-1 focus-visible:border-primary/55',
                           post.navigation.previous
                             ? 'justify-between sm:justify-end'
-                            : 'justify-between sm:justify-start'
+                            : 'justify-between sm:justify-start',
                         )}
                         href={post.navigation.next.url as Route}
                       >
                         <div
                           className={cn(
                             'flex min-w-0 flex-col text-left',
-                            post.navigation.previous ? 'sm:items-end sm:text-right' : 'sm:items-start'
+                            post.navigation.previous
+                              ? 'sm:items-end sm:text-right'
+                              : 'sm:items-start',
                           )}
                         >
                           <span className="text-xs font-medium uppercase tracking-wider text-muted/60">
@@ -362,7 +382,7 @@ export default async function LocalizedBlogDetailPage({ params }: LocalizedBlogD
               postId={post.id}
               turnstileSiteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''}
             />
-            
+
             <AuthorBox locale={locale} messages={dictionary.authorBox} />
           </div>
         </article>

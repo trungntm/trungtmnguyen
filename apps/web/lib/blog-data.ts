@@ -20,10 +20,18 @@ export type TagData = TagSummary & {
   lastModified: string;
 };
 
+export type TagDetailData = {
+  label: string | undefined;
+  tag: TagData | null;
+  blogs: BlogPreview[];
+};
+
 const getAllCmsPostsByLocale = cache(async (locale: Locale) => getAllPublishedPosts({ locale }));
 
 function sortBlogs(blogs: BlogPreview[]) {
-  return [...blogs].sort((left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt));
+  return [...blogs].sort(
+    (left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt),
+  );
 }
 
 function buildTagData(posts: Awaited<ReturnType<typeof getAllCmsPostsByLocale>>, locale: Locale) {
@@ -70,9 +78,7 @@ function buildTagData(posts: Awaited<ReturnType<typeof getAllCmsPostsByLocale>>,
 
 export async function getPublishedBlogs(locale: Locale) {
   const posts = await getAllCmsPostsByLocale(locale);
-  return sortBlogs(
-    posts.map((post) => mapCmsPostToPostCardViewModel(post)),
-  );
+  return sortBlogs(posts.map((post) => mapCmsPostToPostCardViewModel(post)));
 }
 
 export async function getAllTags(locale: Locale) {
@@ -97,3 +103,21 @@ export async function getTagData(locale: Locale, tag: string) {
   const normalizedTag = normalizeTag(tag);
   return buildTagData(posts, locale).find((entry) => entry.slug === normalizedTag) ?? null;
 }
+
+export const getCachedTagDetailData = cache(
+  async (locale: Locale, tag: string): Promise<TagDetailData> => {
+    const normalizedTag = normalizeTag(tag);
+    const posts = await getAllCmsPostsByLocale(locale);
+    const tagData =
+      buildTagData(posts, locale).find((entry) => entry.slug === normalizedTag) ?? null;
+    const blogs = sortBlogs(posts.map((post) => mapCmsPostToPostCardViewModel(post))).filter(
+      (blog) => blog.tags.some((entry) => normalizeTag(entry) === normalizedTag),
+    );
+
+    return {
+      label: tagData?.label,
+      tag: tagData,
+      blogs,
+    };
+  },
+);
