@@ -6,7 +6,10 @@ import { SeriesPostListItem } from '@/components/blog/series-post-list-item';
 import { BlogDetailTranslationSync } from '@/components/layout/blog-detail-translation-sync';
 import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { BaseLink } from '@/components/ui/links';
-import { getPublishedSeriesBySlug } from '@/features/cms-blog/api/cms-blog-api';
+import {
+  getCachedPublishedSeriesBySlug,
+  logCmsPageError,
+} from '@/features/cms-blog/api/cms-blog-api';
 import type { PublicSeriesDetailDto } from '@/features/cms-blog/types';
 import { getSeriesPostCountLabel, getDictionary, isValidLocale, type Locale } from '@/lib/i18n';
 import { buildAbsoluteUrl, getOpenGraphLocale, resolveAbsoluteUrl } from '@/lib/seo';
@@ -18,6 +21,12 @@ type LocalizedSeriesDetailPageProps = {
     slug: string;
   }>;
 };
+
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  return [];
+}
 
 function resolveCmsSeriesCoverImage(coverImageUrl: string | null) {
   if (!coverImageUrl) {
@@ -32,7 +41,10 @@ function getCmsSeriesSeo(series: PublicSeriesDetailDto) {
   const canonical = buildAbsoluteUrl(series.url);
   const images = resolveCmsSeriesCoverImage(series.coverImageUrl);
   const languages = Object.fromEntries(
-    series.translations.map((translation) => [translation.locale, buildAbsoluteUrl(translation.url)]),
+    series.translations.map((translation) => [
+      translation.locale,
+      buildAbsoluteUrl(translation.url),
+    ]),
   ) as Partial<Record<Locale, string>>;
 
   return {
@@ -54,7 +66,7 @@ export async function generateMetadata({
   }
 
   try {
-    const series = await getPublishedSeriesBySlug({ locale, slug });
+    const series = await getCachedPublishedSeriesBySlug(locale, slug);
 
     if (!series) {
       return {};
@@ -98,7 +110,14 @@ export default async function LocalizedSeriesDetailPage({
     notFound();
   }
 
-  const series = await getPublishedSeriesBySlug({ locale, slug });
+  let series: Awaited<ReturnType<typeof getCachedPublishedSeriesBySlug>>;
+
+  try {
+    series = await getCachedPublishedSeriesBySlug(locale, slug);
+  } catch (error) {
+    logCmsPageError({ route: '/[locale]/series/[slug]', locale, slug, error });
+    throw error;
+  }
 
   if (!series) {
     notFound();
@@ -107,7 +126,7 @@ export default async function LocalizedSeriesDetailPage({
   const dictionary = getDictionary(locale);
   const { canonical } = getCmsSeriesSeo(series);
   const structuredData = getSeriesStructuredData(series, canonical);
-  
+
   const breadcrumbListStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
@@ -159,9 +178,7 @@ export default async function LocalizedSeriesDetailPage({
               {series.title}
             </h1>
             {series.description ? (
-              <p className="text-lg leading-8 text-muted md:text-xl">
-                {series.description}
-              </p>
+              <p className="text-lg leading-8 text-muted md:text-xl">{series.description}</p>
             ) : null}
           </div>
 
